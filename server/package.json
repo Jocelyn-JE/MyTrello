@@ -1,0 +1,43 @@
+{
+  "name": "mytrello-server",
+  "version": "1.0.0",
+  "description": "This is the backend server providing an API for the clients as well as connecting to a PostgreSQL database for document storage",
+  "main": "./src/app.ts",
+  "scripts": {
+    "start": "ts-node ./src/app.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jocelyn-JE/MyTrello.git"
+  },
+  "keywords": [
+    "epitech"
+  ],
+  "author": "Jocelyn JEAN-ELIE",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jocelyn-JE/MyTrello/issues"
+  },
+  "homepage": "https://github.com/Jocelyn-JE/MyTrello#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "swagger-ui-express": "^5.0.1",
+    "websocket-express": "^4.0.1",
+    "ws": "^8.18.3",
+    "yaml": "^2.8.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.5.0",
+    "@types/swagger-ui-express": "^4.1.8",
+    "@types/ws": "^8.18.1",
+    "@typescript-eslint/parser": "^5.62.0",
+    "eslint": "^8.57.1",
+    "prettier": "^3.6.2",
+    "prettier-eslint": "^16.4.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^4.9.5"
+  }
+}
