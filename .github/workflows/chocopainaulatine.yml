@@ -96,10 +96,10 @@ jobs:
           node-version: '20'
       - name: "Install dependencies (with devDependencies)"
         run: npm install --include=dev
-        working-directory: /home/runner/work/MyTrello/backend
+        working-directory: /home/runner/work/MyTrello/MyTrello/backend
       - name: "Run tests"
         run: npm test
-        working-directory: /home/runner/work/MyTrello/backend
+        working-directory: /home/runner/work/MyTrello/MyTrello/backend
 
   backend_run:
     needs: backend_tests
@@ -115,7 +115,7 @@ jobs:
           node-version: '20'
       - name: "Install dependencies"
         run: npm install
-        working-directory: /home/runner/work/MyTrello/backend
+        working-directory: /home/runner/work/MyTrello/MyTrello/backend
       - name: "Test backend startup"
         run: |
           # Start backend in background and capture PID
@@ -145,7 +145,7 @@ jobs:
           kill $BACKEND_PID 2>/dev/null || true
           echo "Backend failed to respond after startup"
           exit 1
-        working-directory: /home/runner/work/MyTrello/backend
+        working-directory: /home/runner/work/MyTrello/MyTrello/backend
 
   push_to_mirror:
     needs: [check_if_mirror, backend_run, frontend_build]
