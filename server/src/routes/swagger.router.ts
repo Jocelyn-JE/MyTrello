@@ -27,6 +27,11 @@ function middleware(req: any, res: any, next: any) {
     next();
 }
 
+// Endpoint to get the raw swagger JSON
+router.get("/swagger.json", (req, res) => {
+    res.json(getSwaggerConfigFile());
+});
+
 // Reloads and serves the swagger file on each request
 router.useHTTP(
     "/",
