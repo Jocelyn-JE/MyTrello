@@ -1,0 +1,60 @@
+# Install Operating system and dependencies
+FROM ubuntu:latest AS builder
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update 
+RUN apt-get install -y curl git wget unzip
+RUN apt-get clean
+
+ENV DEBIAN_FRONTEND=dialog
+ENV PUB_HOSTED_URL=https://pub.flutter-io.cn
+ENV FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
+
+# download Flutter SDK from Flutter Github repo
+RUN git clone https://github.com/flutter/flutter.git /usr/local/flutter
+
+# Set flutter environment path
+ENV PATH="/usr/local/flutter/bin:/usr/local/flutter/bin/cache/dart-sdk/bin:${PATH}"
+
+# Enable flutter web and upgrade (do this before copying app files)
+RUN flutter channel stable
+RUN flutter upgrade
+RUN flutter config --enable-web
+
+# Copy pubspec files first for better dependency caching
+RUN mkdir /app/
+WORKDIR /app/
+COPY pubspec.yaml pubspec.lock ./
+
+# Get dependencies (this will be cached unless pubspec files change)
+RUN flutter pub get
+
+# Copy only the files needed for web build
+COPY lib/ ./lib/
+COPY web/ ./web/
+COPY analysis_options.yaml ./
+
+# Build the flutter web app
+RUN flutter build web --release --no-source-maps
+
+# Set up nginx to serve the app
+FROM nginx:stable-alpine AS production-stage
+COPY --from=builder /app/build/web /usr/share/nginx/html
+
+# Create nginx configuration
+RUN echo 'server { \
+    listen 80; \
+    server_name localhost; \
+    root /usr/share/nginx/html; \
+    index index.html; \
+    location / { \
+        try_files $uri $uri/ /index.html; \
+    } \
+}' > /etc/nginx/conf.d/default.conf
+
+# Record the exposed port
+EXPOSE 80
+
+# Start nginx
+ENTRYPOINT ["nginx", "-g", "daemon off;"]

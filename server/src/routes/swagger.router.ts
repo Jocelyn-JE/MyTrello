@@ -28,7 +28,7 @@ function middleware(req: any, res: any, next: any) {
 }
 
 // Reloads and serves the swagger file on each request
-router.use(
+router.useHTTP(
     "/",
     middleware,
     swaggerUi.serve,

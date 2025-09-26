@@ -1,0 +1,75 @@
+# Install Operating system and dependencies
+FROM ubuntu:latest AS builder
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install required packages
+RUN apt-get update 
+RUN apt-get install -y curl git wget unzip openjdk-17-jdk
+RUN apt-get clean
+
+# Set up Android SDK
+ENV ANDROID_HOME=/opt/android-sdk
+ENV PATH=${PATH}:${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools
+
+# Create android sdk directory
+RUN mkdir -p ${ANDROID_HOME}/cmdline-tools
+
+# Download command line tools
+RUN wget https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip -O cmdline-tools.zip
+RUN unzip cmdline-tools.zip -d ${ANDROID_HOME}/cmdline-tools
+RUN mv ${ANDROID_HOME}/cmdline-tools/cmdline-tools ${ANDROID_HOME}/cmdline-tools/latest
+RUN rm cmdline-tools.zip
+
+# Accept Android licenses and install required packages
+RUN yes | sdkmanager --licenses
+RUN sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.0"
+
+# Download Flutter SDK from Flutter Github repo
+ENV DEBIAN_FRONTEND=dialog
+ENV PUB_HOSTED_URL=https://pub.flutter-io.cn
+ENV FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
+
+RUN git clone https://github.com/flutter/flutter.git /usr/local/flutter
+
+# Set flutter environment path
+ENV PATH="/usr/local/flutter/bin:/usr/local/flutter/bin/cache/dart-sdk/bin:${PATH}"
+
+# Enable flutter android and upgrade (do this before copying app files)
+RUN flutter channel stable
+RUN flutter upgrade
+RUN flutter config --enable-android
+
+# Copy pubspec files first for better dependency caching
+RUN mkdir /app/
+WORKDIR /app/
+COPY pubspec.yaml pubspec.lock ./
+
+# Get dependencies (this will be cached unless pubspec files change)
+RUN flutter pub get
+
+# Copy only the files needed for android build
+COPY lib/ ./lib/
+COPY android/ ./android/
+COPY analysis_options.yaml ./
+
+# Build the flutter android apk
+RUN flutter build apk --release
+
+# Set up a minimal image to copy the APK on the host machine
+FROM alpine AS production-stage
+
+# Copy the built APK from the builder stage
+COPY --from=builder /app/build/app/outputs/flutter-apk/app-release.apk /tmp/app-release.apk
+
+# Copy the APK to a mounted volume on the host machine
+CMD ["sh", "-c", "chown 1000:1000 /output/ &&\
+    cp /tmp/app-release.apk /output/app-release.apk &&\
+    chown 1000:1000 /output/app-release.apk"]
+
+# Est-ce que c'est dégueulasse ? Oui.
+# Est-ce que ça marche ? Oui.
+# Est-ce que je suis fier de moi ? Non.
+# Est-ce que j'ai pleuré en écrivant cette ligne ? Oui.
+# Est-ce que j'ai pleuré en écrivant ce Dockerfile ? Oui.
+# https://media.tenor.com/9PTGVf4BLwYAAAAM/crying-emoji-dies.gif
