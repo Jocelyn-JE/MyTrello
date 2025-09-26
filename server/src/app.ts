@@ -1,5 +1,6 @@
 import { WebSocketExpress } from "websocket-express";
 import cors from "cors";
+import prisma from "./utils/prisma.client";
 
 // Routes
 import swaggerRouter from "./routes/swagger.router";
@@ -29,6 +30,7 @@ if (require.main === module) {
     });
 
     process.on("SIGINT", (): null => {
+        prisma.$disconnect();
         console.log("Goodbye!");
         process.exit(0);
     });
