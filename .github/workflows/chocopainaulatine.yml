@@ -91,8 +91,27 @@ jobs:
           automatic_release_tag: "latest"
           title: "Development Build"
 
-  backend_tests:
+  check_backend_changes:
     runs-on: ubuntu-latest
+    outputs:
+      backend_changed: ${{ steps.changes.outputs.backend }}
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: "Check for backend changes"
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            backend:
+              - 'server/**'
+  
+  backend_tests_and_run:
+    needs: check_backend_changes
+    runs-on: ubuntu-latest
+    if: needs.check_backend_changes.outputs.backend_changed == 'true'
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4
@@ -107,22 +126,6 @@ jobs:
         working-directory: ./server
       - name: "Run tests"
         run: npm test
-        working-directory: ./server
-
-  backend_run:
-    needs: backend_tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Checkout"
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: "Set up Node.js"
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-      - name: "Install dependencies"
-        run: npm install
         working-directory: ./server
       - name: "Test backend startup"
         run: |
@@ -156,9 +159,9 @@ jobs:
         working-directory: ./server
 
   push_to_mirror:
-    needs: [check_if_mirror, backend_run, check_frontend_changes, frontend_tests_and_build]
+    needs: [check_if_mirror, check_frontend_changes, frontend_tests_and_build]
     runs-on: ubuntu-latest
-    if: ${{ always() && github.event_name == 'push' && (needs.backend_run.result == 'success' && (needs.check_frontend_changes.outputs.frontend_changed != 'true' || needs.frontend_tests_and_build.result == 'success')) }}
+    if: ${{ always() && github.event_name == 'push' && (needs.check_backend_changes.outputs.backend_changed != 'true' && (needs.check_frontend_changes.outputs.frontend_changed != 'true' || needs.frontend_tests_and_build.result == 'success')) }}
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4
