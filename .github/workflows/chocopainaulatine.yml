@@ -96,10 +96,10 @@ jobs:
           node-version: '20'
       - name: "Install dependencies (with devDependencies)"
         run: npm install --include=dev
-        working-directory: ./backend
+        working-directory: /backend
       - name: "Run tests"
         run: npm test
-        working-directory: ./backend
+        working-directory: /backend
 
   backend_run:
     needs: backend_tests
@@ -115,7 +115,7 @@ jobs:
           node-version: '20'
       - name: "Install dependencies"
         run: npm install
-        working-directory: ./backend
+        working-directory: /backend
       - name: "Test backend startup"
         run: |
           # Start backend in background and capture PID
