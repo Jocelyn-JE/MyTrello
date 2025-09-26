@@ -1,0 +1,165 @@
+name: Chocopainaulatine
+on:
+  push:
+    branches-ignore:
+      - 'ga-ignore-**'
+  pull_request:
+    branches-ignore:
+      - 'ga-ignore-**'
+
+env:
+  REPO_NAME: 'EpitechPGE3-2025/G-PRO-500-NAN-5-1-professionalwork-20'
+
+jobs:
+  check_if_mirror:
+    runs-on: ubuntu-latest
+    if: github.repository != '{{ env.REPO_NAME }}'
+    steps:
+      - name: "Validate"
+        run: |
+          echo "This is not the main repository. Proceeding with mirroring."
+
+  frontend_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: "Set up Flutter"
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.7.0'
+      - name: "Install dependencies"
+        run: flutter pub get
+      - name: "Run tests"
+        run: flutter test
+
+  frontend_build:
+    needs: frontend_tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: "Set up Flutter"
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.7.0'
+      - name: "Install dependencies"
+        run: flutter pub get
+      - name: "Build APK"
+        run: flutter build apk --release
+      - name: "Build Web"
+        run: flutter build web --release
+      - name: "Upload APK artifact"
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 1
+
+  frontend_apk_release:
+    needs: frontend_build
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' }}
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: "Download APK artifact"
+        uses: actions/download-artifact@v4
+        with:
+          name: app-release-apk
+          path: build/app/outputs/flutter-apk/
+      - name: "Upload APK"
+        uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          files: build/app/outputs/flutter-apk/app-release.apk
+          prerelease: true
+          automatic_release_tag: "latest"
+          title: "Development Build"
+
+  backend_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: "Set up Node.js"
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      - name: "Install dependencies (with devDependencies)"
+        run: npm install --include=dev
+        working-directory: ./backend
+      - name: "Run tests"
+        run: npm test
+        working-directory: ./backend
+
+  backend_run:
+    needs: backend_tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: "Set up Node.js"
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      - name: "Install dependencies"
+        run: npm install
+        working-directory: ./backend
+      - name: "Test backend startup"
+        run: |
+          # Start backend in background and capture PID
+          npm start &
+          BACKEND_PID=$!
+          echo "Started backend with PID: $BACKEND_PID"
+          
+          # Wait a bit and check if process is still running (didn't crash immediately)
+          sleep 5
+          if ! kill -0 $BACKEND_PID 2>/dev/null; then
+            echo "Backend process crashed on startup!"
+            exit 1
+          fi
+          
+          # Try to connect to the server
+          for i in {1..5}; do
+            if curl -f http://localhost:3000 > /dev/null 2>&1; then
+              echo "Backend is responding!"
+              kill $BACKEND_PID 2>/dev/null || true
+              exit 0
+            fi
+            echo "Waiting for backend to respond... ($i/5)"
+            sleep 6
+          done
+          
+          # Clean up and fail
+          kill $BACKEND_PID 2>/dev/null || true
+          echo "Backend failed to respond after startup"
+          exit 1
+        working-directory: ./backend
+
+  push_to_mirror:
+    needs: [check_if_mirror, backend_run, frontend_build]
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' }}
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: "Mirroring"
+        uses: pixta-dev/repository-mirroring-action@v1
+        with:
+          target_repo_url:
+            git@github.com:${{ env.REPO_NAME }}
+          ssh_private_key:
+            ${{ secrets.GIT_SSH_PRIVATE_KEY }}
