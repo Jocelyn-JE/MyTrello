@@ -4,14 +4,14 @@ services:
   android-frontend:
     build:
       context: ./frontend
-      dockerfile: android-dockerfile
+      dockerfile: Dockerfile.android
     volumes:
       - ./output:/output
 
   web-frontend:
     build:
       context: ./frontend
-      dockerfile: web-dockerfile
+      dockerfile: Dockerfile.web
     ports:
       - ${FRONTEND_PORT}:80
     depends_on:
