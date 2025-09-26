@@ -2,6 +2,7 @@ services:
   # This service only builds the Android APK and outputs it to the host machine.
   # It does not run anything after building.
   android-frontend:
+    container_name: android-frontend
     build:
       context: ./frontend
       dockerfile: Dockerfile.android
@@ -9,6 +10,7 @@ services:
       - ./output:/output
 
   web-frontend:
+    container_name: web-frontend
     build:
       context: ./frontend
       dockerfile: Dockerfile.web
@@ -20,6 +22,7 @@ services:
       - frontend
 
   backend-server:
+    container_name: backend-server
     build:
       context: ./server
     restart: always
@@ -34,6 +37,7 @@ services:
       - backend
 
   postgres:
+    container_name: postgres
     image: postgres:alpine
     restart: always
     env_file:
