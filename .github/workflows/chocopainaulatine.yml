@@ -22,6 +22,7 @@ jobs:
           echo "This is not the main repository. Proceeding with mirroring."
 
   check_frontend_changes:
+    needs: check_if_mirror
     runs-on: ubuntu-latest
     outputs:
       frontend_changed: ${{ steps.changes.outputs.frontend }}
@@ -94,6 +95,7 @@ jobs:
           title: "Development Build"
 
   check_backend_changes:
+    needs: check_if_mirror
     runs-on: ubuntu-latest
     outputs:
       backend_changed: ${{ steps.changes.outputs.backend }}
