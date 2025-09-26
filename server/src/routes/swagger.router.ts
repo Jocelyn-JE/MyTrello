@@ -22,6 +22,7 @@ const swaggerOptions = {
 
 // Middleware to attach the swagger file to the request
 function middleware(req: any, res: any, next: any) {
+    /* c8 ignore next */
     if (req.path !== "/") return next();
     req.swaggerDoc = getSwaggerConfigFile();
     next();

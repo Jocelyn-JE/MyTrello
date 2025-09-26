@@ -13,19 +13,23 @@ app.use(WebSocketExpress.urlencoded({ extended: true }));
 
 // Test route
 app.get("/", (req, res) => {
-    res.send("Server is working");
+    res.send("Server is running");
 });
 
 // Documentation route
 app.useHTTP("/api-docs", swaggerRouter);
 
-app.listen(port, () => {
-    console.log(`Backend listening on port ${port}`);
-});
-
-process.on("SIGINT", (): null => {
-    console.log("Goodbye!");
-    process.exit(0);
-});
-
+// Export app for testing
 export default app;
+
+// Only start server if this file is run directly (not imported)
+if (require.main === module) {
+    app.listen(port, () => {
+        console.log(`Backend listening on port ${port}`);
+    });
+
+    process.on("SIGINT", (): null => {
+        console.log("Goodbye!");
+        process.exit(0);
+    });
+}
