@@ -44,3 +44,10 @@ services:
       - pgdata:/var/lib/postgresql/
     networks:
       - backend
+
+networks:
+  frontend:
+  backend:
+
+volumes:
+  pgdata:
