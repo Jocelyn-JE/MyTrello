@@ -19,8 +19,27 @@ jobs:
         run: |
           echo "This is not the main repository. Proceeding with mirroring."
 
-  frontend_tests_and_build:
+  check_frontend_changes:
     runs-on: ubuntu-latest
+    outputs:
+      frontend_changed: ${{ steps.changes.outputs.frontend }}
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: "Check for frontend changes"
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            frontend:
+              - 'frontend/**'
+
+  frontend_tests_and_build:
+    needs: check_frontend_changes
+    runs-on: ubuntu-latest
+    if: needs.check_frontend_changes.outputs.frontend_changed == 'true'
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4
@@ -50,9 +69,9 @@ jobs:
           retention-days: 1
 
   frontend_apk_release:
-    needs: frontend_tests_and_build
+    needs: [check_frontend_changes, frontend_tests_and_build]
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' }}
+    if: ${{ github.event_name == 'push' && needs.check_frontend_changes.outputs.frontend_changed == 'true' }}
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4
@@ -137,9 +156,9 @@ jobs:
         working-directory: ./server
 
   push_to_mirror:
-    needs: [check_if_mirror, backend_run, frontend_tests_and_build]
+    needs: [check_if_mirror, backend_run, check_frontend_changes, frontend_tests_and_build]
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' }}
+    if: ${{ always() && github.event_name == 'push' && (needs.backend_run.result == 'success' && (needs.check_frontend_changes.outputs.frontend_changed != 'true' || needs.frontend_tests_and_build.result == 'success')) }}
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4
