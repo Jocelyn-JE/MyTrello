@@ -1,4 +1,6 @@
 name: Chocopainaulatine
+permissions:
+  contents: write
 on:
   push:
     branches-ignore:
