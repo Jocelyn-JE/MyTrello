@@ -19,7 +19,7 @@ jobs:
         run: |
           echo "This is not the main repository. Proceeding with mirroring."
 
-  frontend_tests:
+  frontend_tests_and_build:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
@@ -36,22 +36,6 @@ jobs:
       - name: "Run tests"
         run: flutter test
         working-directory: ./frontend
-
-  frontend_build:
-    needs: frontend_tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Checkout"
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: "Set up Flutter"
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.35.4'
-      - name: "Install dependencies"
-        run: flutter pub get
-        working-directory: ./frontend
       - name: "Build APK"
         run: flutter build apk --release
         working-directory: ./frontend
@@ -66,7 +50,7 @@ jobs:
           retention-days: 1
 
   frontend_apk_release:
-    needs: frontend_build
+    needs: frontend_tests_and_build
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' }}
     steps:
@@ -153,7 +137,7 @@ jobs:
         working-directory: ./server
 
   push_to_mirror:
-    needs: [check_if_mirror, backend_run, frontend_build]
+    needs: [check_if_mirror, backend_run, frontend_tests_and_build]
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' }}
     steps:
