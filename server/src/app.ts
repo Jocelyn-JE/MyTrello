@@ -4,6 +4,7 @@ import prisma from "./utils/prisma.client";
 
 // Routes
 import swaggerRouter from "./routes/swagger.router";
+import registerRouter from "./routes/register.router";
 
 const app = new WebSocketExpress();
 const port = 3000;
@@ -19,6 +20,9 @@ app.get("/", (req, res) => {
 
 // Documentation route
 app.useHTTP("/api-docs", swaggerRouter);
+
+// User routes
+app.useHTTP("/api/register", registerRouter);
 
 // Export app for testing
 export default app;

@@ -23,6 +23,7 @@
   "homepage": "https://github.com/Jocelyn-JE/MyTrello#readme",
   "dependencies": {
     "@prisma/client": "^6.16.2",
+    "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "swagger-ui-express": "^5.0.1",
