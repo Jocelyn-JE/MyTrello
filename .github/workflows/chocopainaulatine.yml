@@ -134,7 +134,7 @@ jobs:
       - name: "Test backend startup"
         run: |
           # Start backend in background and capture PID
-          npm start &
+          npm run start-without-migrate &
           BACKEND_PID=$!
           echo "Started backend with PID: $BACKEND_PID"
           
