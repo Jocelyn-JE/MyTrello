@@ -4,7 +4,7 @@
   "description": "This is the backend server providing an API for the clients as well as connecting to a PostgreSQL database for document storage",
   "main": "./src/app.ts",
   "scripts": {
-    "start": "prisma generate --no-hints && ts-node ./src/app.ts",
+    "start": "prisma migrate reset --force && ts-node ./src/app.ts",
     "test": "jest"
   },
   "repository": {

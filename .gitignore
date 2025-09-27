@@ -140,3 +140,6 @@ vite.config.ts.timestamp-*
 
 # APK output
 /output
+
+# Prisma migration files
+migrations/
