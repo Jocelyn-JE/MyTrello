@@ -1,8 +1,14 @@
 FROM node:lts-alpine
 
 EXPOSE 3000
-COPY . ./
-RUN rm -f .env .env.* || true
+WORKDIR /app
+
+# Copy package files first for better caching
+COPY package*.json ./
 RUN npm install
 
-CMD ["npm", "start" ]
+# Copy the rest of the application
+COPY . ./
+
+# Generate Prisma Client, apply migrations and start the server
+CMD ["npm", "start"]
