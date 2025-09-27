@@ -3,24 +3,121 @@ info:
   title: MyTrello API
   version: 1.0.0
   description: API documentation for MyTrello project
+tags:
+  - name: documentation
+    description: API documentation endpoints
+  - name: users
+    description: User authentication
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+
 paths:
-  /about.json:
+  /api-docs:
     get:
-      summary: Get project metadata
+      tags:
+        - documentation
+      summary: Get this API documentation
       responses:
         '200':
           description: Successful response
+  /api/register:
+    post:
+      tags:
+        - users
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                username:
+                  type: string
+              required:
+                - email
+                - password
+                - username
+      responses:
+        '201':
+          description: User registered successfully
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  name:
+                  message:
                     type: string
-                    example: MyTrello
-                  version:
-                    type: string
-                    example: 1.0.0
-                  description:
-                    type: string
-                    example: API for MyTrello project metadata
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        format: uuid
+                      email:
+                        format: email
+                      username:
+                        type: string
+                      createdAt:
+                        format: date-time
+                      updatedAt:
+                        format: date-time
+        '400':
+          $ref: '#/components/responses/Error400'
+        '500':
+          $ref: '#/components/responses/Error500'
+
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      description: Standard error payload
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Human readable error description
+          example: Error XXX because of YYY
+  responses:
+    Error400:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Error401:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Error403:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Error404:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Error409:
+      description: Conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Error500:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
