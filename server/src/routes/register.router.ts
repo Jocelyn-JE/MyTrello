@@ -43,8 +43,8 @@ router.post("/", async (req, res) => {
         const user = createUser(email, password, username);
         res.status(201).send({ message: "User registered successfully", user });
         /* c8 ignore stop */
-    } catch (error) {
-        console.error("Error registering user:", error);
+    } catch (error: any) {
+        console.error("Error registering user:", error.message);
         res.status(500).send({ message: "Internal server error" });
     }
 });
