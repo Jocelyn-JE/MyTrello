@@ -204,8 +204,12 @@ describe("isEmpty", () => {
         expect(isEmpty("", " ", "\n")).toBe(true);
     });
 
-    test("returns false when any field has non-whitespace", () => {
-        expect(isEmpty("", "value", " ")).toBe(false);
+    test("returns true when any field has non-whitespace", () => {
+        expect(isEmpty("", "value", " ")).toBe(true);
+    });
+
+    test("returns false when all fields have non-whitespace", () => {
+        expect(isEmpty("a", "b")).toBe(false);
     });
 });
 
