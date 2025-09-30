@@ -20,7 +20,7 @@ describe("JWT utilities", () => {
         });
 
         it("should generate a valid JWT containing userId and correct expiresAt", () => {
-            const userId = 123;
+            const userId = "uuid-123";
             const token = generateToken(userId);
             expect(typeof token).toBe("string");
 
@@ -85,7 +85,7 @@ describe("JWT utilities", () => {
         });
 
         it("should call next and attach userId for a valid token", async () => {
-            const token = generateToken(77);
+            const token = generateToken("uuid-77");
             const r = await runMiddleware(`Bearer ${token}`);
             expect(r.status).toBe(200);
             expect(r.nextCalled).toBe(true);
@@ -106,12 +106,12 @@ describe("JWT utilities", () => {
         });
 
         it("should succeed on /protected with valid token", async () => {
-            const token = generateToken(999);
+            const token = generateToken("uuid-999");
             const res = await request(app)
                 .get("/protected")
                 .set("Authorization", `Bearer ${token}`)
                 .expect(200);
-            expect(res.body).toEqual({ userId: 999, ok: true });
+            expect(res.body).toEqual({ userId: "uuid-999", ok: true });
         });
 
         it("should fail on /protected without token", async () => {

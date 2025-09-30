@@ -5,12 +5,12 @@ const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
 const JWT_EXPIRES_IN = 3600000; // Token expiration time in ms
 
 interface JwtPayload {
-    userId: number;
+    userId: string;
     expiresAt: number;
 }
 
 // Function to generate a JWT for a given user ID
-export function generateToken(userId: number): string {
+export function generateToken(userId: string): string {
     const payload: JwtPayload = {
         userId,
         expiresAt: Date.now() + JWT_EXPIRES_IN
