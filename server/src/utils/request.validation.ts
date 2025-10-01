@@ -18,7 +18,7 @@ export function validateJSONRequest(req: Request, res: Response) {
     return null;
 }
 
-export function checkRequiredFields(
+export function checkExactFields(
     body: any,
     res: Response,
     requiredFields: string[]

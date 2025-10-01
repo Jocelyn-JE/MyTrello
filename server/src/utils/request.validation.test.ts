@@ -2,7 +2,7 @@ import request from "supertest";
 import express, { Request, Response } from "express";
 import {
     validateJSONRequest,
-    checkRequiredFields,
+    checkExactFields,
     checkAllowedFields,
     isEmpty,
     isValidEmail
@@ -122,12 +122,12 @@ describe("validateJSONRequest", () => {
     });
 });
 
-describe("checkRequiredFields", () => {
+describe("checkExactFields", () => {
     test("passes when body has exactly required fields in any order", () => {
         const required = ["email", "password"];
         const body = { password: "x", email: "y" };
         const res = createMockRes();
-        const result = checkRequiredFields(
+        const result = checkExactFields(
             body,
             res as unknown as Response,
             required
@@ -140,7 +140,7 @@ describe("checkRequiredFields", () => {
         const required = ["email", "password"];
         const body = { email: "x" };
         const res = createMockRes();
-        checkRequiredFields(body, res as unknown as Response, required);
+        checkExactFields(body, res as unknown as Response, required);
         expect(res.status).toHaveBeenCalledWith(400);
         // required array is sorted in-place by implementation
         expect(res._json).toEqual({
@@ -153,7 +153,7 @@ describe("checkRequiredFields", () => {
         const required = ["email", "password"];
         const body = { email: "a", password: "b", extra: 1 };
         const res = createMockRes();
-        checkRequiredFields(body, res as unknown as Response, required);
+        checkExactFields(body, res as unknown as Response, required);
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res._json?.message).toContain(
             "Request body must contain exactly the required fields"

@@ -3,7 +3,7 @@ import prisma from "../utils/prisma.client";
 import bcrypt from "bcryptjs";
 import {
     validateJSONRequest,
-    checkRequiredFields,
+    checkExactFields,
     isValidEmail,
     isEmpty
 } from "../utils/request.validation";
@@ -16,7 +16,7 @@ router.post("/", async (req, res) => {
     // Validate request
     if (
         validateJSONRequest(req, res) ||
-        checkRequiredFields(req.body, res, requiredFields)
+        checkExactFields(req.body, res, requiredFields)
     )
         return;
     const { email, password, username } = req.body;
