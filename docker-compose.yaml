@@ -33,6 +33,8 @@ services:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
     ports:
       - ${BACKEND_PORT}:3000
+    volumes:
+      - ./docs/swagger.yaml:/docs/swagger.yaml
     depends_on:
       postgres:
         condition: service_healthy

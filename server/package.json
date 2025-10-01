@@ -5,7 +5,7 @@
   "main": "./src/app.ts",
   "scripts": {
     "start-without-migrate": "ts-node ./src/app.ts",
-    "start": "prisma migrate reset --force && ts-node ./src/app.ts",
+    "start": "prisma migrate reset --force && prisma migrate dev --name init --skip-generate && ts-node ./src/app.ts",
     "test": "node --no-warnings ./node_modules/jest/bin/jest.js"
   },
   "repository": {

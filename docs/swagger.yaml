@@ -55,18 +55,7 @@ paths:
                   message:
                     type: string
                   user:
-                    type: object
-                    properties:
-                      id:
-                        format: uuid
-                      email:
-                        format: email
-                      username:
-                        type: string
-                      createdAt:
-                        format: date-time
-                      updatedAt:
-                        format: date-time
+                    $ref: '#/components/schemas/User'
         '400':
           $ref: '#/components/responses/Error400'
         '500':
@@ -84,6 +73,23 @@ components:
           type: string
           description: Human readable error description
           example: Error XXX because of YYY
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
   responses:
     Error400:
       description: Bad request

@@ -12,7 +12,7 @@ const router = new Router();
 const requiredFields = ["email", "password", "username"];
 
 router.post("/", async (req, res) => {
-    console.debug("Received registration request");
+    console.debug("/api/register: Received registration request");
     // Validate request
     if (
         validateJSONRequest(req, res) ||
@@ -40,12 +40,12 @@ router.post("/", async (req, res) => {
             return res.status(409).send({ error: "Email is already taken" });
         }
         // Create user in the database
-        const user = createUser(email, password, username);
+        const user = await createUser(email, password, username);
         res.status(201).send({ message: "User registered successfully", user });
-        /* c8 ignore stop */
     } catch (error: unknown) {
         const errorMessage =
             error instanceof Error ? error.message : "Unknown error occurred";
+        /* c8 ignore stop */
         console.error("Error registering user:", errorMessage);
         res.status(500).send({ error: "Internal server error" });
     }
