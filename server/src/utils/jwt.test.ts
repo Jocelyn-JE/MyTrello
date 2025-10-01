@@ -1,10 +1,11 @@
 import express from "express";
 import request from "supertest";
 import jwt from "jsonwebtoken";
-import { generateToken, verifyToken } from "./jwt";
+import { generateToken, JwtPayload, verifyToken } from "./jwt";
+import { Request, Response, NextFunction } from "express";
 
 describe("JWT utilities", () => {
-    const SECRET: string = "your_jwt_secret";
+    const SECRET = "your_jwt_secret";
 
     describe("generateToken", () => {
         const FIXED_NOW = 1700000000000; // fixed timestamp
@@ -24,45 +25,56 @@ describe("JWT utilities", () => {
             const token = generateToken(userId);
             expect(typeof token).toBe("string");
 
-            const decoded = jwt.verify(token, SECRET) as any;
+            const decoded = jwt.verify(token, SECRET) as JwtPayload;
             expect(decoded.userId).toBe(userId);
             expect(decoded.expiresAt).toBe(FIXED_NOW + 3600000);
         });
     });
 
     describe("verifyToken middleware (unit)", () => {
-        const runMiddleware = (authHeader?: string, tokenOverride?: string) =>
-            new Promise<{ status?: number; body?: any; nextCalled: boolean }>(
-                (resolve) => {
-                    const req: any = {
-                        headers: {} as Record<string, string>,
-                        method: "GET",
-                        url: "/"
-                    };
-                    if (authHeader) req.headers.authorization = authHeader;
+        const runMiddleware = (authHeader?: string, _tokenOverride?: string) =>
+            new Promise<{
+                status?: number;
+                body?: unknown;
+                nextCalled: boolean;
+            }>((resolve) => {
+                const req = {
+                    headers: {} as Record<string, string>,
+                    method: "GET" as const,
+                    url: "/"
+                } as Partial<Request>;
 
-                    const result: any = { nextCalled: false };
+                if (authHeader && req.headers)
+                    req.headers.authorization = authHeader;
 
-                    const res: any = {
-                        status(code: number) {
-                            result.status = code;
-                            return this;
-                        },
-                        send(payload: any) {
-                            result.body = payload;
-                            resolve(result);
-                        }
-                    };
+                const result: {
+                    status?: number;
+                    body?: unknown;
+                    nextCalled: boolean;
+                } = {
+                    nextCalled: false
+                };
 
-                    const next = () => {
-                        result.nextCalled = true;
-                        result.status = 200;
+                const res = {
+                    status(code: number) {
+                        result.status = code;
+                        return this;
+                    },
+                    send(payload: unknown) {
+                        result.body = payload;
                         resolve(result);
-                    };
+                        return this;
+                    }
+                } as Partial<Response>;
 
-                    verifyToken(req, res as any, next);
-                }
-            );
+                const next: NextFunction = () => {
+                    result.nextCalled = true;
+                    result.status = 200;
+                    resolve(result);
+                };
+
+                verifyToken(req as Request, res as Response, next);
+            });
 
         it("should return 401 when no Authorization header is provided", async () => {
             const r = await runMiddleware();
@@ -102,7 +114,7 @@ describe("JWT utilities", () => {
     describe("verifyToken middleware (integration with Express)", () => {
         const app = express();
         app.get("/protected", verifyToken, (req, res) => {
-            res.json({ userId: (req as any).userId, ok: true });
+            res.json({ userId: req.userId, ok: true });
         });
 
         it("should succeed on /protected with valid token", async () => {
