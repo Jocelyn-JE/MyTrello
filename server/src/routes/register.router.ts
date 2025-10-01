@@ -43,8 +43,10 @@ router.post("/", async (req, res) => {
         const user = createUser(email, password, username);
         res.status(201).send({ message: "User registered successfully", user });
         /* c8 ignore stop */
-    } catch (error: any) {
-        console.error("Error registering user:", error.message);
+    } catch (error: unknown) {
+        const errorMessage =
+            error instanceof Error ? error.message : "Unknown error occurred";
+        console.error("Error registering user:", errorMessage);
         res.status(500).send({ message: "Internal server error" });
     }
 });
@@ -52,13 +54,14 @@ router.post("/", async (req, res) => {
 /* c8 ignore start */
 // Create user and return user data without password hash
 async function createUser(email: string, password: string, username: string) {
-    const { password_hash, ...safeUser } = await prisma.user.create({
-        data: {
-            email,
-            password_hash: await bcrypt.hash(password, 10),
-            username
-        }
-    });
+    const { password_hash: _password_hash, ...safeUser } =
+        await prisma.user.create({
+            data: {
+                email,
+                password_hash: await bcrypt.hash(password, 10),
+                username
+            }
+        });
     return safeUser;
 }
 
