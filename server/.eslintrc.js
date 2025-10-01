@@ -10,6 +10,14 @@ module.exports = {
     ignorePatterns: [".eslintrc.js"],
     rules: {
         indent: ["error", 4],
-        "@typescript-eslint/indent": ["error", 4]
+        "@typescript-eslint/indent": ["error", 4],
+        "@typescript-eslint/no-unused-vars": [
+            "error",
+            {
+                argsIgnorePattern: "^_",
+                varsIgnorePattern: "^_",
+                destructuredArrayIgnorePattern: "^_"
+            }
+        ]
     }
 };
