@@ -3,9 +3,19 @@ import fs from "fs";
 import path from "path";
 import yaml from "yaml";
 import swaggerUi from "swagger-ui-express";
+import { Request, Response, NextFunction } from "express";
 
 const filePath = path.join(__dirname, "../../../docs/swagger.yaml");
 const router = new Router();
+
+declare global {
+    // eslint-disable-next-line @typescript-eslint/no-namespace
+    namespace Express {
+        interface Request {
+            swaggerDoc?: swaggerUi.JsonObject;
+        }
+    }
+}
 
 // Reads and parses the swagger file
 function getSwaggerConfigFile(): swaggerUi.JsonObject {
@@ -21,7 +31,7 @@ const swaggerOptions = {
 };
 
 // Middleware to attach the swagger file to the request
-function middleware(req: any, res: any, next: any) {
+function middleware(req: Request, res: Response, next: NextFunction) {
     /* c8 ignore next */
     if (req.path !== "/") return next();
     req.swaggerDoc = getSwaggerConfigFile();
