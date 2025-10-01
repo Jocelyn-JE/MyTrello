@@ -35,17 +35,17 @@ export async function verifyToken(
 ) {
     const authHeader = req.headers.authorization;
     if (!authHeader)
-        return res.status(401).send({ message: "No token provided" });
+        return res.status(401).send({ error: "No token provided" });
     const token = authHeader.split(" ")[1]; // Bearer <token>
-    if (!token) return res.status(401).send({ message: "No token provided" });
+    if (!token) return res.status(401).send({ error: "No token provided" });
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
         const { userId, expiresAt } = decoded as JwtPayload;
         if (expiresAt < Date.now())
-            return res.status(401).send({ message: "Token has expired" });
+            return res.status(401).send({ error: "Token has expired" });
         req.userId = userId;
         next();
     } catch (error) {
-        return res.status(401).send({ message: "Invalid token" });
+        return res.status(401).send({ error: "Invalid token" });
     }
 }

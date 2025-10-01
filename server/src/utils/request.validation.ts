@@ -8,13 +8,13 @@ export function validateJSONRequest(req: Request, res: Response) {
     )
         return res
             .status(400)
-            .json({ message: "Content-Type must be application/json" });
+            .json({ error: "Content-Type must be application/json" });
     if (!req.body || Object.keys(req.body).length === 0)
-        return res.status(400).json({ message: "Request body is required" });
+        return res.status(400).json({ error: "Request body is required" });
     if (typeof req.body !== "object")
         return res
             .status(400)
-            .json({ message: "Request body must be valid JSON" });
+            .json({ error: "Request body must be valid JSON" });
     return null;
 }
 
@@ -28,7 +28,7 @@ export function checkExactFields(
     const requiredKeys = requiredFields.sort();
     if (JSON.stringify(bodyKeys) !== JSON.stringify(requiredKeys))
         return res.status(400).json({
-            message:
+            error:
                 "Request body must contain exactly the required fields: " +
                 requiredFields.join(", ")
         });
@@ -44,13 +44,13 @@ export function checkAllowedFields(
     const bodyKeys = Object.keys(body).sort();
     if (bodyKeys.some((key) => !allowedFields.includes(key)))
         return res.status(400).json({
-            message:
+            error:
                 "Request body contains invalid fields. Allowed fields are: " +
                 allowedFields.join(", ")
         });
     if (bodyKeys.length === 0)
         return res.status(400).json({
-            message: "Request body must contain at least one field to update."
+            error: "Request body must contain at least one field to update."
         });
     return null;
 }

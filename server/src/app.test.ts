@@ -44,7 +44,7 @@ test('"GET /api-docs/swagger.json" returns 200 and serves swagger JSON', async (
 test('"POST /api/register" with empty body returns 400', async () => {
     const res = await request(testApp).post("/api/register").send({});
     expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty("message", "Request body is required");
+    expect(res.body).toHaveProperty("error", "Request body is required");
 });
 
 test('"POST /api/register" with missing fields returns 400', async () => {
@@ -55,7 +55,7 @@ test('"POST /api/register" with missing fields returns 400', async () => {
     });
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty(
-        "message",
+        "error",
         "All fields must contain non-empty values"
     );
 });
@@ -67,7 +67,7 @@ test('"POST /api/register" with invalid email returns 400', async () => {
         username: "validUsername"
     });
     expect(res.status).toBe(400);
-    expect(res.body).toHaveProperty("message", "Invalid email format");
+    expect(res.body).toHaveProperty("error", "Invalid email format");
 });
 
 test('"POST /api/register" with valid data returns 500', async () => {
@@ -78,7 +78,7 @@ test('"POST /api/register" with valid data returns 500', async () => {
     });
     // Since the database is not set up in this test, we expect a 500 error
     expect(res.status).toBe(500);
-    expect(res.body).toHaveProperty("message", "Internal server error");
+    expect(res.body).toHaveProperty("error", "Internal server error");
 });
 
 // Note: More comprehensive tests would require a test database setup

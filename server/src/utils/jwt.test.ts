@@ -79,13 +79,13 @@ describe("JWT utilities", () => {
         it("should return 401 when no Authorization header is provided", async () => {
             const r = await runMiddleware();
             expect(r.status).toBe(401);
-            expect(r.body).toEqual({ message: "No token provided" });
+            expect(r.body).toEqual({ error: "No token provided" });
         });
 
         it("should return 401 when token is malformed", async () => {
             const r = await runMiddleware("Bearer invalid.token.here");
             expect(r.status).toBe(401);
-            expect(r.body).toEqual({ message: "Invalid token" });
+            expect(r.body).toEqual({ error: "Invalid token" });
         });
 
         it("should return 401 when token is expired", async () => {
@@ -93,7 +93,7 @@ describe("JWT utilities", () => {
             const expiredToken = jwt.sign(expiredPayload, SECRET);
             const r = await runMiddleware(`Bearer ${expiredToken}`);
             expect(r.status).toBe(401);
-            expect(r.body).toEqual({ message: "Token has expired" });
+            expect(r.body).toEqual({ error: "Token has expired" });
         });
 
         it("should call next and attach userId for a valid token", async () => {
@@ -107,7 +107,7 @@ describe("JWT utilities", () => {
             const r = await runMiddleware(`Bearer `);
             expect(r.status).toBe(401);
             expect(r.nextCalled).toBe(false);
-            expect(r.body).toEqual({ message: "No token provided" });
+            expect(r.body).toEqual({ error: "No token provided" });
         });
     });
 
@@ -128,7 +128,7 @@ describe("JWT utilities", () => {
 
         it("should fail on /protected without token", async () => {
             const res = await request(app).get("/protected").expect(401);
-            expect(res.body).toEqual({ message: "No token provided" });
+            expect(res.body).toEqual({ error: "No token provided" });
         });
 
         it("should fail on /protected with invalid token", async () => {
@@ -136,7 +136,7 @@ describe("JWT utilities", () => {
                 .get("/protected")
                 .set("Authorization", "Bearer abc.def.ghi")
                 .expect(401);
-            expect(res.body).toEqual({ message: "Invalid token" });
+            expect(res.body).toEqual({ error: "Invalid token" });
         });
     });
 });

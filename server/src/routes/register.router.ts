@@ -26,18 +26,18 @@ router.post("/", async (req, res) => {
             console.warn("Empty field(s) detected");
             return res
                 .status(400)
-                .send({ message: "All fields must contain non-empty values" });
+                .send({ error: "All fields must contain non-empty values" });
         }
         // Email format validation
         if (!isValidEmail(email)) {
             console.warn("Invalid email format:", email);
-            return res.status(400).send({ message: "Invalid email format" });
+            return res.status(400).send({ error: "Invalid email format" });
         }
         /* c8 ignore start */
         // Check if email is already taken
         if (await isEmailTaken(email)) {
             console.warn("Email already registered:", email);
-            return res.status(409).send({ message: "Email is already taken" });
+            return res.status(409).send({ error: "Email is already taken" });
         }
         // Create user in the database
         const user = createUser(email, password, username);
@@ -47,7 +47,7 @@ router.post("/", async (req, res) => {
         const errorMessage =
             error instanceof Error ? error.message : "Unknown error occurred";
         console.error("Error registering user:", errorMessage);
-        res.status(500).send({ message: "Internal server error" });
+        res.status(500).send({ error: "Internal server error" });
     }
 });
 

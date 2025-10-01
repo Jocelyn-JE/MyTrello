@@ -83,7 +83,7 @@ describe("validateJSONRequest", () => {
         validateJSONRequest(req as Request, res as unknown as Response);
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res.json).toHaveBeenCalledWith({
-            message: "Content-Type must be application/json"
+            error: "Content-Type must be application/json"
         });
     });
 
@@ -95,7 +95,7 @@ describe("validateJSONRequest", () => {
         const res = createMockRes();
         validateJSONRequest(req as Request, res as unknown as Response);
         expect(res.status).toHaveBeenCalledWith(400);
-        expect(res._json).toEqual({ message: "Request body is required" });
+        expect(res._json).toEqual({ error: "Request body is required" });
     });
 
     test("rejects undefined body", () => {
@@ -106,7 +106,7 @@ describe("validateJSONRequest", () => {
         const res = createMockRes();
         validateJSONRequest(req as Request, res as unknown as Response);
         expect(res.status).toHaveBeenCalledWith(400);
-        expect(res._json).toEqual({ message: "Request body is required" });
+        expect(res._json).toEqual({ error: "Request body is required" });
     });
 
     test("rejects non-object body", () => {
@@ -118,7 +118,7 @@ describe("validateJSONRequest", () => {
         validateJSONRequest(req as Request, res as unknown as Response);
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res._json).toEqual({
-            message: "Request body must be valid JSON"
+            error: "Request body must be valid JSON"
         });
     });
 });
@@ -145,8 +145,7 @@ describe("checkExactFields", () => {
         expect(res.status).toHaveBeenCalledWith(400);
         // required array is sorted in-place by implementation
         expect(res._json).toEqual({
-            message:
-                "Request body must contain exactly the required fields: email, password"
+            error: "Request body must contain exactly the required fields: email, password"
         });
     });
 
@@ -156,7 +155,7 @@ describe("checkExactFields", () => {
         const res = createMockRes();
         checkExactFields(body, res as unknown as Response, required);
         expect(res.status).toHaveBeenCalledWith(400);
-        expect(res._json?.message).toContain(
+        expect(res._json?.error).toContain(
             "Request body must contain exactly the required fields"
         );
     });
@@ -183,8 +182,7 @@ describe("checkAllowedFields", () => {
         checkAllowedFields(body, res as unknown as Response, allowed);
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res._json).toEqual({
-            message:
-                "Request body contains invalid fields. Allowed fields are: name, email"
+            error: "Request body contains invalid fields. Allowed fields are: name, email"
         });
     });
 
@@ -195,7 +193,7 @@ describe("checkAllowedFields", () => {
         checkAllowedFields(body, res as unknown as Response, allowed);
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res._json).toEqual({
-            message: "Request body must contain at least one field to update."
+            error: "Request body must contain at least one field to update."
         });
     });
 });
@@ -254,7 +252,7 @@ describe("Integration with Express + supertest (validateJSONRequest)", () => {
             .expect(400)
             .expect((r) => {
                 expect(r.body).toEqual({
-                    message: "Content-Type must be application/json"
+                    error: "Content-Type must be application/json"
                 });
             });
     });
@@ -275,7 +273,7 @@ describe("Integration with Express + supertest (validateJSONRequest)", () => {
             .send({})
             .expect(400)
             .expect((r) => {
-                expect(r.body).toEqual({ message: "Request body is required" });
+                expect(r.body).toEqual({ error: "Request body is required" });
             });
     });
 });

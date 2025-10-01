@@ -78,9 +78,9 @@ components:
       type: object
       description: Standard error payload
       required:
-        - message
+        - error
       properties:
-        message:
+        error:
           type: string
           description: Human readable error description
           example: Error XXX because of YYY
