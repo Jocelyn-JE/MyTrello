@@ -5,7 +5,6 @@ const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
 const JWT_EXPIRES_IN = 3600000; // Token expiration time in ms
 
 declare global {
-    // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Express {
         interface Request {
             userId?: string;
@@ -45,7 +44,10 @@ export async function verifyToken(
             return res.status(401).send({ error: "Token has expired" });
         req.userId = userId;
         next();
-    } catch (error) {
+    } catch (error: unknown) {
+        const errorMessage =
+            error instanceof Error ? error.message : "Unknown error occurred";
+        console.error("JWT verification error:", errorMessage);
         return res.status(401).send({ error: "Invalid token" });
     }
 }

@@ -9,7 +9,6 @@ const filePath = path.join(__dirname, "../../../docs/swagger.yaml");
 const router = new Router();
 
 declare global {
-    // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Express {
         interface Request {
             swaggerDoc?: swaggerUi.JsonObject;
