@@ -6,8 +6,13 @@ void main() async {
   // Ensure that widget binding is initialized
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Load environment variables
-  await dotenv.load(fileName: '.env');
+  // Load environment variables (optional)
+  try {
+    await dotenv.load(fileName: '.env');
+  } catch (e) {
+    // .env file not found or failed to load - use default values
+    print('Warning: .env file not found, using default configuration');
+  }
 
   runApp(const MyApp());
 }
