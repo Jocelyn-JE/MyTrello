@@ -4,9 +4,9 @@ import bcrypt from "bcryptjs";
 import {
     validateJSONRequest,
     checkExactFields,
-    isValidEmail,
     isEmpty
 } from "../utils/request.validation";
+import { isValidEmail } from "../utils/regex";
 
 const router = new Router();
 const requiredFields = ["email", "password", "username"];

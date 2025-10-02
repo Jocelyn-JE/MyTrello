@@ -4,9 +4,9 @@ import {
     validateJSONRequest,
     checkExactFields,
     checkAllowedFields,
-    isEmpty,
-    isValidEmail
+    isEmpty
 } from "./request.validation";
+import { isValidEmail } from "./regex";
 
 function createMockReq(overrides: Partial<Request> = {}): Partial<Request> {
     return {
