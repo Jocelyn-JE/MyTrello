@@ -40,11 +40,14 @@ model Board {
 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+
+  @@index([ownerId])
 }
 
 model Column {
   id              String    @id @default(uuid())
   boardId         String
+  index           Int       // Position of the column within the board
 
   title           String
 
@@ -55,6 +58,7 @@ model Column {
   updatedAt       DateTime  @updatedAt
 
   @@index([boardId])
+  @@unique([boardId, index])
 }
 
 model Card {
