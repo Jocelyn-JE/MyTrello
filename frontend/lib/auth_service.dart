@@ -31,4 +31,11 @@ class AuthService {
     _isLoggedIn = false;
     _token = null;
   }
+
+  // Test-only method to reset the initialization state
+  static void resetForTesting() {
+    _isInitialized = false;
+    _isLoggedIn = false;
+    _token = null;
+  }
 }
