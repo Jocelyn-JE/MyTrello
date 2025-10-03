@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/protected_routes.dart';
 import 'login_screen.dart';
 import 'register_screen.dart';
+import 'home_screen.dart';
 import 'auth_service.dart';
 
 void main() async {
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
+        '/home': (context) => const ProtectedRoute(child: HomeScreen()),
       },
     );
   }
