@@ -58,6 +58,8 @@ paths:
                     $ref: '#/components/schemas/User'
         '400':
           $ref: '#/components/responses/Error400'
+        '409':
+          $ref: '#/components/responses/Error409'
         '500':
           $ref: '#/components/responses/Error500'
 
