@@ -41,7 +41,7 @@ router.post("/", async (req, res) => {
             console.warn("User not found for email:", email);
             return res.status(404).send({ error: "User not found" });
         }
-        if (!await bcrypt.compare(password, user.password_hash)) {
+        if (!(await bcrypt.compare(password, user.password_hash))) {
             console.warn("Incorrect password for email:", email);
             return res.status(401).send({ error: "Invalid email or password" });
         }
