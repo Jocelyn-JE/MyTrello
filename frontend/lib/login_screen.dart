@@ -109,52 +109,58 @@ class _LoginScreenState extends State<LoginScreen> {
             padding: const EdgeInsets.all(16.0),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 300),
-              child: Column(
-                spacing: 16,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TextField(
-                    controller: _emailController,
-                    decoration: const InputDecoration(labelText: 'Email'),
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                  PasswordField(
-                    controller: _passwordController,
-                    labelText: 'Password',
-                  ),
-                  Wrap(
-                    spacing: 16,
-                    runSpacing: 16,
-                    alignment: WrapAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: 140,
-                        child: ElevatedButton(
-                          onPressed: _isLoading ? null : _handleLogin,
-                          child: _isLoading
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : const Text('Login'),
+              child: AutofillGroup(
+                child: Column(
+                  spacing: 16,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextField(
+                      controller: _emailController,
+                      decoration: const InputDecoration(labelText: 'Email'),
+                      keyboardType: TextInputType.emailAddress,
+                      autofillHints: const [
+                        AutofillHints.email,
+                        AutofillHints.username,
+                      ],
+                    ),
+                    PasswordField(
+                      controller: _passwordController,
+                      labelText: 'Password',
+                    ),
+                    Wrap(
+                      spacing: 16,
+                      runSpacing: 16,
+                      alignment: WrapAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 140,
+                          child: ElevatedButton(
+                            onPressed: _isLoading ? null : _handleLogin,
+                            child: _isLoading
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : const Text('Login'),
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        width: 140,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            // Navigate to the registration screen
-                            Navigator.pushNamed(context, '/register');
-                          },
-                          child: const Text('Register'),
+                        SizedBox(
+                          width: 140,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              // Navigate to the registration screen
+                              Navigator.pushNamed(context, '/register');
+                            },
+                            child: const Text('Register'),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

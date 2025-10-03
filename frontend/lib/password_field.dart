@@ -10,6 +10,7 @@ class PasswordField extends StatefulWidget {
   final VoidCallback? onTap;
   final TextInputAction? textInputAction;
   final VoidCallback? onEditingComplete;
+  final List<String>? autofillHints;
 
   const PasswordField({
     super.key,
@@ -22,6 +23,7 @@ class PasswordField extends StatefulWidget {
     this.onTap,
     this.textInputAction,
     this.onEditingComplete,
+    this.autofillHints,
   });
 
   @override
@@ -41,6 +43,7 @@ class _PasswordFieldState extends State<PasswordField> {
       onTap: widget.onTap,
       textInputAction: widget.textInputAction,
       onEditingComplete: widget.onEditingComplete,
+      autofillHints: widget.autofillHints ?? const [AutofillHints.password],
       decoration: (widget.decoration ?? const InputDecoration()).copyWith(
         labelText: widget.decoration?.labelText ?? widget.labelText,
         hintText: widget.decoration?.hintText ?? widget.hintText,
