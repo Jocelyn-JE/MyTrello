@@ -27,17 +27,17 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _handleLogin() async {
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
-    if (email.isEmpty) {
-      _showSnackBar('Please enter your email', color: Colors.red);
-      return;
-    }
-    if (password.isEmpty) {
-      _showSnackBar('Please enter your password', color: Colors.red);
-      return;
-    }
-    if (!isValidEmail(email)) {
-      _showSnackBar('Please enter a valid email address', color: Colors.red);
-      return;
+    // Validation checks
+    final validations = [
+      (email.isEmpty, 'Please enter your email'),
+      (!isValidEmail(email), 'Please enter a valid email address'),
+      (password.isEmpty, 'Please enter your password'),
+    ];
+    for (final (condition, message) in validations) {
+      if (condition) {
+        _showSnackBar(message, color: Colors.red);
+        return;
+      }
     }
     setState(() {
       _isLoading = true;
