@@ -1,29 +1,30 @@
-const js = require('@eslint/js');
-const tseslint = require('@typescript-eslint/eslint-plugin');
-const tsparser = require('@typescript-eslint/parser');
-const globals = require('globals');
+const js = require("@eslint/js");
+const tseslint = require("@typescript-eslint/eslint-plugin");
+const tsparser = require("@typescript-eslint/parser");
+const globals = require("globals");
+const prettier = require("eslint-config-prettier");
 
 // Common TypeScript configuration
 const baseTypeScriptConfig = {
     languageOptions: {
         parser: tsparser,
         parserOptions: {
-            project: './tsconfig.json',
+            project: "./tsconfig.json",
             tsconfigRootDir: __dirname
         }
     },
     plugins: {
-        '@typescript-eslint': tseslint
+        "@typescript-eslint": tseslint
     },
     rules: {
-        'indent': ['error', 4],
-        'no-unused-vars': 'off', // Disable base rule in favor of TypeScript rule
-        '@typescript-eslint/no-unused-vars': [
-            'error',
+        // Formatting rules are handled by Prettier
+        "no-unused-vars": "off", // Disable base rule in favor of TypeScript rule
+        "@typescript-eslint/no-unused-vars": [
+            "error",
             {
-                argsIgnorePattern: '^_',
-                varsIgnorePattern: '^_',
-                destructuredArrayIgnorePattern: '^_'
+                argsIgnorePattern: "^_",
+                varsIgnorePattern: "^_",
+                destructuredArrayIgnorePattern: "^_"
             }
         ]
     }
@@ -31,8 +32,9 @@ const baseTypeScriptConfig = {
 
 module.exports = [
     js.configs.recommended,
+    prettier, // Disable ESLint rules that conflict with Prettier
     {
-        files: ['**/*.ts', '**/*.tsx'],
+        files: ["**/*.ts", "**/*.tsx"],
         ...baseTypeScriptConfig,
         languageOptions: {
             ...baseTypeScriptConfig.languageOptions,
@@ -42,7 +44,7 @@ module.exports = [
         }
     },
     {
-        files: ['**/*.test.ts', '**/*.spec.ts'],
+        files: ["**/*.test.ts", "**/*.spec.ts"],
         ...baseTypeScriptConfig,
         languageOptions: {
             ...baseTypeScriptConfig.languageOptions,
@@ -53,6 +55,6 @@ module.exports = [
         }
     },
     {
-        ignores: ['eslint.config.js', '.eslintrc.js']
+        ignores: ["eslint.config.js", ".eslintrc.js"]
     }
 ];
