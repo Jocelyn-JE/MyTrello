@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'login_screen.dart';
+import 'register_screen.dart';
 
 void main() async {
   // Ensure that widget binding is initialized
@@ -33,9 +34,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/login',
       routes: {
         '/login': (context) => const LoginScreen(),
-        '/register': (context) => const Scaffold(
-          body: Center(child: Text('Registration Screen Placeholder')),
-        ),
+        '/register': (context) => const RegisterScreen(),
       },
     );
   }
