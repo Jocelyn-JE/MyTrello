@@ -57,8 +57,10 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       } else {
         if (mounted) {
+          final errorData = json.decode(response.body);
+          final errorMessage = errorData['error'] ?? 'Unknown error';
           _showSnackBar(
-            'Invalid email or password',
+            'Login failed: $errorMessage',
             color: Colors.orangeAccent,
           );
         }
