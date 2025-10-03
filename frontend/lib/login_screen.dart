@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'config.dart';
 import 'regex.dart';
 import 'password_field.dart';
+import 'auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -16,6 +17,21 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Check if user is already authenticated
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (AuthService.isLoggedIn) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/home',
+          (route) => false, // Remove all previous routes
+        );
+      }
+    });
+  }
 
   void _showSnackBar(String message, {Color? color}) {
     ScaffoldMessenger.of(context).clearSnackBars();
@@ -52,8 +68,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (response.statusCode == 200) {
         if (mounted) {
+          final responseData = json.decode(response.body);
+          final token = responseData['token'] ?? '';
+
+          // Set the authentication state
+          await AuthService.login(token);
+
           _showSnackBar('Login successful!', color: Colors.green);
-          // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+          if (mounted) Navigator.pushReplacementNamed(context, '/home');
         }
       } else {
         if (mounted) {

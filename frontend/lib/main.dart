@@ -1,12 +1,17 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:frontend/protected_routes.dart';
 import 'login_screen.dart';
 import 'register_screen.dart';
+import 'auth_service.dart';
 
 void main() async {
   // Ensure that widget binding is initialized
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize AuthService to load saved authentication state
+  await AuthService.initialize();
 
   // Load environment variables (optional)
   try {
@@ -31,7 +36,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.from(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightGreen),
       ),
-      initialRoute: '/login',
+      initialRoute: AuthService.isLoggedIn ? '/home' : '/login',
       routes: {
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
