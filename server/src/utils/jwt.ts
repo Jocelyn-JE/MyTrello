@@ -32,6 +32,11 @@ export async function verifyToken(
     res: Response,
     next: NextFunction
 ) {
+    console.debug("Verifying JWT for incoming request");
+    if (!req.headers || !req.headers.authorization) {
+        console.warn("No authorization header present");
+        return res.status(401).send({ error: "No token provided" });
+    }
     const authHeader = req.headers.authorization;
     if (!authHeader)
         return res.status(401).send({ error: "No token provided" });
