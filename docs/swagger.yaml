@@ -100,6 +100,8 @@ paths:
                     type: string
         '400':
           $ref: '#/components/responses/Error400'
+        '404':
+          $ref: '#/components/responses/Error404'
         '401':
           $ref: '#/components/responses/Error401'
         '500':
