@@ -126,12 +126,13 @@ async function createBoard(
         data: {
             title,
             owner: { connect: { id: ownerId } },
-            ...(members.length > 0 && {
-                members: { connect: members.map((user) => ({ id: user.id })) }
-            }),
-            ...(viewers.length > 0 && {
-                viewers: { connect: viewers.map((user) => ({ id: user.id })) }
-            })
+            members: { connect: members.map((user) => ({ id: user.id })) },
+            viewers: { connect: viewers.map((user) => ({ id: user.id })) }
+        },
+        include: {
+            owner: { select: { id: true, username: true } },
+            members: { select: { id: true, username: true } },
+            viewers: { select: { id: true, username: true } }
         }
     });
 }

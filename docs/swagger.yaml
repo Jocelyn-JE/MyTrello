@@ -220,7 +220,7 @@ paths:
                     type: string
                     example: Board created successfully
                   board:
-                    $ref: "#/components/schemas/Board"
+                    $ref: "#/components/schemas/BoardWithUsers"
         "400":
           $ref: "#/components/responses/Error400"
         "401":
