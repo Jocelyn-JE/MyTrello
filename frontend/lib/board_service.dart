@@ -104,4 +104,11 @@ class BoardUserInput {
   Map<String, dynamic> toJson() {
     return {'id': id, 'role': role};
   }
+
+  factory BoardUserInput.fromJson(Map<String, dynamic> json) {
+    return BoardUserInput(
+      id: json['id'] as String,
+      role: json['role'] as String,
+    );
+  }
 }

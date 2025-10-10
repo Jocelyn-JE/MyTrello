@@ -58,78 +58,6 @@ class _HomeScreenState extends State<HomeScreen> {
     await _loadBoards();
   }
 
-  void _showCreateBoardDialog() {
-    final titleController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Create New Board'),
-        content: TextField(
-          controller: titleController,
-          decoration: const InputDecoration(
-            labelText: 'Board Title',
-            hintText: 'Enter board title',
-          ),
-          autofocus: true,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              final title = titleController.text.trim();
-              if (title.isNotEmpty) {
-                Navigator.pop(context);
-                await _createBoard(title);
-              }
-            },
-            child: const Text('Create'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _createBoard(String title) async {
-    try {
-      setState(() {
-        _isLoading = true;
-      });
-
-      await BoardService.createBoard(
-        title: title,
-        users: [], // Start with empty users list
-      );
-
-      // Refresh the board list
-      await _loadBoards();
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Board created successfully!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to create board: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -150,7 +78,10 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: RefreshIndicator(onRefresh: _refreshBoards, child: _buildBody()),
       floatingActionButton: FloatingActionButton(
-        onPressed: _showCreateBoardDialog,
+        onPressed: () async {
+          final result = await Navigator.pushNamed(context, '/createBoard');
+          if (result == true) _refreshBoards();
+        },
         tooltip: 'Create New Board',
         child: const Icon(Icons.add),
       ),

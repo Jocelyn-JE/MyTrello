@@ -6,6 +6,7 @@ import 'login_screen.dart';
 import 'register_screen.dart';
 import 'home_screen.dart';
 import 'auth_service.dart';
+import 'board_creation_screen.dart';
 
 void main() async {
   // Ensure that widget binding is initialized
@@ -42,6 +43,8 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
         '/home': (context) => const ProtectedRoute(child: HomeScreen()),
+        '/createBoard': (context) =>
+            const ProtectedRoute(child: BoardCreationScreen()),
       },
     );
   }
