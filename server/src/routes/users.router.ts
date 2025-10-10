@@ -1,13 +1,12 @@
 import { Router } from "websocket-express";
 import prisma from "../utils/prisma.client";
-import { User } from "@prisma/client";
 
 const router = new Router();
 
 router.get("/", async (req, res) => {
     console.debug("/api/users: Fetching all users");
     try {
-        const users: User[] = await prisma.user.findMany({ where: {username: {contains: "", mode: "insensitive"}}, take: 100, orderBy: { username: 'asc' } });
+        const users = await prisma.user.findMany({ where: {username: {contains: "", mode: "insensitive"}}, take: 100, orderBy: { username: 'asc' }, omit: { password_hash: true } });
         res.status(200).json(users);
     } catch (error) {
         console.error("Error fetching users:", error);
@@ -55,7 +54,7 @@ router.get("/search", async (req, res) => {
         const take = queryFilters.count || undefined;
 
         console.debug("Search parameters:", { where, orderBy, take });
-        const users: User[] = await prisma.user.findMany({ where, orderBy, take });
+        const users = await prisma.user.findMany({ where, orderBy, take, omit: { password_hash: true } });
         res.status(200).json(users);
     } catch (error) {
         console.error("Error searching users:", error);
