@@ -136,4 +136,39 @@ async function createBoard(
     });
 }
 
+router.get("/", verifyToken, async (req, res) => {
+    console.debug("/api/boards: Received get boards request");
+    if (!req.userId) {
+        console.error("User ID missing in request after token verification");
+        return res.status(500).send({ error: "Internal server error" });
+    }
+    const userId = req.userId;
+    try {
+        const boards = await prisma.board.findMany({
+            where: {
+                OR: [
+                    { ownerId: userId },
+                    { members: { some: { id: userId } } },
+                    { viewers: { some: { id: userId } } }
+                ]
+            },
+            include: {
+                owner: { select: { id: true, username: true } },
+                members: { select: { id: true, username: true } },
+                viewers: { select: { id: true, username: true } }
+            }
+        });
+        console.info(`Retrieved ${boards.length} boards for user ${userId}`);
+        return res
+            .status(200)
+            .send({ message: "Boards retrieved successfully", boards });
+    } catch (error: unknown) {
+        const errorMessage =
+            error instanceof Error ? error.message : "Unknown error occurred";
+        /* c8 ignore stop */
+        console.error("Error retrieving boards:", errorMessage);
+        res.status(500).send({ error: "Internal server error" });
+    }
+});
+
 export default router;
