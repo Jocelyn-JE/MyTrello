@@ -7,7 +7,9 @@ tags:
   - name: documentation
     description: API documentation endpoints
   - name: users
-    description: User authentication
+    description: User authentication and management
+  - name: boards
+    description: Board management operations
 servers:
   - url: http://localhost:3000
     description: Local development server
@@ -19,7 +21,7 @@ paths:
         - documentation
       summary: Get this API documentation
       responses:
-        '200':
+        "200":
           description: Successful response
   /api/register:
     post:
@@ -45,7 +47,7 @@ paths:
                 - password
                 - username
       responses:
-        '201':
+        "201":
           description: User registered successfully
           content:
             application/json:
@@ -55,13 +57,13 @@ paths:
                   message:
                     type: string
                   user:
-                    $ref: '#/components/schemas/User'
-        '400':
-          $ref: '#/components/responses/Error400'
-        '409':
-          $ref: '#/components/responses/Error409'
-        '500':
-          $ref: '#/components/responses/Error500'
+                    $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "409":
+          $ref: "#/components/responses/Error409"
+        "500":
+          $ref: "#/components/responses/Error500"
 
   /api/login:
     post:
@@ -84,7 +86,7 @@ paths:
                 - email
                 - password
       responses:
-        '200':
+        "200":
           description: User logged in successfully
           content:
             application/json:
@@ -95,19 +97,171 @@ paths:
                     type: string
                     example: Login successful
                   user:
-                    $ref: '#/components/schemas/User'
+                    $ref: "#/components/schemas/User"
                   token:
                     type: string
-        '400':
-          $ref: '#/components/responses/Error400'
-        '404':
-          $ref: '#/components/responses/Error404'
-        '401':
-          $ref: '#/components/responses/Error401'
-        '500':
-          $ref: '#/components/responses/Error500'
+        "400":
+          $ref: "#/components/responses/Error400"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "500":
+          $ref: "#/components/responses/Error500"
+
+  /api/users:
+    get:
+      tags:
+        - users
+      summary: Get all users
+      description: Retrieve a list of all users (limited to 100, ordered by username)
+      responses:
+        "200":
+          description: Users retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        "500":
+          $ref: "#/components/responses/Error500"
+
+  /api/users/search:
+    get:
+      tags:
+        - users
+      summary: Search users with filters
+      description: Search for users by username or email with optional ordering and count limit
+      parameters:
+        - name: username
+          in: query
+          description: Filter by username (starts with)
+          schema:
+            type: string
+        - name: email
+          in: query
+          description: Filter by email (starts with)
+          schema:
+            type: string
+        - name: order
+          in: query
+          description: Sort order for results
+          schema:
+            type: string
+            enum: [asc, desc]
+        - name: count
+          in: query
+          description: Maximum number of results to return
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "200":
+          description: Users found successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "500":
+          $ref: "#/components/responses/Error500"
+
+  /api/boards:
+    post:
+      tags:
+        - boards
+      summary: Create a new board
+      description: Create a new board with title and assigned users
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: The board title
+                users:
+                  type: array
+                  description: Array of users to assign to the board
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                        description: User ID
+                      role:
+                        type: string
+                        enum: [member, viewer]
+                        description: User role on the board
+                    required:
+                      - id
+                      - role
+              required:
+                - title
+                - users
+      responses:
+        "201":
+          description: Board created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Board created successfully
+                  board:
+                    $ref: "#/components/schemas/Board"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "500":
+          $ref: "#/components/responses/Error500"
+
+    get:
+      tags:
+        - boards
+      summary: Get user's boards
+      description: Retrieve all boards where the authenticated user is owner, member, or viewer
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Boards retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Boards retrieved successfully
+                  boards:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/BoardWithUsers"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "500":
+          $ref: "#/components/responses/Error500"
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     ErrorResponse:
       type: object
@@ -136,40 +290,90 @@ components:
         updatedAt:
           type: string
           format: date-time
+    Board:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        ownerId:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    BoardWithUsers:
+      allOf:
+        - $ref: "#/components/schemas/Board"
+        - type: object
+          properties:
+            owner:
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                username:
+                  type: string
+            members:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  username:
+                    type: string
+            viewers:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  username:
+                    type: string
   responses:
     Error400:
       description: Bad request
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: "#/components/schemas/ErrorResponse"
     Error401:
       description: Unauthorized
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: "#/components/schemas/ErrorResponse"
     Error403:
       description: Forbidden
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: "#/components/schemas/ErrorResponse"
     Error404:
       description: Not found
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: "#/components/schemas/ErrorResponse"
     Error409:
       description: Conflict
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: "#/components/schemas/ErrorResponse"
     Error500:
       description: Internal server error
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: "#/components/schemas/ErrorResponse"
