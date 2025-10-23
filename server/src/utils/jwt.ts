@@ -26,6 +26,23 @@ export function generateToken(userId: string): string {
     return jwt.sign(payload, JWT_SECRET);
 }
 
+export async function getTokenPayload(token: string): Promise<JwtPayload> {
+    return new Promise((resolve, reject) => {
+        jwt.verify(token, JWT_SECRET, (err, decoded) => {
+            if (err) {
+                console.error("JWT verification failed:", err.message);
+                return reject(new Error("Invalid token"));
+            }
+            const payload = decoded as JwtPayload;
+            if (payload.expiresAt < Date.now()) {
+                console.warn("JWT has expired");
+                return reject(new Error("Token has expired"));
+            }
+            resolve(payload);
+        });
+    });
+}
+
 // Middleware to verify JWT and attach user info to the request
 export async function verifyToken(
     req: Request,
