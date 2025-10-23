@@ -6,7 +6,12 @@ const router = new Router();
 router.get("/", async (req, res) => {
     console.debug("/api/users: Fetching all users");
     try {
-        const users = await prisma.user.findMany({ where: {username: {contains: "", mode: "insensitive"}}, take: 100, orderBy: { username: 'asc' }, omit: { password_hash: true } });
+        const users = await prisma.user.findMany({
+            where: { username: { contains: "", mode: "insensitive" } },
+            take: 100,
+            orderBy: { username: "asc" },
+            omit: { password_hash: true }
+        });
         res.status(200).json(users);
     } catch (error) {
         console.error("Error fetching users:", error);
@@ -36,16 +41,20 @@ router.get("/search", async (req, res) => {
             if (query[filter])
                 queryFilters[filter as keyof QueryValues] = query[filter];
         });
-        if (query.order)
-            queryFilters.order = query.order;
-        if (query.count)
-            queryFilters.count = parseInt(query.count, 10);
+        if (query.order) queryFilters.order = query.order;
+        if (query.count) queryFilters.count = parseInt(query.count, 10);
 
         const where: any = {};
         if (queryFilters.username)
-            where.username = { startsWith: queryFilters.username, mode: "insensitive" };
-        if (queryFilters.email) 
-            where.email = { startsWith: queryFilters.email, mode: "insensitive" };
+            where.username = {
+                startsWith: queryFilters.username,
+                mode: "insensitive"
+            };
+        if (queryFilters.email)
+            where.email = {
+                startsWith: queryFilters.email,
+                mode: "insensitive"
+            };
         const orderBy: any = {};
         if (queryFilters.order && queryFilters.username)
             orderBy.username = queryFilters.order;
@@ -54,7 +63,12 @@ router.get("/search", async (req, res) => {
         const take = queryFilters.count || undefined;
 
         console.debug("Search parameters:", { where, orderBy, take });
-        const users = await prisma.user.findMany({ where, orderBy, take, omit: { password_hash: true } });
+        const users = await prisma.user.findMany({
+            where,
+            orderBy,
+            take,
+            omit: { password_hash: true }
+        });
         res.status(200).json(users);
     } catch (error) {
         console.error("Error searching users:", error);
