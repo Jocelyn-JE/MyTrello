@@ -131,9 +131,9 @@ function onMessage(
     }
 }
 
-router.ws("/connect/:boardId", async (req, res) => {
+router.ws("/:boardId", async (req, res) => {
     console.debug(
-        "/api/boards/connect/:boardId: Received board connection request"
+        "/ws/boards/:boardId: Received board connection request"
     );
     const ws = await res.accept();
     const { boardId } = req.params;
@@ -193,3 +193,5 @@ router.ws("/connect/:boardId", async (req, res) => {
         ws.close(1011, "Internal server error");
     }
 });
+
+export default router;

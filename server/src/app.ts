@@ -8,6 +8,7 @@ import registerRouter from "./routes/register.router";
 import loginRouter from "./routes/login.router";
 import boardRouter from "./routes/board.router";
 import usersRouter from "./routes/users.router";
+import boardRoomSocketRouter from "./routes/board_room.socket";
 
 const app = new WebSocketExpress();
 const port = 3000;
@@ -31,6 +32,9 @@ app.useHTTP("/api/users", usersRouter);
 
 // Board routes
 app.useHTTP("/api/boards", boardRouter);
+
+// Board WebSocket routes
+app.use("/ws/boards", boardRoomSocketRouter);
 
 // Export app for testing
 export default app;
