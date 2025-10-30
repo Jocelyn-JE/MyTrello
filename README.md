@@ -230,17 +230,13 @@ The built APK will be available in the `output/` directory.
 
 ## 🌐 API Documentation
 
-The API is fully documented using Swagger/OpenAPI 3.1. Access the interactive documentation at:
+The API is fully documented using Swagger/OpenAPI 3.1.
+
+Access the interactive documentation at:
 
 ```text
 http://localhost:${BACKEND_PORT}/api-docs
 ```
-
-### Available Endpoints
-
-- `POST /api/register` - User registration
-- `POST /api/login` - User authentication
-- `GET /api-docs` - API documentation
 
 ## 🔒 Environment Variables
 
