@@ -35,6 +35,31 @@ async function isUserMemberOfBoard(userId: string, boardId: string): Promise<boo
     }
 }
 
+async function getUserProfile(userId: string) {
+    try {
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { username: true, email: true }
+        });
+        return user || null;
+    } catch (error) {
+        console.error(`Error fetching profile for user ${userId}:`, error);
+        return null;
+    }
+}
+
+async function getBoardInfo(boardId: string) {
+    try {
+        const board = await prisma.board.findUnique({
+            where: { id: boardId }
+        });
+        return board || null;
+    } catch (error) {
+        console.error(`Error fetching info for board ${boardId}:`, error);
+        return null;
+    }
+}
+
 //function sendToUser(userId: string, payload: unknown): boolean {
 //    const userWs = clients.get(userId);
 //    if (!userWs) return false;
@@ -111,12 +136,13 @@ function createRoom(boardId: string): Room {
     return newRoom;
 }
 
-function onMessage(
+async function onMessage(
     client: ExtendedWebSocket,
     message: unknown,
     room: Room,
     userId: string
 ) {
+    const user = await getUserProfile(userId);
     try {
         const text =
             typeof message === "string" ? message : (message as any).toString();
@@ -125,10 +151,20 @@ function onMessage(
             `Received message from user ${userId} in room ${room.boardId}:`,
             payload
         );
-        broadCastToRoom(client, room.users, { userId, payload });
+        broadCastToRoom(client, room.users, { ...payload, sender: user });
     } catch (err) {
         console.warn(`Invalid JSON from user ${userId}:`, err);
     }
+}
+
+async function getConnectionAcknowledgement(boardId: string): Promise<unknown> {
+    const board = await getBoardInfo(boardId);
+    if (!board) return { type: "error", message: "Board not found" };
+    return { type: "connection_ack", board };
+}
+
+function closeError(message: string): string {
+    return JSON.stringify({ type: "error", message });
 }
 
 router.ws("/:boardId", async (req, res) => {
@@ -149,15 +185,15 @@ router.ws("/:boardId", async (req, res) => {
 
     if (!userId) {
         console.error("No user ID found");
-        return ws.close(1008, "Unauthorized: Invalid or missing token");
+        return ws.close(1008, closeError("Unauthorized: Invalid or missing token"));
     }
     if (!boardId) {
         console.error("Board ID missing in request");
-        return ws.close(1008, "Bad Request: Missing board ID");
+        return ws.close(1008, closeError("Bad Request: Missing board ID"));
     }
     const allowed = await isUserMemberOfBoard(userId, boardId);
     if (!allowed)
-        return ws.close(1008, "Unauthorized: not a board member");
+        return ws.close(1008, closeError("Unauthorized: not a board member"));
     try {
         let room = rooms.get(boardId);
         if (!room) room = createRoom(boardId);
@@ -182,15 +218,12 @@ router.ws("/:boardId", async (req, res) => {
         console.info(
             `User ${userId} connected to room ${room.boardId} successfully`
         );
-        sendToWs(ws, {
-            message: "Connected to board successfully",
-            room: { boardId: room.boardId, userCount: room.users.length }
-        });
+        sendToWs(ws, await getConnectionAcknowledgement(boardId));
     } catch (error: unknown) {
         const errorMessage =
             error instanceof Error ? error.message : "Unknown error occurred";
         console.error("Error during board room connection:", errorMessage);
-        ws.close(1011, "Internal server error");
+        ws.close(1011, closeError("Internal server error"));
     }
 });
 
