@@ -8,7 +8,7 @@ A Trello-like project management application built with Flutter (frontend) and N
 - **Cross-Platform Support**:
   - Web application (Flutter Web)
   - Android mobile app (Flutter Android)
-- **Real-time Updates**: WebSocket integration for live collaboration
+- **Real-time Updates**: WebSocket integration for live collaboration — see [WebSocket protocol](docs/websocket_protocol.md)
 - **RESTful API**: Well-documented API with Swagger/OpenAPI specification
 - **Database Management**: PostgreSQL with Prisma ORM
 - **Containerized Deployment**: Docker and Docker Compose setup
