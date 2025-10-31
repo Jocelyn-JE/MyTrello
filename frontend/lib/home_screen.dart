@@ -75,6 +75,8 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
         ],
+        backgroundColor: Colors.lightGreen,
+        shadowColor: Colors.grey,
       ),
       body: RefreshIndicator(onRefresh: _refreshBoards, child: _buildBody()),
       floatingActionButton: FloatingActionButton(
@@ -196,10 +198,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         trailing: const Icon(Icons.arrow_forward_ios),
         onTap: () {
-          // TODO: Navigate to board detail screen
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Opened board: ${board.title}')),
-          );
+          Navigator.pushNamed(context, '/board/${board.id}');
         },
       ),
     );

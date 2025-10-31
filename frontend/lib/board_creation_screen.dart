@@ -121,7 +121,11 @@ class _BoardCreationScreenState extends State<BoardCreationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Create Board')),
+      appBar: AppBar(
+        title: const Text('Create Board'),
+        backgroundColor: Colors.lightGreen,
+        shadowColor: Colors.grey,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
