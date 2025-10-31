@@ -36,30 +36,9 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
   void initState() {
     super.initState();
     // Connect when the screen appears
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (_boardId.isEmpty) return;
-      WebsocketService.connectToBoard(_boardId)
-          .then((_) {
-            setState(() => _connected = true);
-            _sub = WebsocketService.stream?.listen(
-              (event) {
-                // server sends JSON-serialized payloads; keep raw string for demo
-                setState(() {
-                  _messages.add(event.toString());
-                });
-              },
-              onError: (err) {
-                debugPrint('WebSocket stream error: $err');
-              },
-              onDone: () {
-                debugPrint('WebSocket stream closed');
-                setState(() => _connected = false);
-              },
-            );
-          })
-          .catchError((err) {
-            debugPrint('Failed to connect to board websocket: $err');
-          });
+      _connectToBoard();
     });
   }
 
@@ -71,9 +50,50 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
     super.dispose();
   }
 
+  void _connectToBoard() async {
+    if (_boardId.isEmpty) return;
+    try {
+      await WebsocketService.connectToBoard(_boardId);
+      setState(() => _connected = true);
+      _sub = WebsocketService.stream?.listen(
+        (event) {
+          // server sends JSON-serialized payloads; keep raw string for demo
+          setState(() {
+            _messages.add(event.toString());
+          });
+        },
+        onError: (err) {
+          debugPrint('WebSocket stream error: $err');
+        },
+        onDone: () {
+          debugPrint('WebSocket stream closed');
+          WebsocketService.close();
+          setState(() => _connected = false);
+        },
+      );
+    } catch (e) {
+      _disconnectFromBoard();
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Connection error: $e')));
+      }
+    }
+  }
+
+  void _disconnectFromBoard() {
+    _sub?.cancel();
+    WebsocketService.close();
+    setState(() => _connected = false);
+  }
+
   void _send(Map<String, dynamic> payload) {
     if (!_connected) return;
-    WebsocketService.send(payload);
+    try {
+      WebsocketService.send(payload);
+    } catch (e) {
+      debugPrint('Failed to send message: $e');
+    }
   }
 
   @override
@@ -84,6 +104,16 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
         title: Text('Board Details'),
         backgroundColor: Colors.lightGreen,
         shadowColor: Colors.grey,
+        actions: [
+          IconButton(
+            icon: Icon(
+              _connected ? Icons.link : Icons.link_off,
+              color: _connected ? Colors.black : Colors.red,
+            ),
+            onPressed: _connected ? _disconnectFromBoard : _connectToBoard,
+          ),
+          const SizedBox(width: 16),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -118,7 +148,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
                   ? () {
                       final message = _messageController.text.trim();
                       if (message.isNotEmpty) {
-                        _send({'type': 'message', 'content': message});
+                        _send({'type': 'message', 'data': message});
                         _messageController.clear();
                       }
                     }
