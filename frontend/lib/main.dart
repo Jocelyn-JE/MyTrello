@@ -7,6 +7,7 @@ import 'register_screen.dart';
 import 'home_screen.dart';
 import 'auth_service.dart';
 import 'board_creation_screen.dart';
+import 'board_detail_screen.dart';
 
 void main() async {
   // Ensure that widget binding is initialized
@@ -45,6 +46,16 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const ProtectedRoute(child: HomeScreen()),
         '/createBoard': (context) =>
             const ProtectedRoute(child: BoardCreationScreen()),
+      },
+      // Handle dynamic routes like '/board/123'
+      onGenerateRoute: (RouteSettings settings) {
+        final name = settings.name ?? '';
+        if (name.startsWith('/board/')) {
+          // Let BoardDetailScreen build itself from the settings
+          return BoardDetailScreen.routeFromSettings(settings);
+        }
+        // Fallback to default behavior for unknown routes
+        return null;
       },
     );
   }
