@@ -1,4 +1,5 @@
 import { columnCreationAction } from "./column.create";
+import { columnDeletionAction } from "./column.delete";
 import { columnListingAction } from "./column.list";
 import { messageAction } from "./message";
 
@@ -15,6 +16,7 @@ export type SocketAction = {
 
 export const actionIndex: SocketAction[] = [
     columnCreationAction,
+    columnDeletionAction,
     columnListingAction,
     messageAction
 ];
