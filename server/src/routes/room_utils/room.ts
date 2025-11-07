@@ -97,6 +97,7 @@ export class Room {
         const action = actionIndex.find((act) => act.actionName === actionName);
         if (!action) {
             console.warn(`No action found for name: ${actionName}`);
+            sendToWs(client, new ErrorPayload(`Unknown action: ${actionName}`));
             return;
         }
         try {
@@ -111,7 +112,10 @@ export class Room {
                 `Error executing action "${actionName}" for user ${userId}:`,
                 err
             );
-            sendToWs(client, new ErrorPayload(err.message || "Action execution error"));
+            sendToWs(
+                client,
+                new ErrorPayload(err.message || "Action execution error")
+            );
         }
     }
 }
