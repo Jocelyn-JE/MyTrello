@@ -54,7 +54,111 @@ Server -> client messages follow the same `{ type, ... }` pattern. There are a f
 - `connection_ack` — acknowledgement on successful connect (includes board info)
 - `error` — indicates a protocol or authorization error; contains `message` string
 
-Application-level event types are free-form strings (e.g. `card.create`, `card.update`, `comment.add`, `cursor.move`) defined by the frontend and server implementation. Each event should include a `data` object with the event payload.
+## Available commands
+
+The following commands are currently supported by the server. Each command must be sent as a JSON object with `type` and `data` fields.
+
+### Column commands
+
+#### `column.create`
+
+Creates a new column in the board.
+
+**Request (client -> server):**
+
+```json
+{
+  "type": "column.create",
+  "data": {
+    "title": "Column Title"
+  }
+}
+```
+
+**Response (server -> all clients including sender):**
+
+```json
+{
+  "type": "column.create",
+  "data": {
+    "id": "column-uuid",
+    "title": "Column Title",
+    "boardId": "board-uuid",
+    "index": 0
+  },
+  "sender": {
+    "username": "alice",
+    "email": "alice@example.com"
+  }
+}
+```
+
+#### `column.list`
+
+Lists all columns in the board.
+
+**Request (client -> server):**
+
+```json
+{
+  "type": "column.list",
+  "data": null
+}
+```
+
+**Response (server -> all clients including sender):**
+
+```json
+{
+  "type": "column.list",
+  "data": [
+    {
+      "id": "column-uuid-1",
+      "title": "To Do",
+      "boardId": "board-uuid",
+      "index": 0
+    },
+    {
+      "id": "column-uuid-2",
+      "title": "In Progress",
+      "boardId": "board-uuid",
+      "index": 1
+    }
+  ],
+  "sender": {
+    "username": "alice",
+    "email": "alice@example.com"
+  }
+}
+```
+
+### Message commands
+
+#### `message`
+
+Sends a message/text to all clients in the board room (simple broadcast).
+
+**Request (client -> server):**
+
+```json
+{
+  "type": "message",
+  "data": "Hello, everyone!"
+}
+```
+
+**Response (server -> all clients including sender):**
+
+```json
+{
+  "type": "message",
+  "data": "Hello, everyone!",
+  "sender": {
+    "username": "alice",
+    "email": "alice@example.com"
+  }
+}
+```
 
 ## Broadcasting rules
 
@@ -87,18 +191,18 @@ Close codes used by the server:
 - Wait for `connection_ack` before sending application events.
 - When sending an event include `type` and `data` fields and keep payloads JSON-serializable.
 
-Example client message (create card):
+Example client message (create column):
 
 ```json
-{ "type": "card.create", "data": { "title": "New card", "listId": "abc" } }
+{ "type": "column.create", "data": { "title": "New Column" } }
 ```
 
-Example server broadcast (received by other clients):
+Example server broadcast (received by all clients including sender):
 
 ```json
 {
-  "type": "card.create",
-  "data": { "title": "New card", "listId": "abc", "id": "card123" },
+  "type": "column.create",
+  "data": { "id": "col123", "title": "New Column", "boardId": "board456", "index": 2 },
   "sender": { "username": "alice", "email": "alice@example.com" }
 }
 ```
@@ -112,7 +216,3 @@ Example server broadcast (received by other clients):
 ## Version
 
 This document describes the protocol implemented in the server at commit time. Update this file if server message formats or handshake behaviour change.
-
----
-
-If anything is missing or you want the doc to include example client code (JS/Flutter) or TypeScript types, tell me which language and I will add a short snippet.
