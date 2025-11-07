@@ -221,7 +221,6 @@ router.ws("/:boardId", async (req, res) => {
     const userId = payload?.userId;
 
     if (!userId) {
-        console.error("No user ID found");
         return ws.close(
             1008,
             closeError("Unauthorized: Invalid or missing token")
