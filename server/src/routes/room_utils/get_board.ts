@@ -12,3 +12,16 @@ export async function getBoardInfo(boardId: string): Promise<Board | null> {
         return null;
     }
 }
+
+export async function boardExists(boardId: string): Promise<boolean> {
+    try {
+        const exists = await prisma.board.findUnique({
+            where: { id: boardId },
+            select: { id: true }
+        });
+        return Boolean(exists);
+    } catch (error) {
+        console.error(`Error checking existence for board ${boardId}:`, error);
+        return Promise.resolve(false);
+    }
+}
