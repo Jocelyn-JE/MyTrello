@@ -1,7 +1,12 @@
 import { ExtendedWebSocket, Router } from "websocket-express";
 import { getTokenPayload } from "../utils/jwt";
 import { sendToWs } from "./room_utils/send_to_ws";
-import { AckPayload, ErrorPayload, MessagePayload, Room } from "./room_utils/room";
+import {
+    AckPayload,
+    ErrorPayload,
+    MessagePayload,
+    Room
+} from "./room_utils/room";
 import { getBoardInfo } from "./room_utils/get_board";
 import { isUserMember } from "./room_utils/is_user_member";
 import { isUserViewer } from "./room_utils/is_user_viewer";
@@ -62,7 +67,9 @@ async function onMessage(
     }
 }
 
-async function getConnectionAcknowledgement(boardId: string): Promise<AckPayload | ErrorPayload> {
+async function getConnectionAcknowledgement(
+    boardId: string
+): Promise<AckPayload | ErrorPayload> {
     const board = await getBoardInfo(boardId);
     if (!board) return new ErrorPayload("Board not found");
     return new AckPayload(board);
