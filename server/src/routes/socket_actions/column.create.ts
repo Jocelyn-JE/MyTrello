@@ -17,7 +17,9 @@ export const columnCreationAction: SocketAction = {
                 boardId,
                 index: await prisma.column.count({
                     where: { boardId }
-                })
+                }),
+                createdAt: new Date(),
+                updatedAt: new Date()
             }
         });
         console.info(`Column created with ID: ${column.id}`);

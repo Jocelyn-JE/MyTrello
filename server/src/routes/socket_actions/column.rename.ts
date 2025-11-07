@@ -17,7 +17,8 @@ export const columnRenameAction: SocketAction = {
                 id: columnData.id
             },
             data: {
-                title: columnData.title
+                title: columnData.title,
+                updatedAt: new Date()
             }
         });
         console.info(`Column renamed with ID: ${column.id}`);
