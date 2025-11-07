@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:frontend/protected_routes.dart';
 import 'websocket_service.dart';
+
+const List<String> list = ['message', 'column.list', 'column.create'];
 
 class BoardDetailScreen extends StatefulWidget {
   final String? boardId;
@@ -26,6 +29,13 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
   final List<String> _messages = [];
   bool _connected = false;
   final _messageController = TextEditingController();
+  String dropdownValue = list.first;
+  static final List<DropdownMenuEntry<String>> menuEntries =
+      UnmodifiableListView<DropdownMenuEntry<String>>(
+        list.map<DropdownMenuEntry<String>>(
+          (String name) => DropdownMenuEntry<String>(value: name, label: name),
+        ),
+      );
 
   String get _boardId =>
       widget.boardId ??
@@ -135,6 +145,17 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
+            DropdownMenu<String>(
+              initialSelection: dropdownValue,
+              dropdownMenuEntries: menuEntries,
+              onSelected: (String? value) {
+                debugPrint('Selected action: $value');
+                setState(() {
+                  dropdownValue = value ?? dropdownValue;
+                });
+              },
+            ),
+            const SizedBox(height: 8),
             TextField(
               controller: _messageController,
               decoration: const InputDecoration(
@@ -147,10 +168,8 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
               onPressed: _connected
                   ? () {
                       final message = _messageController.text.trim();
-                      if (message.isNotEmpty) {
-                        _send({'type': 'message', 'data': message});
-                        _messageController.clear();
-                      }
+                      _send({'type': dropdownValue, 'data': message});
+                      _messageController.clear();
                     }
                   : null,
               icon: const Icon(Icons.send),
