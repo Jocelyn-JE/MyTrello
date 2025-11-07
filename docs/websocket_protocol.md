@@ -132,6 +132,73 @@ Lists all columns in the board.
 }
 ```
 
+#### `column.rename`
+
+Renames an existing column in the board.
+
+**Request (client -> server):**
+
+```json
+{
+  "type": "column.rename",
+  "data": {
+    "id": "column-uuid",
+    "title": "New Column Title"
+  }
+}
+```
+
+**Response (server -> all clients including sender):**
+
+```json
+{
+  "type": "column.rename",
+  "data": {
+    "id": "column-uuid",
+    "title": "New Column Title",
+    "boardId": "board-uuid",
+    "index": 0
+  },
+  "sender": {
+    "username": "alice",
+    "email": "alice@example.com"
+  }
+}
+```
+
+#### `column.delete`
+
+Deletes a column from the board.
+
+**Request (client -> server):**
+
+```json
+{
+  "type": "column.delete",
+  "data": {
+    "id": "column-uuid"
+  }
+}
+```
+
+**Response (server -> all clients including sender):**
+
+```json
+{
+  "type": "column.delete",
+  "data": {
+    "id": "column-uuid",
+    "title": "Deleted Column",
+    "boardId": "board-uuid",
+    "index": 0
+  },
+  "sender": {
+    "username": "alice",
+    "email": "alice@example.com"
+  }
+}
+```
+
 ### Message commands
 
 #### `message`
