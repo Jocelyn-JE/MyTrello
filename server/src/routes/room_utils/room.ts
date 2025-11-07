@@ -40,6 +40,20 @@ export class Room {
 
     public broadcast(sender: ExtendedWebSocket, data: MessagePayload) {
         for (const userWs of Array.from(this.users)) {
+            if (
+                userWs.readyState === WebSocket.CLOSED ||
+                userWs.readyState === WebSocket.CLOSING
+            ) {
+                this.removeUser(userWs);
+                continue;
+            }
+            if (userWs.readyState !== WebSocket.OPEN) continue;
+            sendToWs(userWs, data);
+        }
+    }
+
+    public broadcastToOthers(sender: ExtendedWebSocket, data: MessagePayload) {
+        for (const userWs of Array.from(this.users)) {
             if (userWs === sender) continue;
             if (
                 userWs.readyState === WebSocket.CLOSED ||
