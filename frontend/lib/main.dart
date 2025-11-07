@@ -51,10 +51,8 @@ class MyApp extends StatelessWidget {
       onGenerateRoute: (RouteSettings settings) {
         final name = settings.name ?? '';
         if (name.startsWith('/board/')) {
-          // Let BoardDetailScreen build itself from the settings
           return BoardDetailScreen.routeFromSettings(settings);
         }
-        // Fallback to default behavior for unknown routes
         return null;
       },
     );
