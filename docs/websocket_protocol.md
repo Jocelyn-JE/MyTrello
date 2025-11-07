@@ -84,7 +84,9 @@ Creates a new column in the board.
     "id": "column-uuid",
     "title": "Column Title",
     "boardId": "board-uuid",
-    "index": 0
+    "index": 0,
+    "createdAt": "2025-11-07T09:30:00.000Z",
+    "updatedAt": "2025-11-07T09:30:00.000Z"
   },
   "sender": {
     "username": "alice",
@@ -116,13 +118,17 @@ Lists all columns in the board.
       "id": "column-uuid-1",
       "title": "To Do",
       "boardId": "board-uuid",
-      "index": 0
+      "index": 0,
+      "createdAt": "2025-11-07T09:00:00.000Z",
+      "updatedAt": "2025-11-07T09:00:00.000Z"
     },
     {
       "id": "column-uuid-2",
       "title": "In Progress",
       "boardId": "board-uuid",
-      "index": 1
+      "index": 1,
+      "createdAt": "2025-11-07T09:15:00.000Z",
+      "updatedAt": "2025-11-07T09:15:00.000Z"
     }
   ],
   "sender": {
@@ -157,7 +163,9 @@ Renames an existing column in the board.
     "id": "column-uuid",
     "title": "New Column Title",
     "boardId": "board-uuid",
-    "index": 0
+    "index": 0,
+    "createdAt": "2025-11-07T09:00:00.000Z",
+    "updatedAt": "2025-11-07T09:30:00.000Z"
   },
   "sender": {
     "username": "alice",
@@ -190,7 +198,57 @@ Deletes a column from the board.
     "id": "column-uuid",
     "title": "Deleted Column",
     "boardId": "board-uuid",
-    "index": 0
+    "index": 0,
+    "createdAt": "2025-11-07T09:00:00.000Z",
+    "updatedAt": "2025-11-07T09:00:00.000Z"
+  },
+  "sender": {
+    "username": "alice",
+    "email": "alice@example.com"
+  }
+}
+```
+
+### Card commands
+
+#### `card.create`
+
+Creates a new card in a column.
+
+**Request (client -> server):**
+
+```json
+{
+  "type": "card.create",
+  "data": {
+    "columnId": "column-uuid",
+    "title": "Card Title",
+    "content": "Card description",
+    "tagId": "tag-uuid",
+    "startDate": "2025-11-07T10:00:00Z",
+    "dueDate": "2025-11-14T18:00:00Z"
+  }
+}
+```
+
+**Note:** Only `columnId` and `title` are required. `content`, `tagId`, `startDate`, and `dueDate` are optional.
+
+**Response (server -> all clients including sender):**
+
+```json
+{
+  "type": "card.create",
+  "data": {
+    "id": "card-uuid",
+    "columnId": "column-uuid",
+    "title": "Card Title",
+    "content": "Card description",
+    "tagId": "tag-uuid",
+    "index": 0,
+    "startDate": "2025-11-07T10:00:00.000Z",
+    "dueDate": "2025-11-14T18:00:00.000Z",
+    "createdAt": "2025-11-07T09:30:00.000Z",
+    "updatedAt": "2025-11-07T09:30:00.000Z"
   },
   "sender": {
     "username": "alice",
