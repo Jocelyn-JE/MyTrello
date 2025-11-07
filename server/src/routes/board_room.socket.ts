@@ -38,6 +38,25 @@ async function isUserMemberOfBoard(
     }
 }
 
+async function isUserViewer(userId: string, boardId: string): Promise<boolean> {
+    try {
+        const exists = await prisma.board.findFirst({
+            where: {
+                id: boardId,
+                viewers: { some: { id: userId } }
+            },
+            select: { id: true }
+        });
+        return Boolean(exists);
+    } catch (error) {
+        console.error(
+            `Error checking viewer status for user ${userId} on board ${boardId}:`,
+            error
+        );
+        return Promise.resolve(false);
+    }
+}
+
 async function getUserProfile(userId: string) {
     try {
         const user = await prisma.user.findUnique({
@@ -201,9 +220,12 @@ router.ws("/:boardId", async (req, res) => {
         if (!room) room = createRoom(boardId);
         handleConnect(userId, ws, room);
 
-        ws.on("message", async (message) => {
-            onMessage(ws, message, room, userId);
-        });
+        if (!(await isUserViewer(userId, boardId))) {
+            // only non-viewers can send messages
+            ws.on("message", async (message) => {
+                onMessage(ws, message, room, userId);
+            });
+        }
         ws.on("error", (err) => {
             console.warn(
                 `WebSocket error for user ${userId} in room ${room.boardId}:`,
