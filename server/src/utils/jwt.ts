@@ -26,12 +26,13 @@ export function generateToken(userId: string): string {
     return jwt.sign(payload, JWT_SECRET);
 }
 
-export async function getTokenPayload(token: string): Promise<JwtPayload | null> {
+export async function getTokenPayload(
+    token: string
+): Promise<JwtPayload | null> {
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
         const { expiresAt } = decoded as JwtPayload;
-        if (expiresAt < Date.now())
-            return null;
+        if (expiresAt < Date.now()) return null;
         return decoded as JwtPayload;
     } catch (error) {
         console.error("Error decoding token:", error);

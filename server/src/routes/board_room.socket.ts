@@ -12,18 +12,21 @@ const router = new Router();
 const rooms: Map<string, Room> = new Map();
 const clients: Map<string, Set<ExtendedWebSocket>> = new Map();
 
-async function isUserMemberOfBoard(userId: string, boardId: string): Promise<boolean> {
+async function isUserMemberOfBoard(
+    userId: string,
+    boardId: string
+): Promise<boolean> {
     try {
         const exists = await prisma.board.findFirst({
-          where: {
-            id: boardId,
-            OR: [
-              { ownerId: userId },
-              { members: { some: { id: userId } } },
-              { viewers: { some: { id: userId } } }
-            ]
-          },
-          select: { id: true }
+            where: {
+                id: boardId,
+                OR: [
+                    { ownerId: userId },
+                    { members: { some: { id: userId } } },
+                    { viewers: { some: { id: userId } } }
+                ]
+            },
+            select: { id: true }
         });
         return Boolean(exists);
     } catch (error) {
@@ -168,9 +171,7 @@ function closeError(message: string): string {
 }
 
 router.ws("/:boardId", async (req, res) => {
-    console.debug(
-        "/ws/boards/:boardId: Received board connection request"
-    );
+    console.debug("/ws/boards/:boardId: Received board connection request");
     const ws = await res.accept();
     const { boardId } = req.params;
     const message = await ws.nextMessage({ timeout: 1000 });
@@ -178,14 +179,15 @@ router.ws("/:boardId", async (req, res) => {
         message && !message.isBinary && message.data && message.data.length > 0
             ? JSON.parse(message.data.toString())
             : null;
-    const payload = body?.token
-        ? await getTokenPayload(body.token)
-        : null;
+    const payload = body?.token ? await getTokenPayload(body.token) : null;
     const userId = payload?.userId;
 
     if (!userId) {
         console.error("No user ID found");
-        return ws.close(1008, closeError("Unauthorized: Invalid or missing token"));
+        return ws.close(
+            1008,
+            closeError("Unauthorized: Invalid or missing token")
+        );
     }
     if (!boardId) {
         console.error("Board ID missing in request");
