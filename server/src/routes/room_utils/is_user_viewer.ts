@@ -1,6 +1,6 @@
 import prisma from "../../utils/prisma.client";
 
-export async function isUserMember(
+export async function isUserViewer(
     userId: string,
     boardId: string
 ): Promise<boolean> {
@@ -8,14 +8,14 @@ export async function isUserMember(
         const exists = await prisma.board.findFirst({
             where: {
                 id: boardId,
-                members: { some: { id: userId } }
+                viewers: { some: { id: userId } }
             },
             select: { id: true }
         });
         return Boolean(exists);
     } catch (error) {
         console.error(
-            `Error checking membership for user ${userId} on board ${boardId}:`,
+            `Error checking viewer status for user ${userId} on board ${boardId}:`,
             error
         );
         return Promise.resolve(false);

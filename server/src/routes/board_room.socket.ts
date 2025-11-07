@@ -1,33 +1,14 @@
 import { ExtendedWebSocket, Router } from "websocket-express";
 import { getTokenPayload } from "../utils/jwt";
-import prisma from "../utils/prisma.client";
 import { sendToWs } from "./room_utils/send_to_ws";
 import { MessagePayload, Room } from "./room_utils/room";
 import { getBoardInfo } from "./room_utils/get_board";
-import { isUserMemberOfBoard } from "./room_utils/is_user_member";
+import { isUserMember } from "./room_utils/is_user_member";
+import { isUserViewer } from "./room_utils/is_user_viewer";
 
 const router = new Router();
 const rooms: Map<string, Room> = new Map();
 const clients: Map<string, Set<ExtendedWebSocket>> = new Map();
-
-async function isUserViewer(userId: string, boardId: string): Promise<boolean> {
-    try {
-        const exists = await prisma.board.findFirst({
-            where: {
-                id: boardId,
-                viewers: { some: { id: userId } }
-            },
-            select: { id: true }
-        });
-        return Boolean(exists);
-    } catch (error) {
-        console.error(
-            `Error checking viewer status for user ${userId} on board ${boardId}:`,
-            error
-        );
-        return Promise.resolve(false);
-    }
-}
 
 function handleConnect(userId: string, ws: ExtendedWebSocket, room: Room) {
     let userSockets = clients.get(userId);
@@ -111,15 +92,16 @@ router.ws("/:boardId", async (req, res) => {
         console.error("Board ID missing in request");
         return ws.close(1008, closeError("Bad Request: Missing board ID"));
     }
-    const allowed = await isUserMemberOfBoard(userId, boardId);
-    if (!allowed)
+    const member = await isUserMember(userId, boardId);
+    const viewer = await isUserViewer(userId, boardId);
+    if (!member && !viewer)
         return ws.close(1008, closeError("Unauthorized: not a board member"));
     try {
         let room = rooms.get(boardId);
         if (!room) room = createRoom(boardId);
         handleConnect(userId, ws, room);
 
-        if (!(await isUserViewer(userId, boardId))) {
+        if (!viewer) {
             // only non-viewers can send messages
             ws.on("message", async (message) => {
                 onMessage(ws, message, room, userId);
