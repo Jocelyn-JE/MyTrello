@@ -58,19 +58,6 @@ async function isUserViewer(userId: string, boardId: string): Promise<boolean> {
     }
 }
 
-async function getUserProfile(userId: string) {
-    try {
-        const user = await prisma.user.findUnique({
-            where: { id: userId },
-            select: { username: true, email: true }
-        });
-        return user || null;
-    } catch (error) {
-        console.error(`Error fetching profile for user ${userId}:`, error);
-        return null;
-    }
-}
-
 async function getBoardInfo(boardId: string) {
     try {
         const board = await prisma.board.findUnique({
