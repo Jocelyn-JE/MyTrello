@@ -2,6 +2,7 @@ import { ExtendedWebSocket, Router } from "websocket-express";
 import { WebSocket } from "ws";
 import { getTokenPayload } from "../utils/jwt";
 import prisma from "../utils/prisma.client";
+import { executeAction } from "./socket_actions/action_type";
 
 type Room = {
     boardId: string;
@@ -158,6 +159,11 @@ function createRoom(boardId: string): Room {
     return newRoom;
 }
 
+type MessagePayload = {
+    type: string;
+    data: any;
+};
+
 async function onMessage(
     client: ExtendedWebSocket,
     message: unknown,
@@ -166,16 +172,29 @@ async function onMessage(
 ) {
     const user = await getUserProfile(userId);
     try {
-        const text =
+        const text: string =
             typeof message === "string" ? message : (message as any).toString();
-        const payload = text ? JSON.parse(text) : null;
+        const payload: MessagePayload | null = text ? JSON.parse(text) : null;
         console.debug(
             `Received message from user ${userId} in room ${room.boardId}:`,
             payload
         );
-        broadCastToRoom(client, room.users, { ...payload, sender: user });
+        if (!payload || !payload.type) {
+            console.warn(`Invalid message payload from user ${userId}:`, text);
+            return;
+        }
+        const result = await executeAction(
+            payload.type,
+            room.boardId,
+            payload.data
+        );
+        broadCastToRoom(client, room.users, {
+            type: payload.type,
+            data: result,
+            sender: user
+        });
     } catch (err) {
-        console.warn(`Invalid JSON from user ${userId}:`, err);
+        console.warn(`Invalid request from user ${userId}:`, err);
     }
 }
 
