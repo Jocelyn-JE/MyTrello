@@ -4,36 +4,11 @@ import prisma from "../utils/prisma.client";
 import { sendToWs } from "./room_utils/send_to_ws";
 import { MessagePayload, Room } from "./room_utils/room";
 import { getBoardInfo } from "./room_utils/get_board";
+import { isUserMemberOfBoard } from "./room_utils/is_user_member";
 
 const router = new Router();
 const rooms: Map<string, Room> = new Map();
 const clients: Map<string, Set<ExtendedWebSocket>> = new Map();
-
-async function isUserMemberOfBoard(
-    userId: string,
-    boardId: string
-): Promise<boolean> {
-    try {
-        const exists = await prisma.board.findFirst({
-            where: {
-                id: boardId,
-                OR: [
-                    { ownerId: userId },
-                    { members: { some: { id: userId } } },
-                    { viewers: { some: { id: userId } } }
-                ]
-            },
-            select: { id: true }
-        });
-        return Boolean(exists);
-    } catch (error) {
-        console.error(
-            `Error checking membership for user ${userId} on board ${boardId}:`,
-            error
-        );
-        return Promise.resolve(false);
-    }
-}
 
 async function isUserViewer(userId: string, boardId: string): Promise<boolean> {
     try {
