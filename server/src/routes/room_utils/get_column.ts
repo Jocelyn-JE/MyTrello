@@ -21,7 +21,10 @@ export async function columnExists(columnId: string): Promise<boolean> {
         });
         return Boolean(exists);
     } catch (error) {
-        console.error(`Error checking existence for column ${columnId}:`, error);
+        console.error(
+            `Error checking existence for column ${columnId}:`,
+            error
+        );
         return Promise.resolve(false);
     }
 }
