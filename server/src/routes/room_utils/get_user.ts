@@ -19,3 +19,16 @@ export async function getUserInfo(
         return undefined;
     }
 }
+
+export async function userExists(userId: string): Promise<boolean> {
+    try {
+        const exists = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { id: true }
+        });
+        return Boolean(exists);
+    } catch (error) {
+        console.error(`Error checking existence for user ${userId}:`, error);
+        return Promise.resolve(false);
+    }
+}
