@@ -18,14 +18,3 @@ export const actionIndex: SocketAction[] = [
     columnListingAction,
     messageAction
 ];
-
-export function executeAction(
-    actionName: string,
-    boardId: string,
-    data: Object
-): Promise<Object> | undefined {
-    const action = actionIndex.find((act) => act.actionName === actionName);
-    if (action) return action.execute(boardId, data);
-    console.warn(`No action found for name: ${actionName}`);
-    return undefined;
-}

@@ -1,13 +1,9 @@
 import { ExtendedWebSocket, Router } from "websocket-express";
-import { WebSocket } from "ws";
 import { getTokenPayload } from "../utils/jwt";
 import prisma from "../utils/prisma.client";
-import { executeAction } from "./socket_actions/action_type";
-
-type Room = {
-    boardId: string;
-    users: ExtendedWebSocket[];
-};
+import { sendToWs } from "./room_utils/send_to_ws";
+import { MessagePayload, Room } from "./room_utils/room";
+import { getBoardInfo } from "./room_utils/get_board";
 
 const router = new Router();
 const rooms: Map<string, Room> = new Map();
@@ -58,68 +54,6 @@ async function isUserViewer(userId: string, boardId: string): Promise<boolean> {
     }
 }
 
-async function getBoardInfo(boardId: string) {
-    try {
-        const board = await prisma.board.findUnique({
-            where: { id: boardId }
-        });
-        return board || null;
-    } catch (error) {
-        console.error(`Error fetching info for board ${boardId}:`, error);
-        return null;
-    }
-}
-
-//function sendToUser(userId: string, payload: unknown): boolean {
-//    const userWs = clients.get(userId);
-//    if (!userWs) return false;
-//    let result = false;
-//    for (const ws of Array.from(userWs)) {
-//        if (ws.readyState === WebSocket.CLOSED || ws.readyState === WebSocket.CLOSING) {
-//            userWs.delete(ws);
-//            continue;
-//        }
-//        result = sendToWs(ws, payload) || result;
-//    }
-//    if (userWs.size === 0)
-//        clients.delete(userId);
-//    if (!result)
-//        console.warn(`Failed to send message to user ${userId}: WebSocket not open`);
-//    return result;
-//}
-
-function sendToWs(ws: ExtendedWebSocket, payload: unknown): boolean {
-    try {
-        if (ws.readyState !== WebSocket.OPEN) return false;
-        ws.send(JSON.stringify(payload));
-        return true;
-    } catch (err) {
-        console.error(`Failed to send message to ws:`, err);
-        return false;
-    }
-}
-
-function broadCastToRoom(
-    sender: ExtendedWebSocket,
-    users: ExtendedWebSocket[],
-    data: unknown
-) {
-    for (const userWs of Array.from(users)) {
-        if (userWs === sender) continue;
-        if (
-            userWs.readyState === WebSocket.CLOSED ||
-            userWs.readyState === WebSocket.CLOSING
-        ) {
-            // remove stale socket from room list
-            const idx = users.indexOf(userWs);
-            if (idx !== -1) users.splice(idx, 1);
-            continue;
-        }
-        if (userWs.readyState !== WebSocket.OPEN) continue;
-        sendToWs(userWs, data);
-    }
-}
-
 function handleConnect(userId: string, ws: ExtendedWebSocket, room: Room) {
     let userSockets = clients.get(userId);
     if (!userSockets) {
@@ -127,7 +61,7 @@ function handleConnect(userId: string, ws: ExtendedWebSocket, room: Room) {
         clients.set(userId, userSockets);
     }
     userSockets.add(ws);
-    if (!room.users.includes(ws)) room.users.push(ws);
+    room.addUser(ws);
 }
 
 function handleDisconnect(userId: string, ws: ExtendedWebSocket, room: Room) {
@@ -136,20 +70,15 @@ function handleDisconnect(userId: string, ws: ExtendedWebSocket, room: Room) {
         userSockets.delete(ws);
         if (userSockets.size === 0) clients.delete(userId);
     }
-    room.users = room.users.filter((userWs) => userWs !== ws);
-    if (room.users.length === 0) rooms.delete(room.boardId);
+    room.removeUser(ws);
+    if (room.getUsers().length === 0) rooms.delete(room.getBoardId());
 }
 
 function createRoom(boardId: string): Room {
-    const newRoom: Room = { boardId, users: [] };
+    const newRoom: Room = new Room(boardId);
     rooms.set(boardId, newRoom);
     return newRoom;
 }
-
-type MessagePayload = {
-    type: string;
-    data: any;
-};
 
 async function onMessage(
     client: ExtendedWebSocket,
@@ -157,29 +86,19 @@ async function onMessage(
     room: Room,
     userId: string
 ) {
-    const user = await getUserProfile(userId);
     try {
         const text: string =
             typeof message === "string" ? message : (message as any).toString();
         const payload: MessagePayload | null = text ? JSON.parse(text) : null;
         console.debug(
-            `Received message from user ${userId} in room ${room.boardId}:`,
+            `Received message from user ${userId} in room ${room.getBoardId()}:`,
             payload
         );
         if (!payload || !payload.type) {
             console.warn(`Invalid message payload from user ${userId}:`, text);
             return;
         }
-        const result = await executeAction(
-            payload.type,
-            room.boardId,
-            payload.data
-        );
-        broadCastToRoom(client, room.users, {
-            type: payload.type,
-            data: result,
-            sender: user
-        });
+        await room.executeAction(client, userId, payload);
     } catch (err) {
         console.warn(`Invalid request from user ${userId}:`, err);
     }
