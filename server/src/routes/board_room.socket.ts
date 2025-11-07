@@ -92,6 +92,10 @@ router.ws("/:boardId", async (req, res) => {
         console.error("Board ID missing in request");
         return ws.close(1008, closeError("Bad Request: Missing board ID"));
     }
+    if (!(await getBoardInfo(boardId))) {
+        console.error(`Board not found: ${boardId}`);
+        return ws.close(1008, closeError("Bad Request: Board not found"));
+    }
     const member = await isUserMember(userId, boardId);
     const viewer = await isUserViewer(userId, boardId);
     if (!member && !viewer)
