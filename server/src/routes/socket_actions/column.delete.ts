@@ -1,5 +1,6 @@
 import { SocketAction } from "./action_type";
 import prisma from "../../utils/prisma.client";
+import { columnExists } from "../room_utils/get_column";
 
 type ColumnDeleteData = {
     id: string;
@@ -11,6 +12,10 @@ export const columnDeletionAction: SocketAction = {
         console.info(
             `Deleting column with ID "${columnData.id}" from board ${boardId}`
         );
+        if (!(await columnExists(columnData.id))) {
+            console.error(`Column with ID ${columnData.id} does not exist`);
+            throw new Error("Column does not exist");
+        }
         const column = await prisma.column.delete({
             where: {
                 id: columnData.id

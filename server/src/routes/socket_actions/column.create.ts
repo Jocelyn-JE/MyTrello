@@ -11,6 +11,10 @@ export const columnCreationAction: SocketAction = {
         console.info(
             `Creating column with title "${columnData.title}" in board ${boardId}`
         );
+        if (!columnData.title || columnData.title.trim() === "") {
+            console.error("Column title cannot be empty");
+            throw new Error("Column title cannot be empty");
+        }
         const column = await prisma.column.create({
             data: {
                 title: columnData.title,
