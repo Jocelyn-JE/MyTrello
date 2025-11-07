@@ -2,12 +2,31 @@ import { ExtendedWebSocket } from "websocket-express";
 import { sendToWs } from "./send_to_ws";
 import { actionIndex } from "../socket_actions/action_type";
 import { getUserInfo, UserInfo } from "./get_user";
+import { Board } from "@prisma/client";
 
 export type MessagePayload = {
     type: string;
     data: Object | null;
     sender?: UserInfo;
 };
+
+export class ErrorPayload {
+    type: string = "error";
+    message: string;
+
+    constructor(message: string) {
+        this.message = message;
+    }
+}
+
+export class AckPayload {
+    type: string = "connection_ack";
+    board: Board;
+
+    constructor(board: Board) {
+        this.board = board;
+    }
+}
 
 export class Room {
     private boardId: string;
@@ -38,7 +57,10 @@ export class Room {
         return this.boardId;
     }
 
-    public broadcast(sender: ExtendedWebSocket, data: MessagePayload) {
+    public broadcast(
+        sender: ExtendedWebSocket,
+        data: MessagePayload | ErrorPayload
+    ) {
         for (const userWs of Array.from(this.users)) {
             if (
                 userWs.readyState === WebSocket.CLOSED ||
@@ -77,11 +99,19 @@ export class Room {
             console.warn(`No action found for name: ${actionName}`);
             return;
         }
-        let result = await action.execute(this.boardId, data);
-        this.broadcast(client, {
-            type: actionName,
-            data: result,
-            sender: await getUserInfo(userId)
-        });
+        try {
+            let result = await action.execute(this.boardId, data);
+            this.broadcast(client, {
+                type: actionName,
+                data: result,
+                sender: await getUserInfo(userId)
+            });
+        } catch (err: any) {
+            console.warn(
+                `Error executing action "${actionName}" for user ${userId}:`,
+                err
+            );
+            sendToWs(client, new ErrorPayload(err.message || "Action execution error"));
+        }
     }
 }

@@ -1,10 +1,11 @@
 import { ExtendedWebSocket, Router } from "websocket-express";
 import { getTokenPayload } from "../utils/jwt";
 import { sendToWs } from "./room_utils/send_to_ws";
-import { MessagePayload, Room } from "./room_utils/room";
+import { AckPayload, ErrorPayload, MessagePayload, Room } from "./room_utils/room";
 import { getBoardInfo } from "./room_utils/get_board";
 import { isUserMember } from "./room_utils/is_user_member";
 import { isUserViewer } from "./room_utils/is_user_viewer";
+import { sendToUser } from "./room_utils/send_to_user";
 
 const router = new Router();
 const rooms: Map<string, Room> = new Map();
@@ -57,17 +58,18 @@ async function onMessage(
         await room.executeAction(client, userId, payload);
     } catch (err) {
         console.warn(`Invalid request from user ${userId}:`, err);
+        sendToUser(clients, userId, new ErrorPayload("Invalid request format"));
     }
 }
 
-async function getConnectionAcknowledgement(boardId: string): Promise<unknown> {
+async function getConnectionAcknowledgement(boardId: string): Promise<AckPayload | ErrorPayload> {
     const board = await getBoardInfo(boardId);
-    if (!board) return { type: "error", message: "Board not found" };
-    return { type: "connection_ack", board };
+    if (!board) return new ErrorPayload("Board not found");
+    return new AckPayload(board);
 }
 
 function closeError(message: string): string {
-    return JSON.stringify({ type: "error", message });
+    return JSON.stringify(new ErrorPayload(message));
 }
 
 router.ws("/:boardId", async (req, res) => {

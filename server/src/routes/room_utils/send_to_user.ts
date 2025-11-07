@@ -1,5 +1,6 @@
 import { ExtendedWebSocket } from "websocket-express";
 import { sendToWs } from "./send_to_ws";
+import { ErrorPayload, MessagePayload } from "./room";
 
 /*
  * Sends a payload to all WebSocket connections of a specific user.
@@ -9,7 +10,7 @@ import { sendToWs } from "./send_to_ws";
 export function sendToUser(
     clients: Map<string, Set<ExtendedWebSocket>>,
     userId: string,
-    payload: unknown
+    payload: MessagePayload | ErrorPayload
 ): boolean {
     const userWs = clients.get(userId);
     if (!userWs) return false;

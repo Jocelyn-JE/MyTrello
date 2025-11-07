@@ -1,6 +1,10 @@
 import { ExtendedWebSocket } from "websocket-express";
+import { AckPayload, ErrorPayload, MessagePayload } from "./room";
 
-export function sendToWs(ws: ExtendedWebSocket, payload: unknown): boolean {
+export function sendToWs(
+    ws: ExtendedWebSocket,
+    payload: MessagePayload | AckPayload | ErrorPayload
+): boolean {
     try {
         if (ws.readyState !== WebSocket.OPEN) return false;
         ws.send(JSON.stringify(payload));
