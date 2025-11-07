@@ -2,9 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:frontend/protected_routes.dart';
-import 'websocket_service.dart';
-
-const List<String> list = ['message', 'column.list', 'column.create'];
+import 'package:frontend/websocket/websocket.dart';
 
 class BoardDetailScreen extends StatefulWidget {
   final String? boardId;
@@ -29,13 +27,14 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
   final List<String> _messages = [];
   bool _connected = false;
   final _messageController = TextEditingController();
-  String dropdownValue = list.first;
+  String dropdownValue = commands.first;
   static final List<DropdownMenuEntry<String>> menuEntries =
       UnmodifiableListView<DropdownMenuEntry<String>>(
-        list.map<DropdownMenuEntry<String>>(
+        commands.map<DropdownMenuEntry<String>>(
           (String name) => DropdownMenuEntry<String>(value: name, label: name),
         ),
       );
+  late String _boardTitle;
 
   String get _boardId =>
       widget.boardId ??
@@ -63,8 +62,12 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
   void _connectToBoard() async {
     if (_boardId.isEmpty) return;
     try {
-      await WebsocketService.connectToBoard(_boardId);
-      setState(() => _connected = true);
+      TrelloBoard? result = await WebsocketService.connectToBoard(_boardId);
+      if (result == null) return; // already connected
+      setState(() {
+        _connected = true;
+        _boardTitle = result.title;
+      });
       _sub = WebsocketService.stream?.listen(
         (event) {
           // server sends JSON-serialized payloads; keep raw string for demo
@@ -109,9 +112,10 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final displayedId = _boardId.isNotEmpty ? _boardId : 'unknown';
+    final title = _connected ? _boardTitle : 'Board Details';
     return Scaffold(
       appBar: AppBar(
-        title: Text('Board Details'),
+        title: Text(title),
         backgroundColor: Colors.lightGreen,
         shadowColor: Colors.grey,
         actions: [

@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import 'auth_service.dart';
+import 'websocket.dart';
+import '../auth_service.dart';
 
 class WebsocketService {
   static WebSocketChannel? _channel;
@@ -15,12 +16,12 @@ class WebsocketService {
   static Stream<dynamic>? get stream => _broadcastStream;
 
   /// Connect to a board room on the backend and immediately send the token handshake.
-  /// host can be overridden for testing (default should be replaced with your real host).
-  static Future<void> connectToBoard(
+  /// host can be overridden (default should be replaced with the real host).
+  static Future<TrelloBoard?> connectToBoard(
     String boardId, {
     String host = 'localhost:3000',
   }) async {
-    if (isConnected) return;
+    if (isConnected) return null;
 
     if (!AuthService.isLoggedIn) throw Exception('User is not authenticated');
 
@@ -36,23 +37,31 @@ class WebsocketService {
     _channel!.sink.add(jsonEncode({'token': token}));
 
     // Wait for server to confirm connection or close it
-    final completer = Completer<void>();
+    final completer = Completer<TrelloBoard?>();
     late StreamSubscription sub;
-    sub = _broadcastStream!.listen((event) {
-      final data = jsonDecode(event);
-      if (data['type'] == 'connection_ack') {
-        completer.complete();
-        sub.cancel();
-      } else if (data['type'] == 'error') {
-        completer.completeError(data['message'] ?? 'Connection error');
-        sub.cancel();
-      }
-    }, onError: (err) {
-      if (!completer.isCompleted) completer.completeError(err);
-    });
-
+    sub = _broadcastStream!.listen(
+      (event) {
+        final data = jsonDecode(event);
+        if (data['type'] == 'connection_ack') {
+          final board = TrelloBoard.fromJson(data['board']);
+          completer.complete(board);
+          sub.cancel();
+        } else if (data['type'] == 'error') {
+          completer.completeError(data['message'] ?? 'Connection error');
+          sub.cancel();
+        }
+      },
+      onError: (err) {
+        if (!completer.isCompleted) completer.completeError(err);
+      },
+    );
     // Wait for either the connection acknowledgment or an error
-    await completer.future;
+    return await completer.future;
+  }
+
+  /// Send a WebSocket command to the server.
+  static void sendCommand(WebSocketCommand command) {
+    send(command.toJson());
   }
 
   /// Send a JSON-serializable payload to the server.
