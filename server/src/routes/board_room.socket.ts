@@ -233,19 +233,17 @@ router.ws("/:boardId", async (req, res) => {
         }
         ws.on("error", (err) => {
             console.warn(
-                `WebSocket error for user ${userId} in room ${room.boardId}:`,
+                `WebSocket error for user ${userId} in room ${boardId}:`,
                 err
             );
         });
         ws.on("close", () => {
-            console.info(
-                `User ${userId} disconnected from room ${room.boardId}`
-            );
+            console.info(`User ${userId} disconnected from room ${boardId}`);
             handleDisconnect(userId, ws, room);
         });
 
         console.info(
-            `User ${userId} connected to room ${room.boardId} successfully`
+            `User ${userId} connected to room ${boardId} successfully`
         );
         sendToWs(ws, await getConnectionAcknowledgement(boardId));
     } catch (error: unknown) {
