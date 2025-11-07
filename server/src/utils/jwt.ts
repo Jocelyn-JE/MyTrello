@@ -31,9 +31,12 @@ export async function getTokenPayload(
 ): Promise<JwtPayload | null> {
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
-        const { expiresAt } = decoded as JwtPayload;
-        if (expiresAt < Date.now()) return null;
-        return decoded as JwtPayload;
+        const payload = decoded as JwtPayload;
+        if (payload.expiresAt < Date.now()) {
+            console.info(`Token for user ${payload.userId} has expired`);
+            return null;
+        }
+        return payload;
     } catch (error) {
         console.error("Error decoding token:", error);
         return null;
