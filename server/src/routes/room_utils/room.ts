@@ -37,6 +37,19 @@ export class Room {
         this.users = [];
     }
 
+    public close() {
+        for (const userWs of this.users) {
+            if (userWs.readyState === WebSocket.OPEN) {
+                sendToWs(
+                    userWs,
+                    new ErrorPayload("Board no longer exists. Disconnecting.")
+                );
+                userWs.close(1000, "Board no longer exists");
+            }
+        }
+        this.users = [];
+    }
+
     public addUser(ws: ExtendedWebSocket) {
         if (!this.isUserInRoom(ws)) this.users.push(ws);
     }

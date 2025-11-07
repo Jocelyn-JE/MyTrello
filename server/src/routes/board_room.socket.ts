@@ -7,7 +7,7 @@ import {
     MessagePayload,
     Room
 } from "./room_utils/room";
-import { getBoardInfo } from "./room_utils/get_board";
+import { boardExists, getBoardInfo } from "./room_utils/get_board";
 import { isUserMember } from "./room_utils/is_user_member";
 import { isUserViewer } from "./room_utils/is_user_viewer";
 import { sendToUser } from "./room_utils/send_to_user";
@@ -48,6 +48,21 @@ async function onMessage(
     room: Room,
     userId: string
 ) {
+    if (!room.isUserInRoom(client)) {
+        console.warn(
+            `Received message from user ${userId} who is not in room ${room.getBoardId()}`
+        );
+        room.removeUser(client);
+        return;
+    }
+    if (!(await boardExists(room.getBoardId()))) {
+        console.warn(
+            `Board ${room.getBoardId()} no longer exists. Disconnecting user ${userId}.`
+        );
+        room.close(); // Closes all connections in the room. Note: does not remove from clients map.
+        rooms.delete(room.getBoardId());
+        return;
+    }
     try {
         const text: string =
             typeof message === "string" ? message : (message as any).toString();
