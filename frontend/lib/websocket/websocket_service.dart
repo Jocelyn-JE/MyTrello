@@ -60,12 +60,12 @@ class WebsocketService {
   }
 
   /// Send a WebSocket command to the server.
-  static void sendCommand(WebSocketCommand command) {
-    send(command.toJson());
+  static void _sendCommand(WebSocketCommand command) {
+    _send(command.toJson());
   }
 
   /// Send a JSON-serializable payload to the server.
-  static void send(Map<String, dynamic> payload) {
+  static void _send(Map<String, dynamic> payload) {
     if (AuthService.isLoggedIn == false) {
       close();
       throw Exception('User is not authenticated');
