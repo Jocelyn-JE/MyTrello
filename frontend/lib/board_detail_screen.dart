@@ -189,6 +189,15 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
             children: [
               Text('Column: ${column.title}'),
               // Add more widgets to display cards, etc.
+              const Spacer(),
+              IconButton(
+                color: Colors.red,
+                icon: const Icon(Icons.delete),
+                tooltip: 'Delete column',
+                onPressed: () {
+                  WebsocketService.deleteColumn(column.id);
+                },
+              ),
             ],
           ),
         ),
