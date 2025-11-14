@@ -107,6 +107,7 @@ router.ws("/:boardId", async (req, res) => {
     const userId = payload?.userId;
 
     if (!userId) {
+        console.error("Unauthorized: Invalid or missing token");
         return ws.close(
             1008,
             closeError("Unauthorized: Invalid or missing token")
@@ -116,14 +117,17 @@ router.ws("/:boardId", async (req, res) => {
         console.error("Board ID missing in request");
         return ws.close(1008, closeError("Bad Request: Missing board ID"));
     }
-    if (!(await getBoardInfo(boardId))) {
+    const board = await getBoardInfo(boardId);
+    if (!board) {
         console.error(`Board not found: ${boardId}`);
         return ws.close(1008, closeError("Bad Request: Board not found"));
     }
     const member = await isUserMember(userId, boardId);
     const viewer = await isUserViewer(userId, boardId);
-    if (!member && !viewer)
+    if (!member && !viewer && board.ownerId !== userId) {
+        console.error(`Unauthorized: User ${userId} is not a member of board ${boardId}`);
         return ws.close(1008, closeError("Unauthorized: not a board member"));
+    }
     try {
         let room = rooms.get(boardId);
         if (!room) room = createRoom(boardId);
