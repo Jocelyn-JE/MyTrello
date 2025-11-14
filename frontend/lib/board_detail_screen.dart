@@ -25,8 +25,7 @@ class BoardDetailScreen extends StatefulWidget {
 
 class _BoardDetailScreenState extends State<BoardDetailScreen> {
   StreamSubscription? _sub;
-  bool _connected = false;
-  late String _boardTitle;
+  String? _boardTitle;
   late List<TrelloColumn> _columns = [];
   final ScrollController _scrollController = ScrollController();
 
@@ -55,12 +54,13 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
   }
 
   void _connectToBoard() async {
+    debugPrint('Connecting to board $_boardId');
     if (_boardId.isEmpty) return;
     try {
       TrelloBoard? result = await WebsocketService.connectToBoard(_boardId);
       if (result == null) return; // already connected
+      debugPrint('Connected to board: ${result.title}');
       setState(() {
-        _connected = true;
         _boardTitle = result.title;
       });
       _sub = WebsocketService.stream?.listen(
@@ -82,45 +82,38 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
         onDone: () {
           debugPrint('WebSocket stream closed');
           WebsocketService.close();
-          setState(() => _connected = false);
         },
       );
       WebsocketService.fetchColumns();
     } catch (e) {
+      debugPrint('Error connecting to board: $e');
       _disconnectFromBoard();
       if (mounted) {
-        ScaffoldMessenger.of(
+        Navigator.pushNamedAndRemoveUntil(
           context,
-        ).showSnackBar(SnackBar(content: Text('Connection error: $e')));
+          '/home',
+          (route) => false, // Remove all previous routes
+        );
       }
     }
   }
 
   void _disconnectFromBoard() {
+    debugPrint('Disconnecting from board');
     _sub?.cancel();
     WebsocketService.close();
-    setState(() => _connected = false);
   }
 
   @override
   Widget build(BuildContext context) {
     final displayedId = _boardId.isNotEmpty ? _boardId : 'unknown';
-    final title = _connected ? _boardTitle : 'Board Details';
+    final title = _boardTitle ?? 'Board Details';
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
         backgroundColor: Colors.lightGreen,
         shadowColor: Colors.grey,
-        actions: [
-          IconButton(
-            icon: Icon(
-              _connected ? Icons.link : Icons.link_off,
-              color: _connected ? Colors.black : Colors.red,
-            ),
-            onPressed: _connected ? _disconnectFromBoard : _connectToBoard,
-          ),
-          const SizedBox(width: 16),
-        ],
+        actions: [],
       ),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
@@ -179,6 +172,9 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
    * Build the column widget that will contain the cards
    */
   Widget _buildColumn(TrelloColumn column) {
+    final TextEditingController titleController = TextEditingController(
+      text: column.title,
+    );
     return SizedBox(
       width: 300, // Set the width of each column
       child: Card(
@@ -187,7 +183,27 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-              Text('Column: ${column.title}'),
+              TextField(
+                controller: titleController,
+                decoration: const InputDecoration(hintText: 'Column title'),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+                onSubmitted: (newTitle) {
+                  if (newTitle.isNotEmpty && newTitle != column.title) {
+                    WebsocketService.renameColumn(column.id, newTitle);
+                  }
+                },
+                onEditingComplete: () {
+                  final newTitle = titleController.text;
+                  if (newTitle.isNotEmpty && newTitle != column.title) {
+                    WebsocketService.renameColumn(column.id, newTitle);
+                  }
+                  FocusScope.of(context).unfocus();
+                },
+              ),
               // Add more widgets to display cards, etc.
               const Spacer(),
               IconButton(
@@ -210,20 +226,30 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
       List<TrelloColumn> columns = (payload as List)
           .map((col) => TrelloColumn.fromJson(col))
           .toList();
-      _columns = columns;
+      setState(() {
+        _columns = columns;
+      });
     },
     'column.rename': (dynamic payload) {
       TrelloColumn renamedColumn = TrelloColumn.fromJson(payload);
       int index = _columns.indexWhere((col) => col.id == renamedColumn.id);
-      if (index != -1) _columns[index] = renamedColumn;
+      if (index != -1) {
+        setState(() {
+          _columns[index] = renamedColumn;
+        });
+      }
     },
     'column.delete': (dynamic payload) {
       TrelloColumn deletedColumn = TrelloColumn.fromJson(payload);
-      _columns.removeWhere((col) => col.id == deletedColumn.id);
+      setState(() {
+        _columns.removeWhere((col) => col.id == deletedColumn.id);
+      });
     },
     'column.create': (dynamic payload) {
       TrelloColumn newColumn = TrelloColumn.fromJson(payload);
-      _columns.insert(newColumn.index, newColumn);
+      setState(() {
+        _columns.add(newColumn);
+      });
     },
   };
 
@@ -231,7 +257,6 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
     final action = actionMap[type];
     if (action != null) {
       action(payload);
-      setState(() {});
     } else {
       debugPrint('Unknown action type: $type');
     }
