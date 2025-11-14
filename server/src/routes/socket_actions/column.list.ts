@@ -6,7 +6,8 @@ export const columnListingAction: SocketAction = {
     async execute(boardId: string, _data: null) {
         console.info(`Listing columns in board ${boardId}`);
         const columns = await prisma.column.findMany({
-            where: { boardId }
+            where: { boardId },
+            orderBy: { index: "asc" }
         });
         console.info(`Columns found: ${columns.length}`);
         return columns;
