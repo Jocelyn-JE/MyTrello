@@ -28,7 +28,7 @@ If the token is missing or invalid, the server will close the connection with a 
 On success the server sends a connection acknowledgement message (text JSON):
 
 ```json
-{ "type": "connection_ack", "board": { /* board object as returned by the DB */ } }
+{ "type": "connection_ack", "board": { "board object as returned by the DB" } }
 ```
 
 If the board cannot be found the server replies with an error message and closes the connection.
@@ -40,13 +40,13 @@ All messages are JSON objects. The server expects text frames (UTF-8). Binary fr
 General form (client -> server):
 
 ```json
-{ "type": "<event.type>", "data": { ... } }
+{ "type": "<event.type>", "data": { "..." } }
 ```
 
 When the server broadcasts a client's message to other clients in the same board room it will attach a `sender` object with minimal public profile information:
 
 ```json
-{ "type": "<event.type>", "data": { ... }, "sender": { "username": "alice", "email": "alice@example.com" } }
+{ "type": "<event.type>", "data": { "..." }, "sender": { "username": "alice", "email": "alice@example.com" } }
 ```
 
 Server -> client messages follow the same `{ type, ... }` pattern. There are a few reserved message types used by the server:
