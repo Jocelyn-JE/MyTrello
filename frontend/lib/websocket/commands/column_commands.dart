@@ -26,3 +26,34 @@ class ListColumnsCommand implements WebSocketCommand {
   @override
   Map<String, dynamic> toJson() => {'type': type, 'data': null};
 }
+
+/// Rename a column in the board
+class RenameColumnCommand implements WebSocketCommand {
+  @override
+  final String type = 'column.rename';
+  final String columnId;
+  final String newTitle;
+
+  RenameColumnCommand({required this.columnId, required this.newTitle});
+
+  @override
+  Map<String, dynamic> toJson() => {
+    'type': type,
+    'data': {'id': columnId, 'title': newTitle},
+  };
+}
+
+/// Delete a column in the board
+class DeleteColumnCommand implements WebSocketCommand {
+  @override
+  final String type = 'column.delete';
+  final String columnId;
+
+  DeleteColumnCommand({required this.columnId});
+
+  @override
+  Map<String, dynamic> toJson() => {
+    'type': type,
+    'data': {'id': columnId},
+  };
+}

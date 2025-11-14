@@ -87,4 +87,24 @@ class WebsocketService {
     _channel = null;
     _broadcastStream = null;
   }
+
+  /// Ask the server to fetch the list of columns for the current board
+  static void fetchColumns() {
+    _sendCommand(ListColumnsCommand());
+  }
+
+  /// Ask the server to create a new column with the given title
+  static void createColumn(String title) {
+    _sendCommand(CreateColumnCommand(title: title));
+  }
+
+  /// Ask the server to rename a column
+  static void renameColumn(String columnId, String newTitle) {
+    _sendCommand(RenameColumnCommand(columnId: columnId, newTitle: newTitle));
+  }
+
+  /// Ask the server to delete a column
+  static void deleteColumn(String columnId) {
+    _sendCommand(DeleteColumnCommand(columnId: columnId));
+  }
 }

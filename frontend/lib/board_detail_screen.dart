@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/protected_routes.dart';
@@ -64,8 +65,16 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
       });
       _sub = WebsocketService.stream?.listen(
         (event) {
-          // Handle incoming messages
-          // TODO: make a handler function to process different message types
+          // Handle incoming actions
+          try {
+            final data = jsonDecode(event);
+            final type = data['type'];
+            final payload = data['data'];
+            handleIncomingAction(type, payload);
+            debugPrint('Received WebSocket message: $data');
+          } catch (e) {
+            debugPrint('Error processing WebSocket message: $e');
+          }
         },
         onError: (err) {
           debugPrint('WebSocket stream error: $err');
@@ -76,6 +85,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
           setState(() => _connected = false);
         },
       );
+      WebsocketService.fetchColumns();
     } catch (e) {
       _disconnectFromBoard();
       if (mounted) {
@@ -153,18 +163,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
                 backgroundColor: Colors.lightGreen.shade200,
               ),
               onPressed: () {
-                // TODO: Implement add column functionality
-                _columns.add(
-                  TrelloColumn(
-                    id: 'new_column_${_columns.length}',
-                    boardId: _boardId,
-                    index: _columns.length,
-                    title: 'New Column',
-                    createdAt: DateTime.now(),
-                    updatedAt: DateTime.now(),
-                  ),
-                );
-                setState(() {});
+                WebsocketService.createColumn('New Column');
               },
               child: const Icon(Icons.add),
             );
@@ -195,5 +194,37 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
         ),
       ),
     );
+  }
+
+  late final actionMap = {
+    'column.list': (dynamic payload) {
+      List<TrelloColumn> columns = (payload as List)
+          .map((col) => TrelloColumn.fromJson(col))
+          .toList();
+      _columns = columns;
+    },
+    'column.rename': (dynamic payload) {
+      TrelloColumn renamedColumn = TrelloColumn.fromJson(payload);
+      int index = _columns.indexWhere((col) => col.id == renamedColumn.id);
+      if (index != -1) _columns[index] = renamedColumn;
+    },
+    'column.delete': (dynamic payload) {
+      TrelloColumn deletedColumn = TrelloColumn.fromJson(payload);
+      _columns.removeWhere((col) => col.id == deletedColumn.id);
+    },
+    'column.create': (dynamic payload) {
+      TrelloColumn newColumn = TrelloColumn.fromJson(payload);
+      _columns.insert(newColumn.index, newColumn);
+    },
+  };
+
+  void handleIncomingAction(String type, dynamic payload) {
+    final action = actionMap[type];
+    if (action != null) {
+      action(payload);
+      setState(() {});
+    } else {
+      debugPrint('Unknown action type: $type');
+    }
   }
 }
