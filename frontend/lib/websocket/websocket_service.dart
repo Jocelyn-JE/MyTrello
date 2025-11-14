@@ -54,9 +54,15 @@ class WebsocketService {
       onError: (err) {
         if (!completer.isCompleted) completer.completeError(err);
       },
+      onDone: () {
+        if (!completer.isCompleted) {
+          completer.completeError('Connection closed by server');
+        }
+      },
     );
-    // Wait for either the connection acknowledgment or an error
-    return await completer.future;
+    final result = await completer.future;
+    if (result == null) throw Exception('Failed to connect to board');
+    return result;
   }
 
   /// Send a WebSocket command to the server.
