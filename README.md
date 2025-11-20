@@ -12,7 +12,7 @@ A Trello-like project management application built with Flutter (frontend) and N
 - **RESTful API**: Well-documented API with Swagger/OpenAPI specification
 - **Database Management**: PostgreSQL with Prisma ORM
 - **Containerized Deployment**: Docker and Docker Compose setup
-- **Testing**: Comprehensive test coverage with Jest
+- **Testing**: Test coverage with Jest
 
 ## 🏗️ Architecture
 
@@ -22,6 +22,7 @@ MyTrello/
 ├── server/           # Node.js/Express backend API
 ├── docs/             # API documentation (Swagger)
 ├── output/           # Built Android APK files
+├── .env.example      # Example environment variables
 └── docker-compose.yaml
 ```
 
@@ -29,15 +30,12 @@ MyTrello/
 
 **Frontend:**
 
-- Flutter/Dart
-- Flutter Web
-- Android SDK
+- Flutter/Dart for both web and mobile
 
 **Backend:**
 
-- Node.js
+- Node.js / TypeScript
 - WebSocket Express
-- TypeScript
 - Prisma ORM
 - PostgreSQL
 - JWT Authentication
@@ -196,13 +194,6 @@ npx prisma generate
 ```bash
 cd server
 npx prisma migrate reset
-```
-
-**View database in Prisma Studio:**
-
-```bash
-cd server
-npx prisma studio
 ```
 
 ## 📱 Mobile Development
