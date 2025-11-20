@@ -70,9 +70,10 @@ class _LoginScreenState extends State<LoginScreen> {
         if (mounted) {
           final responseData = json.decode(response.body);
           final token = responseData['token'] ?? '';
+          final userId = responseData['user']['id'] ?? '';
 
           // Set the authentication state
-          await AuthService.login(token);
+          await AuthService.login(token, userId);
 
           _showSnackBar('Login successful!', color: Colors.green);
           if (mounted) Navigator.pushReplacementNamed(context, '/home');
