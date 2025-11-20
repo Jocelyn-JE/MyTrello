@@ -264,39 +264,59 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
+        child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              card.title,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            if (card.content.isNotEmpty) ...[
-              const SizedBox(height: 4),
-              Text(
-                card.content,
-                style: const TextStyle(fontSize: 12, color: Colors.grey),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-            if (card.dueDate != null) ...[
-              const SizedBox(height: 4),
-              Row(
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(
-                    Icons.calendar_today,
-                    size: 12,
-                    color: Colors.grey,
-                  ),
-                  const SizedBox(width: 4),
                   Text(
-                    '${card.dueDate!.month}/${card.dueDate!.day}',
-                    style: const TextStyle(fontSize: 11, color: Colors.grey),
+                    card.title,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
+                  if (card.content.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      card.content,
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                  if (card.dueDate != null) ...[
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.calendar_today,
+                          size: 12,
+                          color: Colors.grey,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${card.dueDate!.month}/${card.dueDate!.day}',
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ],
               ),
-            ],
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete, size: 18),
+              color: Colors.red,
+              tooltip: 'Delete card',
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+              onPressed: () {
+                WebsocketService.deleteCard(card.id);
+              },
+            ),
           ],
         ),
       ),
@@ -418,6 +438,20 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
         if (index != -1) {
           final updatedCards = [..._columns[index].cards, newCard]
             ..sort((a, b) => a.index.compareTo(b.index));
+          _columns[index] = _columns[index].update(cards: updatedCards);
+        }
+      });
+    },
+    'card.delete': (dynamic payload, MinimalUser sender) {
+      TrelloCard deletedCard = TrelloCard.fromJson(payload);
+      setState(() {
+        final index = _columns.indexWhere(
+          (col) => col.id == deletedCard.columnId,
+        );
+        if (index != -1) {
+          final updatedCards = _columns[index].cards
+              .where((card) => card.id != deletedCard.id)
+              .toList();
           _columns[index] = _columns[index].update(cards: updatedCards);
         }
       });

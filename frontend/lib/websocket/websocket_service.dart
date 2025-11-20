@@ -130,6 +130,11 @@ class WebsocketService {
     );
   }
 
+  /// Ask the server to delete a card by its ID
+  static void deleteCard(String cardId) {
+    _sendCommand(DeleteCardCommand(id: cardId));
+  }
+
   /// Ask the server to rename a column
   static void renameColumn(String columnId, String newTitle) {
     _sendCommand(RenameColumnCommand(columnId: columnId, newTitle: newTitle));

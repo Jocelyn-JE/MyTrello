@@ -50,3 +50,19 @@ class CreateCardCommand implements WebSocketCommand {
     },
   };
 }
+
+/// Delete a card by its ID
+class DeleteCardCommand implements WebSocketCommand {
+  @override
+  final String type = 'card.delete';
+
+  final String id;
+
+  DeleteCardCommand({required this.id});
+
+  @override
+  Map<String, dynamic> toJson() => {
+    'type': type,
+    'data': {'id': id},
+  };
+}
