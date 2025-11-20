@@ -175,3 +175,19 @@ class TrelloUser {
     );
   }
 }
+
+class MinimalUser {
+  final String id;
+  final String username;
+  final String email;
+
+  MinimalUser({required this.id, required this.username, required this.email});
+
+  factory MinimalUser.fromJson(Map<String, dynamic> json) {
+    return MinimalUser(
+      id: json['id'] as String,
+      username: json['username'] as String,
+      email: json['email'] as String,
+    );
+  }
+}
