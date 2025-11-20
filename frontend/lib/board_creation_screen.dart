@@ -80,11 +80,11 @@ class _BoardCreationScreenState extends State<BoardCreationScreen> {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 4.0),
       child: ListTile(
-        title: Text('User: ${user.username}'),
+        title: Text(user.username),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('User Email: ${user.email}'),
+            Text(user.email),
             Text('User ID: ${user.id}'),
             DropdownButton<String>(
               value: usersInput[index].role,
