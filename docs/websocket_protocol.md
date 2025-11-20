@@ -310,6 +310,45 @@ Lists all cards in a column.
 }
 ```
 
+#### `card.delete`
+
+Deletes a card from a column.
+
+**Request (client -> server):**
+
+```json
+{
+  "type": "card.delete",
+  "data": {
+    "id": "card-uuid"
+  }
+}
+```
+
+**Response (server -> all clients including sender):**
+
+```json
+{
+  "type": "card.delete",
+  "data": {
+    "id": "card-uuid",
+    "columnId": "column-uuid",
+    "title": "Deleted Card",
+    "content": "Card description",
+    "tagId": null,
+    "index": 0,
+    "startDate": null,
+    "dueDate": null,
+    "createdAt": "2025-11-07T09:00:00.000Z",
+    "updatedAt": "2025-11-07T09:00:00.000Z"
+  },
+  "sender": {
+    "username": "alice",
+    "email": "alice@example.com"
+  }
+}
+```
+
 ### Message commands
 
 #### `message`
