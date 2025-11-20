@@ -99,9 +99,35 @@ class WebsocketService {
     _sendCommand(ListColumnsCommand());
   }
 
+  /// Ask the server to fetch the list of cards for a specific column
+  static void fetchCards(String columnId) {
+    _sendCommand(ListCardsCommand(columnId: columnId));
+  }
+
   /// Ask the server to create a new column with the given title
   static void createColumn(String title) {
     _sendCommand(CreateColumnCommand(title: title));
+  }
+
+  /// Ask the server to create a new card
+  static void createCard({
+    required String columnId,
+    required String title,
+    required String content,
+    String? tagId,
+    DateTime? startDate,
+    DateTime? dueDate,
+  }) {
+    _sendCommand(
+      CreateCardCommand(
+        columnId: columnId,
+        title: title,
+        content: content,
+        tagId: tagId,
+        startDate: startDate,
+        dueDate: dueDate,
+      ),
+    );
   }
 
   /// Ask the server to rename a column

@@ -11,7 +11,8 @@ export 'commands/websocket_command.dart';
 // Commands - Column operations
 export 'commands/column_commands.dart';
 
+// Commands - Card operations
+export 'commands/card_commands.dart';
+
 // Commands - Messages
 export 'commands/message_commands.dart';
-
-const List<String> commands = ['message', 'column.list', 'column.create'];

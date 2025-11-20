@@ -31,6 +31,7 @@ class TrelloColumn {
   final String title;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final List<TrelloCard> cards;
 
   TrelloColumn({
     required this.id,
@@ -39,6 +40,7 @@ class TrelloColumn {
     required this.title,
     required this.createdAt,
     required this.updatedAt,
+    this.cards = const [],
   });
 
   factory TrelloColumn.fromJson(Map<String, dynamic> json) {
@@ -49,6 +51,27 @@ class TrelloColumn {
       title: json['title'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
+      cards: [],
+    );
+  }
+
+  TrelloColumn update({
+    String? id,
+    String? boardId,
+    int? index,
+    String? title,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    List<TrelloCard>? cards,
+  }) {
+    return TrelloColumn(
+      id: id ?? this.id,
+      boardId: boardId ?? this.boardId,
+      index: index ?? this.index,
+      title: title ?? this.title,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      cards: cards ?? this.cards,
     );
   }
 }

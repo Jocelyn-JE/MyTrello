@@ -181,10 +181,14 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               TextField(
                 controller: titleController,
-                decoration: const InputDecoration(hintText: 'Column title'),
+                decoration: const InputDecoration(
+                  hintText: 'Column title',
+                  border: InputBorder.none,
+                ),
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -203,8 +207,38 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
                   FocusScope.of(context).unfocus();
                 },
               ),
-              // Add more widgets to display cards, etc.
-              const Spacer(),
+              const Divider(),
+              // Cards list
+              Expanded(
+                child: column.cards.isEmpty
+                    ? const Center(
+                        child: Text(
+                          'No cards',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: column.cards.length,
+                        itemBuilder: (context, index) {
+                          final card = column.cards[index];
+                          return _buildCard(card);
+                        },
+                      ),
+              ),
+              const SizedBox(height: 8),
+              // Add card button
+              ElevatedButton.icon(
+                icon: const Icon(Icons.add, size: 16),
+                label: const Text('Add card'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.lightGreen.shade100,
+                ),
+                onPressed: () {
+                  _showAddCardDialog(column.id);
+                },
+              ),
+              const SizedBox(height: 8),
+              // Delete column button
               IconButton(
                 color: Colors.red,
                 icon: const Icon(Icons.delete),
@@ -220,6 +254,111 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
     );
   }
 
+  /*
+   * Build a card widget
+   */
+  Widget _buildCard(TrelloCard card) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              card.title,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            if (card.content.isNotEmpty) ...[
+              const SizedBox(height: 4),
+              Text(
+                card.content,
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+            if (card.dueDate != null) ...[
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  const Icon(
+                    Icons.calendar_today,
+                    size: 12,
+                    color: Colors.grey,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    '${card.dueDate!.month}/${card.dueDate!.day}',
+                    style: const TextStyle(fontSize: 11, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  /*
+   * Show dialog to add a new card
+   */
+  void _showAddCardDialog(String columnId) {
+    final titleController = TextEditingController();
+    final contentController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Add Card'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: titleController,
+              decoration: const InputDecoration(
+                labelText: 'Title',
+                border: OutlineInputBorder(),
+              ),
+              autofocus: true,
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: contentController,
+              decoration: const InputDecoration(
+                labelText: 'Description',
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 3,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final title = titleController.text.trim();
+              final content = contentController.text.trim();
+              if (title.isNotEmpty && content.isNotEmpty) {
+                WebsocketService.createCard(
+                  columnId: columnId,
+                  title: title,
+                  content: content,
+                );
+                Navigator.pop(context);
+              }
+            },
+            child: const Text('Add'),
+          ),
+        ],
+      ),
+    );
+  }
+
   late final actionMap = {
     'column.list': (dynamic payload) {
       List<TrelloColumn> columns = (payload as List)
@@ -228,13 +367,17 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
       setState(() {
         _columns = columns;
       });
+      // Fetch cards for each column
+      for (var column in columns) {
+        WebsocketService.fetchCards(column.id);
+      }
     },
     'column.rename': (dynamic payload) {
       TrelloColumn renamedColumn = TrelloColumn.fromJson(payload);
       int index = _columns.indexWhere((col) => col.id == renamedColumn.id);
       if (index != -1) {
         setState(() {
-          _columns[index] = renamedColumn;
+          _columns[index] = _columns[index].update(title: renamedColumn.title);
         });
       }
     },
@@ -248,6 +391,31 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
       TrelloColumn newColumn = TrelloColumn.fromJson(payload);
       setState(() {
         _columns.add(newColumn);
+      });
+    },
+    'card.list': (dynamic payload) {
+      List<TrelloCard> cards = (payload as List)
+          .map((card) => TrelloCard.fromJson(card))
+          .toList();
+
+      // Get columnId from the first card
+      final columnId = cards.first.columnId;
+      setState(() {
+        final index = _columns.indexWhere((col) => col.id == columnId);
+        if (index != -1) {
+          _columns[index] = _columns[index].update(cards: cards);
+        }
+      });
+    },
+    'card.create': (dynamic payload) {
+      TrelloCard newCard = TrelloCard.fromJson(payload);
+      setState(() {
+        final index = _columns.indexWhere((col) => col.id == newCard.columnId);
+        if (index != -1) {
+          final updatedCards = [..._columns[index].cards, newCard]
+            ..sort((a, b) => a.index.compareTo(b.index));
+          _columns[index] = _columns[index].update(cards: updatedCards);
+        }
       });
     },
   };
