@@ -106,7 +106,6 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final displayedId = _boardId.isNotEmpty ? _boardId : 'unknown';
     final title = _boardTitle ?? 'Board Details';
     return Scaffold(
       appBar: AppBar(
