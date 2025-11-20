@@ -1,4 +1,5 @@
 import { cardCreationAction } from "./card.create";
+import { cardDeletionAction } from "./card.delete";
 import { cardListingAction } from "./card.list";
 import { columnCreationAction } from "./column.create";
 import { columnDeletionAction } from "./column.delete";
@@ -23,6 +24,7 @@ export const actionIndex: SocketAction[] = [
     columnRenameAction,
     columnListingAction,
     cardCreationAction,
+    cardDeletionAction,
     cardListingAction,
     messageAction
 ];
