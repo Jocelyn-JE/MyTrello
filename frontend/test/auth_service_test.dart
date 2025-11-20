@@ -64,8 +64,9 @@ void main() {
     group('Login Tests', () {
       test('logs in user successfully', () async {
         const testToken = 'login-token-456';
+        const testUserId = 'user-123';
 
-        await AuthService.login(testToken);
+        await AuthService.login(testToken, testUserId);
 
         expect(AuthService.isLoggedIn, isTrue);
         expect(AuthService.token, equals(testToken));
@@ -76,7 +77,7 @@ void main() {
       });
 
       test('handles empty token login', () async {
-        await AuthService.login('');
+        await AuthService.login('', 'user-123');
 
         expect(AuthService.isLoggedIn, isTrue);
         expect(AuthService.token, equals(''));
@@ -86,10 +87,10 @@ void main() {
       });
 
       test('overwrites previous token', () async {
-        await AuthService.login('first-token');
+        await AuthService.login('first-token', 'user-1');
         expect(AuthService.token, equals('first-token'));
 
-        await AuthService.login('second-token');
+        await AuthService.login('second-token', 'user-2');
         expect(AuthService.token, equals('second-token'));
 
         final prefs = await SharedPreferences.getInstance();
@@ -100,7 +101,7 @@ void main() {
     group('Logout Tests', () {
       test('logs out user successfully', () async {
         // First login
-        await AuthService.login('test-token');
+        await AuthService.login('test-token', 'user-123');
         expect(AuthService.isLoggedIn, isTrue);
 
         // Then logout
@@ -126,7 +127,8 @@ void main() {
       test('logout removes token from SharedPreferences', () async {
         // Setup initial state
         const testToken = 'token-to-remove';
-        await AuthService.login(testToken);
+        const testUserId = 'user-123';
+        await AuthService.login(testToken, testUserId);
 
         final prefs = await SharedPreferences.getInstance();
         expect(prefs.getString('auth_token'), equals(testToken));
@@ -146,7 +148,7 @@ void main() {
         expect(AuthService.token, isNull);
 
         // Login
-        await AuthService.login('state-test-token');
+        await AuthService.login('state-test-token', 'user-123');
         expect(AuthService.isLoggedIn, isTrue);
         expect(AuthService.token, equals('state-test-token'));
 
@@ -164,7 +166,8 @@ void main() {
 
         // Test logged in state
         const token = 'getter-test-token';
-        await AuthService.login(token);
+        const userId = 'getter-test-user';
+        await AuthService.login(token, userId);
         expect(AuthService.isLoggedIn, isTrue);
         expect(AuthService.token, equals(token));
       });
@@ -183,8 +186,9 @@ void main() {
 
       test('login with very long token', () async {
         final longToken = 'a' * 1000; // 1000 character token
+        const userId = 'user-123';
 
-        await AuthService.login(longToken);
+        await AuthService.login(longToken, userId);
 
         expect(AuthService.isLoggedIn, isTrue);
         expect(AuthService.token, equals(longToken));
@@ -193,7 +197,7 @@ void main() {
 
       test('multiple rapid login/logout operations', () async {
         for (int i = 0; i < 5; i++) {
-          await AuthService.login('token-$i');
+          await AuthService.login('token-$i', 'user-$i');
           expect(AuthService.isLoggedIn, isTrue);
           expect(AuthService.token, equals('token-$i'));
 

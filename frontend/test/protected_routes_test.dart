@@ -20,7 +20,7 @@ void main() {
         WidgetTester tester,
       ) async {
         // Login first
-        await AuthService.login('test-token');
+        await AuthService.login('test-token', 'test-user-id');
 
         await tester.pumpWidget(
           MaterialApp(
@@ -85,7 +85,7 @@ void main() {
       testWidgets('renders child widget correctly when authenticated', (
         WidgetTester tester,
       ) async {
-        await AuthService.login('test-token');
+        await AuthService.login('test-token', 'test-user-id');
 
         await tester.pumpWidget(
           MaterialApp(
@@ -132,7 +132,7 @@ void main() {
 
     group('Edge Cases', () {
       testWidgets('works with null child safety', (WidgetTester tester) async {
-        await AuthService.login('test-token');
+        await AuthService.login('test-token', 'test-user-id');
 
         await tester.pumpWidget(
           MaterialApp(
@@ -152,7 +152,7 @@ void main() {
       testWidgets('handles complex child widget trees', (
         WidgetTester tester,
       ) async {
-        await AuthService.login('test-token');
+        await AuthService.login('test-token', 'test-user-id');
 
         await tester.pumpWidget(
           MaterialApp(
@@ -192,7 +192,7 @@ void main() {
       testWidgets('builds efficiently when authenticated', (
         WidgetTester tester,
       ) async {
-        await AuthService.login('test-token');
+        await AuthService.login('test-token', 'test-user-id');
 
         final stopwatch = Stopwatch()..start();
 
