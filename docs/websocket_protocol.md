@@ -257,6 +257,59 @@ Creates a new card in a column.
 }
 ```
 
+#### `card.list`
+
+Lists all cards in a column.
+
+**Request (client -> server):**
+
+```json
+{
+  "type": "card.list",
+  "data": {
+    "columnId": "column-uuid"
+  }
+}
+```
+
+**Response (server -> all clients including sender):**
+
+```json
+{
+  "type": "card.list",
+  "data": [
+    {
+      "id": "card-uuid-1",
+      "columnId": "column-uuid",
+      "title": "First card",
+      "content": "Details about the card",
+      "tagId": null,
+      "index": 0,
+      "startDate": null,
+      "dueDate": null,
+      "createdAt": "2025-11-07T09:00:00.000Z",
+      "updatedAt": "2025-11-07T09:00:00.000Z"
+    },
+    {
+      "id": "card-uuid-2",
+      "columnId": "column-uuid",
+      "title": "Second card",
+      "content": "More details",
+      "tagId": "tag-uuid",
+      "index": 1,
+      "startDate": "2025-11-07T10:00:00.000Z",
+      "dueDate": "2025-11-14T18:00:00.000Z",
+      "createdAt": "2025-11-07T09:15:00.000Z",
+      "updatedAt": "2025-11-07T09:15:00.000Z"
+    }
+  ],
+  "sender": {
+    "username": "alice",
+    "email": "alice@example.com"
+  }
+}
+```
+
 ### Message commands
 
 #### `message`
