@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/auth_service.dart';
 import 'package:frontend/protected_routes.dart';
 import 'package:frontend/websocket/websocket.dart';
 
@@ -70,7 +71,8 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
             final data = jsonDecode(event);
             final type = data['type'];
             final payload = data['data'];
-            handleIncomingAction(type, payload);
+            final sender = MinimalUser.fromJson(data['sender']);
+            handleIncomingAction(type, payload, sender);
             debugPrint('Received WebSocket message: $data');
           } catch (e) {
             debugPrint('Error processing WebSocket message: $e');
@@ -360,7 +362,8 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
   }
 
   late final actionMap = {
-    'column.list': (dynamic payload) {
+    'column.list': (dynamic payload, MinimalUser sender) {
+      if (sender.id != AuthService.userId) return;
       List<TrelloColumn> columns = (payload as List)
           .map((col) => TrelloColumn.fromJson(col))
           .toList();
@@ -372,7 +375,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
         WebsocketService.fetchCards(column.id);
       }
     },
-    'column.rename': (dynamic payload) {
+    'column.rename': (dynamic payload, MinimalUser sender) {
       TrelloColumn renamedColumn = TrelloColumn.fromJson(payload);
       int index = _columns.indexWhere((col) => col.id == renamedColumn.id);
       if (index != -1) {
@@ -381,19 +384,20 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
         });
       }
     },
-    'column.delete': (dynamic payload) {
+    'column.delete': (dynamic payload, MinimalUser sender) {
       TrelloColumn deletedColumn = TrelloColumn.fromJson(payload);
       setState(() {
         _columns.removeWhere((col) => col.id == deletedColumn.id);
       });
     },
-    'column.create': (dynamic payload) {
+    'column.create': (dynamic payload, MinimalUser sender) {
       TrelloColumn newColumn = TrelloColumn.fromJson(payload);
       setState(() {
         _columns.add(newColumn);
       });
     },
-    'card.list': (dynamic payload) {
+    'card.list': (dynamic payload, MinimalUser sender) {
+      if (sender.id != AuthService.userId) return;
       List<TrelloCard> cards = (payload as List)
           .map((card) => TrelloCard.fromJson(card))
           .toList();
@@ -407,7 +411,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
         }
       });
     },
-    'card.create': (dynamic payload) {
+    'card.create': (dynamic payload, MinimalUser sender) {
       TrelloCard newCard = TrelloCard.fromJson(payload);
       setState(() {
         final index = _columns.indexWhere((col) => col.id == newCard.columnId);
@@ -420,10 +424,10 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
     },
   };
 
-  void handleIncomingAction(String type, dynamic payload) {
+  void handleIncomingAction(String type, dynamic payload, MinimalUser sender) {
     final action = actionMap[type];
     if (action != null) {
-      action(payload);
+      action(payload, sender);
     } else {
       debugPrint('Unknown action type: $type');
     }
