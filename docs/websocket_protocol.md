@@ -349,6 +349,63 @@ Deletes a card from a column.
 }
 ```
 
+#### `card.update`
+
+Updates an existing card. Only fields provided in the request will be updated. All fields except `id` are **optional**.
+
+**Request (client -> server):**
+
+```json
+{
+  "type": "card.update",
+  "data": {
+    "id": "card-uuid",
+    "title": "Updated Title",
+    "content": "Updated content",
+    "columnId": "different-column-uuid",
+    "tagId": "tag-uuid",
+    "index": 2,
+    "startDate": "2025-11-08T10:00:00Z",
+    "dueDate": "2025-11-15T18:00:00Z",
+    "assignees": ["user-uuid-1", "user-uuid-2"]
+  }
+}
+```
+
+**Note:**
+
+- Only `id` is required
+- Any combination of the other fields can be provided for partial updates
+- Set `tagId`, `startDate`, `dueDate`, or `assignees` to `null` to clear them
+- `columnId` can be changed to move the card between columns
+- `title` and `content` cannot be empty strings
+
+**Response (server -> all clients including sender):**
+
+The server will respond with the full updated card object.
+
+```json
+{
+  "type": "card.update",
+  "data": {
+    "id": "card-uuid",
+    "columnId": "different-column-uuid",
+    "title": "Updated Title",
+    "content": "Updated content",
+    "tagId": "tag-uuid",
+    "index": 2,
+    "startDate": "2025-11-08T10:00:00.000Z",
+    "dueDate": "2025-11-15T18:00:00.000Z",
+    "createdAt": "2025-11-07T09:00:00.000Z",
+    "updatedAt": "2025-11-21T14:30:00.000Z"
+  },
+  "sender": {
+    "username": "alice",
+    "email": "alice@example.com"
+  }
+}
+```
+
 ### Message commands
 
 #### `message`
