@@ -8,7 +8,6 @@ type CardUpdateData = {
     id: string;
     columnId?: string; // Can be modified if moving between columns
     tagId?: string | null;
-    index?: number;
     title?: string;
     content?: string;
     startDate?: Date | null;
@@ -60,7 +59,6 @@ export const cardUpdateAction: SocketAction = {
         if (cardData.columnId !== undefined)
             updateData.columnId = cardData.columnId;
         if (cardData.tagId !== undefined) updateData.tagId = cardData.tagId;
-        if (cardData.index !== undefined) updateData.index = cardData.index;
         if (cardData.title !== undefined) updateData.title = cardData.title;
         if (cardData.content !== undefined)
             updateData.content = cardData.content;
