@@ -73,6 +73,36 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
     }
   }
 
+  Future<void> _confirmDelete() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Card'),
+        content: Text(
+          'Are you sure you want to delete "${widget.card.title}"?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      WebsocketService.deleteCard(widget.card.id);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -140,15 +170,17 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
                 ],
               ),
             ),
-            IconButton(
-              icon: const Icon(Icons.delete, size: 18),
-              color: Colors.red,
-              tooltip: 'Delete card',
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
-              onPressed: () {
-                WebsocketService.deleteCard(widget.card.id);
-              },
+            Column(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.delete, size: 18),
+                  color: Colors.red,
+                  tooltip: 'Delete card',
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  onPressed: _confirmDelete,
+                ),
+              ],
             ),
           ],
         ),
