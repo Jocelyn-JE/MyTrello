@@ -130,6 +130,29 @@ class WebsocketService {
     );
   }
 
+  /// Ask the server to update a card
+  static void updateCard({
+    required String cardId,
+    String? title,
+    String? content,
+    String? tagId,
+    DateTime? startDate,
+    DateTime? dueDate,
+    List<String>? assignees,
+  }) {
+    _sendCommand(
+      UpdateCardCommand(
+        id: cardId,
+        title: title,
+        content: content,
+        tagId: tagId,
+        startDate: startDate,
+        dueDate: dueDate,
+        assignees: assignees,
+      ),
+    );
+  }
+
   /// Ask the server to delete a card by its ID
   static void deleteCard(String cardId) {
     _sendCommand(DeleteCardCommand(id: cardId));

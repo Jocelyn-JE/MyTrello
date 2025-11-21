@@ -66,3 +66,40 @@ class DeleteCardCommand implements WebSocketCommand {
     'data': {'id': id},
   };
 }
+
+/// Update a card by its ID
+class UpdateCardCommand implements WebSocketCommand {
+  @override
+  final String type = 'card.update';
+  final String id;
+  final String? title;
+  final String? content;
+  final String? tagId;
+  final DateTime? startDate;
+  final DateTime? dueDate;
+  final List<String>? assignees;
+
+  UpdateCardCommand({
+    required this.id,
+    this.title,
+    this.content,
+    this.tagId,
+    this.startDate,
+    this.dueDate,
+    this.assignees,
+  });
+
+  @override
+  Map<String, dynamic> toJson() => {
+    'type': type,
+    'data': {
+      'id': id,
+      if (title != null) 'title': title,
+      if (content != null) 'content': content,
+      if (tagId != null) 'tagId': tagId,
+      if (startDate != null) 'startDate': startDate!.toIso8601String(),
+      if (dueDate != null) 'dueDate': dueDate!.toIso8601String(),
+      if (assignees != null) 'assignees': assignees,
+    },
+  };
+}
