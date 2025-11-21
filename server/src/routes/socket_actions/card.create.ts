@@ -28,10 +28,8 @@ export const cardCreationAction: SocketAction = {
             console.error("Card content cannot be empty");
             throw new Error("Card content cannot be empty");
         }
-        if (!await columnExists(cardData.columnId)) {
-            console.error(
-                `Column with ID ${cardData.columnId} does not exist`
-            );
+        if (!(await columnExists(cardData.columnId))) {
+            console.error(`Column with ID ${cardData.columnId} does not exist`);
             throw new Error("Column does not exist");
         }
         if (cardData.tagId && !(await tagExists(cardData.tagId))) {

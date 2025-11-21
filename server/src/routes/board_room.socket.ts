@@ -125,7 +125,9 @@ router.ws("/:boardId", async (req, res) => {
     const member = await isUserMember(userId, boardId);
     const viewer = await isUserViewer(userId, boardId);
     if (!member && !viewer && board.ownerId !== userId) {
-        console.error(`Unauthorized: User ${userId} is not a member of board ${boardId}`);
+        console.error(
+            `Unauthorized: User ${userId} is not a member of board ${boardId}`
+        );
         return ws.close(1008, closeError("Unauthorized: not a board member"));
     }
     try {
