@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/auth_service.dart';
 import 'package:frontend/protected_routes.dart';
 import 'package:frontend/websocket/websocket.dart';
-import 'package:frontend/widgets/trello_card_widget.dart';
+import 'package:frontend/widgets/trello_column_widget.dart';
 
 class BoardDetailScreen extends StatefulWidget {
   final String? boardId;
@@ -164,95 +164,11 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
             );
           }
           final column = _columns[index];
-          return _buildColumn(column);
+          return TrelloColumnWidget(
+            column: column,
+            onAddCard: () => _showAddCardDialog(column.id),
+          );
         },
-      ),
-    );
-  }
-
-  /*
-   * Build the column widget that will contain the cards
-   */
-  Widget _buildColumn(TrelloColumn column) {
-    final TextEditingController titleController = TextEditingController(
-      text: column.title,
-    );
-    return SizedBox(
-      width: 300, // Set the width of each column
-      child: Card(
-        margin: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              TextField(
-                controller: titleController,
-                decoration: const InputDecoration(
-                  hintText: 'Column title',
-                  border: InputBorder.none,
-                ),
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-                onSubmitted: (newTitle) {
-                  if (newTitle.isNotEmpty && newTitle != column.title) {
-                    WebsocketService.renameColumn(column.id, newTitle);
-                  }
-                },
-                onEditingComplete: () {
-                  final newTitle = titleController.text;
-                  if (newTitle.isNotEmpty && newTitle != column.title) {
-                    WebsocketService.renameColumn(column.id, newTitle);
-                  }
-                  FocusScope.of(context).unfocus();
-                },
-              ),
-              const Divider(),
-              // Cards list
-              Expanded(
-                child: column.cards.isEmpty
-                    ? const Center(
-                        child: Text(
-                          'No cards',
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                      )
-                    : ListView.builder(
-                        itemCount: column.cards.length,
-                        itemBuilder: (context, index) {
-                          final card = column.cards[index];
-                          return TrelloCardWidget(card: card);
-                        },
-                      ),
-              ),
-              const SizedBox(height: 8),
-              // Add card button
-              ElevatedButton.icon(
-                icon: const Icon(Icons.add, size: 16),
-                label: const Text('Add card'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.lightGreen.shade100,
-                ),
-                onPressed: () {
-                  _showAddCardDialog(column.id);
-                },
-              ),
-              const SizedBox(height: 8),
-              // Delete column button
-              IconButton(
-                color: Colors.red,
-                icon: const Icon(Icons.delete),
-                tooltip: 'Delete column',
-                onPressed: () {
-                  WebsocketService.deleteColumn(column.id);
-                },
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
