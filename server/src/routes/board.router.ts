@@ -172,4 +172,42 @@ router.get("/", verifyToken, async (req, res) => {
     }
 });
 
+router.delete("/:boardId", verifyToken, async (req, res) => {
+    console.debug("/api/boards/:boardId: Received delete board request");
+    if (!req.userId) {
+        console.error("User ID missing in request after token verification");
+        return res.status(500).send({ error: "Internal server error" });
+    }
+    const userId = req.userId;
+    const { boardId } = req.params;
+    try {
+        const board = await prisma.board.findUnique({
+            where: { id: boardId }
+        });
+        if (!board) {
+            console.warn(`Board with ID ${boardId} not found`);
+            return res.status(404).send({ error: "Board not found" });
+        }
+        if (board.ownerId !== userId) {
+            console.warn(
+                `User ${userId} unauthorized to delete board ${boardId}`
+            );
+            return res
+                .status(403)
+                .send({ error: "You are not authorized to delete this board" });
+        }
+        await prisma.board.delete({
+            where: { id: boardId }
+        });
+        console.info(`Board with ID ${boardId} deleted by user ${userId}`);
+        return res.status(200).send({ message: "Board deleted successfully" });
+    } catch (error: unknown) {
+        const errorMessage =
+            error instanceof Error ? error.message : "Unknown error occurred";
+        /* c8 ignore stop */
+        console.error("Error deleting board:", errorMessage);
+        res.status(500).send({ error: "Internal server error" });
+    }
+});
+
 export default router;
