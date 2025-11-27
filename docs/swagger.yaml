@@ -255,6 +255,42 @@ paths:
         "500":
           $ref: "#/components/responses/Error500"
 
+  /api/boards/{boardId}:
+    delete:
+      tags:
+        - boards
+      summary: Delete a board
+      description: Delete a board. Only the board owner can delete the board.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: boardId
+          in: path
+          required: true
+          description: The ID of the board to delete
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Board deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Board deleted successfully
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+
 components:
   securitySchemes:
     bearerAuth:
