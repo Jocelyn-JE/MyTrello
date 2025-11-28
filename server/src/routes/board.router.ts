@@ -8,6 +8,8 @@ import prisma from "../utils/prisma.client";
 import { verifyToken } from "../utils/jwt";
 import { BoardUser } from "./board_utils/types";
 import { createBoard } from "./board_utils/create_board";
+import { updateBoard } from "./board_utils/update_board";
+import { getBoardInfo } from "./room_utils/get_board";
 import { isBoardUser } from "./board_utils/is_board_user";
 
 const router = new Router();
@@ -151,6 +153,74 @@ router.delete("/:boardId", verifyToken, async (req, res) => {
             error instanceof Error ? error.message : "Unknown error occurred";
         /* c8 ignore stop */
         console.error("Error deleting board:", errorMessage);
+        res.status(500).send({ error: "Internal server error" });
+    }
+});
+
+router.put("/:boardId", verifyToken, async (req, res) => {
+    console.debug("/api/boards/:boardId: Received update board request");
+    if (
+        validateJSONRequest(req, res) ||
+        checkExactFields(req.body, res, requiredFields)
+    )
+        return;
+    if (!req.userId) {
+        console.error("User ID missing in request after token verification");
+        return res.status(500).send({ error: "Internal server error" });
+    }
+    const userId = req.userId;
+    const { boardId } = req.params;
+    const { title, users } = req.body;
+    try {
+        const board = await getBoardInfo(boardId);
+        if (!board) {
+            console.warn(`Board with ID ${boardId} not found`);
+            return res.status(404).send({ error: "Board not found" });
+        }
+        if (board.ownerId !== userId) {
+            console.warn(
+                `User ${userId} unauthorized to update board ${boardId}`
+            );
+            return res
+                .status(403)
+                .send({ error: "You are not authorized to update this board" });
+        }
+        if (isEmpty(title)) {
+            console.warn("Empty title detected");
+            return res
+                .status(400)
+                .send({ error: "Title must contain a non-empty value" });
+        }
+        if (!Array.isArray(users)) {
+            console.warn("Invalid users format:", users);
+            return res.status(400).send({ error: "Users must be an array" });
+        }
+        for (const user of users) {
+            if (!isBoardUser(user)) {
+                console.warn("Invalid user object:", user);
+                return res
+                    .status(400)
+                    .send({ error: "Invalid user object in users array" });
+            }
+        }
+        const nonExistentUsers = await getNonExistentUsers(users);
+        if (nonExistentUsers.length > 0) {
+            console.warn("One or more users do not exist:", nonExistentUsers);
+            return res.status(400).send({
+                error: `One or more users do not exist: ${nonExistentUsers.join(", ")}`
+            });
+        }
+        const updatedBoard = await updateBoard(boardId, title, users);
+        console.info(`Board with ID ${boardId} updated by user ${userId}`);
+        return res.status(200).send({
+            message: "Board updated successfully",
+            board: updatedBoard
+        });
+    } catch (error: unknown) {
+        const errorMessage =
+            error instanceof Error ? error.message : "Unknown error occurred";
+        /* c8 ignore stop */
+        console.error("Error updating board:", errorMessage);
         res.status(500).send({ error: "Internal server error" });
     }
 });
