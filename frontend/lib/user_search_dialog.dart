@@ -4,7 +4,14 @@ import 'package:frontend/users_service.dart';
 import 'board_service.dart';
 
 class UserSearchDialog extends StatefulWidget {
-  const UserSearchDialog({super.key});
+  final List<String> excludedUserIds;
+  final String ownerId;
+
+  const UserSearchDialog({
+    super.key,
+    this.excludedUserIds = const [],
+    required this.ownerId,
+  });
 
   @override
   State<UserSearchDialog> createState() => _UserSearchDialogState();
@@ -28,7 +35,13 @@ class _UserSearchDialogState extends State<UserSearchDialog> {
       final users = await UserService.getUsers();
       if (!mounted) return;
       setState(() {
-        _searchResults = users;
+        _searchResults = users
+            .where(
+              (user) =>
+                  !widget.excludedUserIds.contains(user.id) &&
+                  user.id != widget.ownerId,
+            )
+            .toList();
       });
     } catch (e) {
       if (!mounted) return;
@@ -61,7 +74,13 @@ class _UserSearchDialogState extends State<UserSearchDialog> {
       final results = await UserService.searchUsers(query);
       if (!mounted) return;
       setState(() {
-        _searchResults = results;
+        _searchResults = results
+            .where(
+              (user) =>
+                  !widget.excludedUserIds.contains(user.id) &&
+                  user.id != widget.ownerId,
+            )
+            .toList();
       });
     } catch (e) {
       if (!mounted) return;
@@ -154,6 +173,6 @@ Future<BoardUserInput?> showUserSearchDialog(
 }) {
   return showDialog<BoardUserInput?>(
     context: context,
-    builder: (context) => UserSearchDialog(),
+    builder: (context) => UserSearchDialog(excludedUserIds: [], ownerId: ''),
   );
 }

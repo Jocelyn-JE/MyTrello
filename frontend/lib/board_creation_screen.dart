@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/auth_service.dart';
 import 'package:frontend/models/user.dart';
 import 'board_service.dart';
 import 'user_search_dialog.dart';
@@ -149,7 +150,12 @@ class _BoardCreationScreenState extends State<BoardCreationScreen> {
                             : () async {
                                 final newUser = await showDialog<User>(
                                   context: context,
-                                  builder: (context) => UserSearchDialog(),
+                                  builder: (context) => UserSearchDialog(
+                                    excludedUserIds: users
+                                        .map((u) => u.id)
+                                        .toList(),
+                                    ownerId: AuthService.userId ?? '',
+                                  ),
                                 );
                                 if (newUser != null) {
                                   setState(() {
