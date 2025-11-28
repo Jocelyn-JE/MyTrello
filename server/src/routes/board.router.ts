@@ -119,6 +119,53 @@ router.get("/", verifyToken, async (req, res) => {
     }
 });
 
+router.get("/:boardId", verifyToken, async (req, res) => {
+    console.debug("/api/boards/:boardId: Received get board request");
+    if (!req.userId) {
+        console.error("User ID missing in request after token verification");
+        return res.status(500).send({ error: "Internal server error" });
+    }
+    const userId = req.userId;
+    const { boardId } = req.params;
+    try {
+        const board = await prisma.board.findUnique({
+            where: { id: boardId },
+            include: {
+                owner: { select: { id: true, username: true } },
+                members: { select: { id: true, username: true } },
+                viewers: { select: { id: true, username: true } }
+            }
+        });
+        if (!board) {
+            console.warn(`Board with ID ${boardId} not found`);
+            return res.status(404).send({ error: "Board not found" });
+        }
+        // Check if user has access to this board
+        const hasAccess =
+            board.ownerId === userId ||
+            board.members.some((member) => member.id === userId) ||
+            board.viewers.some((viewer) => viewer.id === userId);
+        if (!hasAccess) {
+            console.warn(
+                `User ${userId} unauthorized to access board ${boardId}`
+            );
+            return res
+                .status(403)
+                .send({ error: "You are not authorized to access this board" });
+        }
+        console.info(`Retrieved board ${boardId} for user ${userId}`);
+        return res
+            .status(200)
+            .send({ message: "Board retrieved successfully", board });
+    } catch (error: unknown) {
+        const errorMessage =
+            error instanceof Error ? error.message : "Unknown error occurred";
+        /* c8 ignore stop */
+        console.error("Error retrieving board:", errorMessage);
+        res.status(500).send({ error: "Internal server error" });
+    }
+});
+
 router.delete("/:boardId", verifyToken, async (req, res) => {
     console.debug("/api/boards/:boardId: Received delete board request");
     if (!req.userId) {
