@@ -244,6 +244,63 @@ paths:
           $ref: "#/components/responses/Error500"
 
   /api/boards/{boardId}:
+    put:
+      tags:
+        - boards
+      summary: Update a board
+      description: Update a board's title and users. Only the board owner can update the board.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: boardId
+          in: path
+          required: true
+          description: The ID of the board to update
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: The board title
+                users:
+                  type: array
+                  description: Array of users to assign to the board
+                  items:
+                    $ref: "#/components/schemas/BoardUserInput"
+              required:
+                - title
+                - users
+      responses:
+        "200":
+          description: Board updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Board updated successfully
+                  board:
+                    $ref: "#/components/schemas/BoardWithUsers"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+
     delete:
       tags:
         - boards
