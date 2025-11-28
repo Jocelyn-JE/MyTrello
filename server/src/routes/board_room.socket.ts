@@ -135,12 +135,10 @@ router.ws("/:boardId", async (req, res) => {
         if (!room) room = createRoom(boardId);
         handleConnect(userId, ws, room);
 
-        if (!viewer) {
-            // only non-viewers can send messages
-            ws.on("message", async (message) => {
-                onMessage(ws, message, room, userId);
-            });
-        }
+        if (viewer) room.addUser(ws, true);
+        ws.on("message", async (message) => {
+            onMessage(ws, message, room, userId);
+        });
         ws.on("error", (err) => {
             console.warn(
                 `WebSocket error for user ${userId} in room ${boardId}:`,

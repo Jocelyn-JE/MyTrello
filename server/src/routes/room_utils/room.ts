@@ -31,10 +31,12 @@ export class AckPayload {
 export class Room {
     private boardId: string;
     private users: ExtendedWebSocket[];
+    private viewers: Set<ExtendedWebSocket>;
 
     constructor(boardId: string) {
         this.boardId = boardId;
         this.users = [];
+        this.viewers = new Set();
     }
 
     public close() {
@@ -50,8 +52,13 @@ export class Room {
         this.users = [];
     }
 
-    public addUser(ws: ExtendedWebSocket) {
+    public addUser(ws: ExtendedWebSocket, isViewer: boolean = false) {
         if (!this.isUserInRoom(ws)) this.users.push(ws);
+        if (isViewer) this.viewers.add(ws);
+    }
+
+    public isViewer(ws: ExtendedWebSocket): boolean {
+        return this.viewers.has(ws);
     }
 
     public isUserInRoom(ws: ExtendedWebSocket): boolean {
@@ -60,6 +67,7 @@ export class Room {
 
     public removeUser(ws: ExtendedWebSocket) {
         this.users = this.users.filter((userWs) => userWs !== ws);
+        this.viewers.delete(ws);
     }
 
     public getUsers(): ExtendedWebSocket[] {
@@ -111,6 +119,22 @@ export class Room {
         if (!action) {
             console.warn(`No action found for name: ${actionName}`);
             sendToWs(client, new ErrorPayload(`Unknown action: ${actionName}`));
+            return;
+        }
+
+        // Restrict viewers to read-only actions
+        const allowedViewerActions = ["column.list", "card.list"];
+        if (
+            this.isViewer(client) &&
+            !allowedViewerActions.includes(actionName)
+        ) {
+            console.warn(`Viewer attempted unauthorized action: ${actionName}`);
+            sendToWs(
+                client,
+                new ErrorPayload(
+                    `Unauthorized: viewers can only list columns and cards`
+                )
+            );
             return;
         }
         try {
