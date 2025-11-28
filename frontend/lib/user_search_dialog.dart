@@ -147,6 +147,7 @@ class _UserSearchDialogState extends State<UserSearchDialog> {
   }
 }
 
+// Unused helper function to show the dialog
 Future<BoardUserInput?> showUserSearchDialog(
   BuildContext context, {
   required Future<List<BoardUserInput>> Function(String query) onSearch,
