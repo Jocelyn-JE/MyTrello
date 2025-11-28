@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/auth_service.dart';
+import 'package:frontend/board_permissions_service.dart';
 import 'package:frontend/board_service.dart';
 import 'package:frontend/board_settings_screen.dart';
 import 'package:frontend/models/board.dart';
@@ -55,6 +56,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
     _sub?.cancel();
     _scrollController.dispose();
     WebsocketService.close();
+    BoardPermissionsService.clearCurrentBoard();
     super.dispose();
   }
 
@@ -65,6 +67,15 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
       TrelloBoard? result = await WebsocketService.connectToBoard(_boardId);
       if (result == null) return; // already connected
       debugPrint('Connected to board: ${result.title}');
+
+      // Fetch full board info to get members and viewers
+      try {
+        Board fullBoard = await BoardService.getBoard(_boardId);
+        BoardPermissionsService.setCurrentBoard(fullBoard);
+      } catch (e) {
+        debugPrint('Error fetching full board info: $e');
+      }
+
       setState(() {
         _boardTitle = result.title;
       });
@@ -108,6 +119,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
     debugPrint('Disconnecting from board');
     _sub?.cancel();
     WebsocketService.close();
+    BoardPermissionsService.clearCurrentBoard();
   }
 
   Future<void> _openBoardSettings() async {
@@ -141,11 +153,12 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
         backgroundColor: Colors.lightGreen,
         shadowColor: Colors.grey,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: _openBoardSettings,
-            tooltip: 'Board Settings',
-          ),
+          if (BoardPermissionsService.canEdit)
+            IconButton(
+              icon: const Icon(Icons.settings),
+              onPressed: _openBoardSettings,
+              tooltip: 'Board Settings',
+            ),
         ],
       ),
       body: Padding(
@@ -181,9 +194,9 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
       child: ListView.builder(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
-        itemCount: _columns.length + 1,
+        itemCount: _columns.length + (BoardPermissionsService.canEdit ? 1 : 0),
         itemBuilder: (context, index) {
-          if (index == _columns.length) {
+          if (index == _columns.length && BoardPermissionsService.canEdit) {
             return ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.lightGreen.shade200,

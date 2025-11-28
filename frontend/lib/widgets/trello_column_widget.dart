@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/board_permissions_service.dart';
 import 'package:frontend/websocket/websocket.dart';
 import 'package:frontend/widgets/trello_card_widget.dart';
 
@@ -17,30 +18,35 @@ class TrelloColumnWidget extends StatefulWidget {
 }
 
 class _TrelloColumnWidgetState extends State<TrelloColumnWidget> {
-  late TextEditingController _titleController;
+  TextEditingController? _titleController;
 
   @override
   void initState() {
     super.initState();
-    _titleController = TextEditingController(text: widget.column.title);
+    // Only create controller if user can edit
+    if (BoardPermissionsService.canEdit) {
+      _titleController = TextEditingController(text: widget.column.title);
+    }
   }
 
   @override
   void didUpdateWidget(TrelloColumnWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.column.title != widget.column.title) {
-      _titleController.text = widget.column.title;
+    if (BoardPermissionsService.canEdit &&
+        oldWidget.column.title != widget.column.title) {
+      _titleController?.text = widget.column.title;
     }
   }
 
   @override
   void dispose() {
-    _titleController.dispose();
+    _titleController?.dispose();
     super.dispose();
   }
 
   void _saveTitle() {
-    final newTitle = _titleController.text;
+    if (_titleController == null) return;
+    final newTitle = _titleController!.text;
     if (newTitle.isNotEmpty && newTitle != widget.column.title) {
       WebsocketService.renameColumn(widget.column.id, newTitle);
     }
@@ -48,6 +54,8 @@ class _TrelloColumnWidgetState extends State<TrelloColumnWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final canEdit = BoardPermissionsService.canEdit;
+
     return SizedBox(
       width: 300,
       child: Card(
@@ -57,23 +65,36 @@ class _TrelloColumnWidgetState extends State<TrelloColumnWidget> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              TextField(
-                controller: _titleController,
-                decoration: const InputDecoration(
-                  hintText: 'Column title',
-                  border: InputBorder.none,
+              if (canEdit)
+                TextField(
+                  controller: _titleController,
+                  decoration: const InputDecoration(
+                    hintText: 'Column title',
+                    border: InputBorder.none,
+                  ),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                  onSubmitted: (_) => _saveTitle(),
+                  onEditingComplete: () {
+                    _saveTitle();
+                    FocusScope.of(context).unfocus();
+                  },
+                )
+              else
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Text(
+                    widget.column.title,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-                onSubmitted: (_) => _saveTitle(),
-                onEditingComplete: () {
-                  _saveTitle();
-                  FocusScope.of(context).unfocus();
-                },
-              ),
               const Divider(),
               // Cards list
               Expanded(
@@ -93,25 +114,27 @@ class _TrelloColumnWidgetState extends State<TrelloColumnWidget> {
                       ),
               ),
               const SizedBox(height: 8),
-              // Add card button
-              ElevatedButton.icon(
-                icon: const Icon(Icons.add, size: 16),
-                label: const Text('Add card'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.lightGreen.shade100,
+              // Add card button (only for editors)
+              if (canEdit) ...[
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.add, size: 16),
+                  label: const Text('Add card'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.lightGreen.shade100,
+                  ),
+                  onPressed: widget.onAddCard,
                 ),
-                onPressed: widget.onAddCard,
-              ),
-              const SizedBox(height: 8),
-              // Delete column button
-              IconButton(
-                color: Colors.red,
-                icon: const Icon(Icons.delete),
-                tooltip: 'Delete column',
-                onPressed: () {
-                  WebsocketService.deleteColumn(widget.column.id);
-                },
-              ),
+                const SizedBox(height: 8),
+                // Delete column button
+                IconButton(
+                  color: Colors.red,
+                  icon: const Icon(Icons.delete),
+                  tooltip: 'Delete column',
+                  onPressed: () {
+                    WebsocketService.deleteColumn(widget.column.id);
+                  },
+                ),
+              ],
             ],
           ),
         ),

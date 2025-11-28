@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/board_permissions_service.dart';
 import 'package:frontend/websocket/websocket.dart';
 
 class TrelloCardWidget extends StatefulWidget {
@@ -11,52 +12,60 @@ class TrelloCardWidget extends StatefulWidget {
 }
 
 class _TrelloCardWidgetState extends State<TrelloCardWidget> {
-  late TextEditingController _titleController;
-  late TextEditingController _contentController;
-  final FocusNode _contentFocusNode = FocusNode();
+  TextEditingController? _titleController;
+  TextEditingController? _contentController;
+  FocusNode? _contentFocusNode;
   String _previousContent = '';
 
   @override
   void initState() {
     super.initState();
-    _titleController = TextEditingController(text: widget.card.title);
-    _contentController = TextEditingController(text: widget.card.content);
     _previousContent = widget.card.content;
 
-    _contentFocusNode.addListener(() {
-      if (!_contentFocusNode.hasFocus) {
-        // Save when focus is lost
-        _saveContent();
-      }
-    });
+    // Only create controllers if user can edit
+    if (BoardPermissionsService.canEdit) {
+      _titleController = TextEditingController(text: widget.card.title);
+      _contentController = TextEditingController(text: widget.card.content);
+      _contentFocusNode = FocusNode();
+
+      _contentFocusNode!.addListener(() {
+        if (!_contentFocusNode!.hasFocus) {
+          // Save when focus is lost
+          _saveContent();
+        }
+      });
+    }
   }
 
   @override
   void didUpdateWidget(TrelloCardWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.card.title != widget.card.title) {
-      _titleController.text = widget.card.title;
-    }
-    if (oldWidget.card.content != widget.card.content) {
-      _contentController.text = widget.card.content;
-      _previousContent = widget.card.content;
+    if (BoardPermissionsService.canEdit) {
+      if (oldWidget.card.title != widget.card.title) {
+        _titleController?.text = widget.card.title;
+      }
+      if (oldWidget.card.content != widget.card.content) {
+        _contentController?.text = widget.card.content;
+        _previousContent = widget.card.content;
+      }
     }
   }
 
   @override
   void dispose() {
-    _titleController.dispose();
-    _contentController.dispose();
-    _contentFocusNode.dispose();
+    _titleController?.dispose();
+    _contentController?.dispose();
+    _contentFocusNode?.dispose();
     super.dispose();
   }
 
   void _saveContent() {
-    final newContent = _contentController.text.trim();
+    if (_contentController == null) return;
+    final newContent = _contentController!.text.trim();
 
     // If content is empty, revert to previous content
     if (newContent.isEmpty) {
-      _contentController.text = _previousContent;
+      _contentController!.text = _previousContent;
       return;
     }
 
@@ -67,7 +76,8 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
   }
 
   void _saveTitle() {
-    final newTitle = _titleController.text;
+    if (_titleController == null) return;
+    final newTitle = _titleController!.text;
     if (newTitle.isNotEmpty && newTitle != widget.card.title) {
       WebsocketService.updateCard(cardId: widget.card.id, title: newTitle);
     }
@@ -105,6 +115,8 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final canEdit = BoardPermissionsService.canEdit;
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
       child: Padding(
@@ -117,36 +129,48 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  TextField(
-                    controller: _titleController,
-                    decoration: const InputDecoration(
-                      hintText: 'Card title',
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.zero,
+                  if (canEdit)
+                    TextField(
+                      controller: _titleController,
+                      decoration: const InputDecoration(
+                        hintText: 'Card title',
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      onSubmitted: (_) => _saveTitle(),
+                      onEditingComplete: () {
+                        _saveTitle();
+                        FocusScope.of(context).unfocus();
+                      },
+                    )
+                  else
+                    Text(
+                      widget.card.title,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                    onSubmitted: (_) => _saveTitle(),
-                    onEditingComplete: () {
-                      _saveTitle();
-                      FocusScope.of(context).unfocus();
-                    },
-                  ),
                   const SizedBox(height: 4),
-                  TextField(
-                    controller: _contentController,
-                    focusNode: _contentFocusNode,
-                    decoration: const InputDecoration(
-                      hintText: 'Card description',
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.zero,
+                  if (canEdit)
+                    TextField(
+                      controller: _contentController,
+                      focusNode: _contentFocusNode,
+                      decoration: const InputDecoration(
+                        hintText: 'Card description',
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.zero,
+                      ),
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                      maxLines: null,
+                      minLines: 1,
+                      keyboardType: TextInputType.multiline,
+                    )
+                  else
+                    Text(
+                      widget.card.content,
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
                     ),
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
-                    maxLines: null,
-                    minLines: 1,
-                    keyboardType: TextInputType.multiline,
-                  ),
                   if (widget.card.dueDate != null) ...[
                     const SizedBox(height: 4),
                     Row(
@@ -170,18 +194,19 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
                 ],
               ),
             ),
-            Column(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.delete, size: 18),
-                  color: Colors.red,
-                  tooltip: 'Delete card',
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  onPressed: _confirmDelete,
-                ),
-              ],
-            ),
+            if (canEdit)
+              Column(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.delete, size: 18),
+                    color: Colors.red,
+                    tooltip: 'Delete card',
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    onPressed: _confirmDelete,
+                  ),
+                ],
+              ),
           ],
         ),
       ),
