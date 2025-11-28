@@ -68,7 +68,9 @@ export const cardUpdateAction: SocketAction = {
             updateData.dueDate = cardData.dueDate;
         if (cardData.assignees !== undefined) {
             updateData.assignees = {
-                set: cardData.assignees ? cardData.assignees.map((id) => ({ id })) : []
+                set: cardData.assignees
+                    ? cardData.assignees.map((id) => ({ id }))
+                    : []
             };
         }
 
