@@ -5,25 +5,13 @@ import {
     isEmpty
 } from "../utils/request.validation";
 import prisma from "../utils/prisma.client";
-import { Board, User } from "@prisma/client";
 import { verifyToken } from "../utils/jwt";
+import { BoardUser } from "./board_utils/types";
+import { createBoard } from "./board_utils/create_board";
+import { isBoardUser } from "./board_utils/is_board_user";
 
 const router = new Router();
 const requiredFields = ["title", "users"];
-
-type UserRole = "member" | "viewer";
-type BoardUser = { id: string; role: UserRole };
-
-function isBoardUser(user: unknown): user is BoardUser {
-    return (
-        typeof user === "object" &&
-        user !== null &&
-        "id" in user &&
-        "role" in user &&
-        typeof (user as any).id === "string" &&
-        ((user as any).role === "member" || (user as any).role === "viewer")
-    );
-}
 
 router.post("/", verifyToken, async (req, res) => {
     console.debug("/api/boards: Received create board request");
@@ -92,49 +80,6 @@ async function getNonExistentUsers(users: BoardUser[]): Promise<string[]> {
         console.warn(`Users not found: ${nonExistentUserIds.join(", ")}`);
     }
     return nonExistentUserIds;
-}
-
-async function createBoard(
-    ownerId: string,
-    title: string,
-    users: BoardUser[]
-): Promise<Board> {
-    const memberIds = users
-        .filter((user) => user.role === "member")
-        .map((user) => user.id);
-
-    const viewerIds = users
-        .filter((user) => user.role === "viewer")
-        .map((user) => user.id);
-
-    // Only query if there are IDs to find
-    const members: User[] =
-        memberIds.length > 0
-            ? await prisma.user.findMany({
-                  where: { id: { in: memberIds } }
-              })
-            : [];
-
-    const viewers: User[] =
-        viewerIds.length > 0
-            ? await prisma.user.findMany({
-                  where: { id: { in: viewerIds } }
-              })
-            : [];
-
-    return prisma.board.create({
-        data: {
-            title,
-            owner: { connect: { id: ownerId } },
-            members: { connect: members.map((user) => ({ id: user.id })) },
-            viewers: { connect: viewers.map((user) => ({ id: user.id })) }
-        },
-        include: {
-            owner: { select: { id: true, username: true } },
-            members: { select: { id: true, username: true } },
-            viewers: { select: { id: true, username: true } }
-        }
-    });
 }
 
 router.get("/", verifyToken, async (req, res) => {
