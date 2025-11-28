@@ -244,6 +244,43 @@ paths:
           $ref: "#/components/responses/Error500"
 
   /api/boards/{boardId}:
+    get:
+      tags:
+        - boards
+      summary: Get a specific board
+      description: Retrieve details of a specific board. User must be the owner, member, or viewer of the board.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: boardId
+          in: path
+          required: true
+          description: The ID of the board to retrieve
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Board retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Board retrieved successfully
+                  board:
+                    $ref: "#/components/schemas/BoardWithUsers"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "403":
+          $ref: "#/components/responses/Error403"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+
     put:
       tags:
         - boards
