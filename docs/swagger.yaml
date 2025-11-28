@@ -192,19 +192,7 @@ paths:
                   type: array
                   description: Array of users to assign to the board
                   items:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                        format: uuid
-                        description: User ID
-                      role:
-                        type: string
-                        enum: [member, viewer]
-                        description: User role on the board
-                    required:
-                      - id
-                      - role
+                    $ref: "#/components/schemas/BoardUserInput"
               required:
                 - title
                 - users
@@ -343,6 +331,21 @@ components:
         updatedAt:
           type: string
           format: date-time
+    BoardUserInput:
+      type: object
+      description: User assignment for a board
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: User ID
+        role:
+          type: string
+          enum: [member, viewer]
+          description: User role on the board
+      required:
+        - id
+        - role
     BoardWithUsers:
       allOf:
         - $ref: "#/components/schemas/Board"
