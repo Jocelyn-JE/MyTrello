@@ -3,6 +3,9 @@ import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/auth_service.dart';
+import 'package:frontend/board_service.dart';
+import 'package:frontend/board_settings_screen.dart';
+import 'package:frontend/models/board.dart';
 import 'package:frontend/protected_routes.dart';
 import 'package:frontend/websocket/websocket.dart';
 import 'package:frontend/widgets/trello_column_widget.dart';
@@ -107,6 +110,28 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
     WebsocketService.close();
   }
 
+  Future<void> _openBoardSettings() async {
+    Board? boardInfo = await BoardService.getBoard(_boardId);
+    if (!mounted) return;
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BoardSettingsScreen(board: boardInfo),
+      ),
+    );
+
+    // If board was deleted or modified, navigate back to home
+    if (result == 'deleted') {
+      if (mounted) {
+        Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+      }
+    } else if (result == true) {
+      // Board was updated, reconnect to get fresh data
+      _disconnectFromBoard();
+      _connectToBoard();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final title = _boardTitle ?? 'Board Details';
@@ -115,7 +140,13 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
         title: Text(title),
         backgroundColor: Colors.lightGreen,
         shadowColor: Colors.grey,
-        actions: [],
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: _openBoardSettings,
+            tooltip: 'Board Settings',
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
