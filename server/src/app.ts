@@ -43,6 +43,7 @@ export default app;
 if (require.main === module) {
     app.listen(port, () => {
         console.log(`Backend listening on port ${port}`);
+        console.log(`API docs available at http://localhost:${port}/api-docs`);
     });
 
     process.on("SIGINT", (): null => {
