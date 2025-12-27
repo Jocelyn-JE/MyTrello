@@ -1,12 +1,13 @@
 import { SocketAction } from "./action_type";
 import prisma from "../../utils/prisma.client";
-import { cardExists } from "../room_utils/get_card";
+import { cardExists, getCardInfo } from "../room_utils/get_card";
 import { tagExists } from "../room_utils/get_tag";
 import { userExists } from "../room_utils/get_user";
 
 type CardUpdateData = {
     id: string;
-    columnId?: string; // Can be modified if moving between columns
+    columnId?: string;
+    index?: number;
     tagId?: string | null;
     title?: string;
     content?: string;
@@ -56,8 +57,24 @@ export const cardUpdateAction: SocketAction = {
             updatedAt: new Date()
         };
 
+        // If columnId is changing but index is not provided, find next available index
+        if (cardData.columnId !== undefined && cardData.index === undefined) {
+            const currentCard = await getCardInfo(cardData.id);
+            
+            // Only auto-assign index if moving to a different column
+            if (currentCard && currentCard.columnId !== cardData.columnId) {
+                const maxIndexCard = await prisma.card.findFirst({
+                    where: { columnId: cardData.columnId },
+                    orderBy: { index: 'desc' },
+                    select: { index: true }
+                });
+                updateData.index = maxIndexCard ? maxIndexCard.index + 1 : 0;
+            }
+        }
+
         if (cardData.columnId !== undefined)
             updateData.columnId = cardData.columnId;
+        if (cardData.index !== undefined) updateData.index = cardData.index;
         if (cardData.tagId !== undefined) updateData.tagId = cardData.tagId;
         if (cardData.title !== undefined) updateData.title = cardData.title;
         if (cardData.content !== undefined)
