@@ -96,22 +96,63 @@ class _TrelloColumnWidgetState extends State<TrelloColumnWidget> {
                   ),
                 ),
               const Divider(),
-              // Cards list
+              // Cards list with drag target
               Expanded(
-                child: widget.column.cards.isEmpty
-                    ? const Center(
-                        child: Text(
-                          'No cards',
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                      )
-                    : ListView.builder(
-                        itemCount: widget.column.cards.length,
-                        itemBuilder: (context, index) {
-                          final card = widget.column.cards[index];
-                          return TrelloCardWidget(card: card);
-                        },
-                      ),
+                child: DragTarget<TrelloCard>(
+                  onWillAcceptWithDetails: (details) {
+                    // Accept any card from any column
+                    return BoardPermissionsService.canEdit;
+                  },
+                  onAcceptWithDetails: (details) {
+                    final draggedCard = details.data;
+                    // Don't do anything if dropped in the same column at the same position
+                    if (draggedCard.columnId == widget.column.id) {
+                      return;
+                    }
+                    // Move card to this column at the end
+                    WebsocketService.updateCard(
+                      cardId: draggedCard.id,
+                      columnId: widget.column.id,
+                      index: widget.column.cards.length,
+                    );
+                  },
+                  builder: (context, candidateData, rejectedData) {
+                    final isHovering = candidateData.isNotEmpty;
+                    return Container(
+                      decoration: isHovering
+                          ? BoxDecoration(
+                              color: Colors.lightGreen.withOpacity(0.1),
+                              border: Border.all(
+                                color: Colors.lightGreen,
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            )
+                          : null,
+                      child: widget.column.cards.isEmpty
+                          ? Center(
+                              child: Text(
+                                isHovering ? 'Drop here' : 'No cards',
+                                style: TextStyle(
+                                  color: isHovering
+                                      ? Colors.lightGreen
+                                      : Colors.grey,
+                                ),
+                              ),
+                            )
+                          : ListView.builder(
+                              itemCount: widget.column.cards.length,
+                              itemBuilder: (context, index) {
+                                final card = widget.column.cards[index];
+                                return TrelloCardWidget(
+                                  card: card,
+                                  isDraggable: true,
+                                );
+                              },
+                            ),
+                    );
+                  },
+                ),
               ),
               const SizedBox(height: 8),
               // Add card button (only for editors)

@@ -4,8 +4,13 @@ import 'package:frontend/websocket/websocket.dart';
 
 class TrelloCardWidget extends StatefulWidget {
   final TrelloCard card;
+  final bool isDraggable;
 
-  const TrelloCardWidget({super.key, required this.card});
+  const TrelloCardWidget({
+    super.key,
+    required this.card,
+    this.isDraggable = false,
+  });
 
   @override
   State<TrelloCardWidget> createState() => _TrelloCardWidgetState();
@@ -117,7 +122,7 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
   Widget build(BuildContext context) {
     final canEdit = BoardPermissionsService.canEdit;
 
-    return Card(
+    final cardWidget = Card(
       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -211,5 +216,51 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
         ),
       ),
     );
+
+    // Wrap with Draggable if editing is enabled and isDraggable is true
+    if (canEdit && widget.isDraggable) {
+      return Draggable<TrelloCard>(
+        data: widget.card,
+        feedback: Material(
+          elevation: 4.0,
+          child: Opacity(
+            opacity: 0.8,
+            child: SizedBox(
+              width: 280,
+              child: Card(
+                margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        widget.card.title,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        widget.card.content,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        childWhenDragging: Opacity(opacity: 0.3, child: cardWidget),
+        child: cardWidget,
+      );
+    }
+
+    return cardWidget;
   }
 }
