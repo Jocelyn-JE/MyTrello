@@ -133,9 +133,11 @@ class WebsocketService {
   /// Ask the server to update a card
   static void updateCard({
     required String cardId,
+    String? columnId,
     String? title,
     String? content,
     String? tagId,
+    int? index,
     DateTime? startDate,
     DateTime? dueDate,
     List<String>? assignees,
@@ -143,9 +145,11 @@ class WebsocketService {
     _sendCommand(
       UpdateCardCommand(
         id: cardId,
+        columnId: columnId,
         title: title,
         content: content,
         tagId: tagId,
+        index: index,
         startDate: startDate,
         dueDate: dueDate,
         assignees: assignees,

@@ -72,18 +72,22 @@ class UpdateCardCommand implements WebSocketCommand {
   @override
   final String type = 'card.update';
   final String id;
+  final String? columnId;
   final String? title;
   final String? content;
   final String? tagId;
+  final int? index;
   final DateTime? startDate;
   final DateTime? dueDate;
   final List<String>? assignees;
 
   UpdateCardCommand({
     required this.id,
+    this.columnId,
     this.title,
     this.content,
     this.tagId,
+    this.index,
     this.startDate,
     this.dueDate,
     this.assignees,
@@ -94,9 +98,11 @@ class UpdateCardCommand implements WebSocketCommand {
     'type': type,
     'data': {
       'id': id,
+      if (columnId != null) 'columnId': columnId,
       if (title != null) 'title': title,
       if (content != null) 'content': content,
       if (tagId != null) 'tagId': tagId,
+      if (index != null) 'index': index,
       if (startDate != null) 'startDate': startDate!.toIso8601String(),
       if (dueDate != null) 'dueDate': dueDate!.toIso8601String(),
       if (assignees != null) 'assignees': assignees,
