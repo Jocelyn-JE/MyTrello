@@ -11,9 +11,15 @@ services:
 
   web-frontend:
     container_name: web-frontend
+    env_file:
+      - ./.env
     build:
       context: ./frontend
       dockerfile: Dockerfile.web
+      args:
+        - BACKEND_URL=${BACKEND_URL}
+        - API_TIMEOUT=${API_TIMEOUT}
+        - DEBUG_MODE=${DEBUG_MODE}
     restart: always
     ports:
       - ${FRONTEND_PORT}:80

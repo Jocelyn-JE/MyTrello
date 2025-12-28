@@ -1,6 +1,11 @@
 # Install Operating system and dependencies
 FROM ubuntu:latest AS builder
 
+# Accept build arguments
+ARG BACKEND_URL=http://localhost:3000
+ARG API_TIMEOUT=30000
+ARG DEBUG_MODE=false
+
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update 
@@ -30,6 +35,11 @@ COPY pubspec.yaml pubspec.lock ./
 # Get dependencies (this will be cached unless pubspec files change)
 RUN flutter pub get
 
+# Create .env file from build args
+RUN echo "BACKEND_URL=$BACKEND_URL" > .env && \
+    echo "API_TIMEOUT=$API_TIMEOUT" >> .env && \
+    echo "DEBUG_MODE=$DEBUG_MODE" >> .env
+
 # Copy only the files needed for web build
 COPY lib/ ./lib/
 COPY web/ ./web/
@@ -49,9 +59,9 @@ RUN echo 'server { \
     root /usr/share/nginx/html; \
     index index.html; \
     location / { \
-        try_files $uri $uri/ /index.html; \
+    try_files $uri $uri/ /index.html; \
     } \
-}' > /etc/nginx/conf.d/default.conf
+    }' > /etc/nginx/conf.d/default.conf
 
 # Record the exposed port
 EXPOSE 80
