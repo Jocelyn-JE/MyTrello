@@ -64,7 +64,10 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
     debugPrint('Connecting to board $_boardId');
     if (_boardId.isEmpty) return;
     try {
-      TrelloBoard? result = await WebsocketService.connectToBoard(_boardId);
+      TrelloBoard? result = await WebsocketService.connectToBoard(
+        _boardId,
+        host: AppConfig.backendUrl,
+      );
       if (result == null) return; // already connected
       debugPrint('Connected to board: ${result.title}');
 
