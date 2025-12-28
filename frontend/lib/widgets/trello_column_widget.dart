@@ -105,15 +105,14 @@ class _TrelloColumnWidgetState extends State<TrelloColumnWidget> {
                   },
                   onAcceptWithDetails: (details) {
                     final draggedCard = details.data;
-                    // Don't do anything if dropped in the same column at the same position
+                    // Don't do anything if dropped in the same column
                     if (draggedCard.columnId == widget.column.id) {
                       return;
                     }
-                    // Move card to this column at the end
+                    // Move card to this column let server assign the index
                     WebsocketService.updateCard(
                       cardId: draggedCard.id,
                       columnId: widget.column.id,
-                      index: widget.column.cards.length,
                     );
                   },
                   builder: (context, candidateData, rejectedData) {
@@ -121,7 +120,7 @@ class _TrelloColumnWidgetState extends State<TrelloColumnWidget> {
                     return Container(
                       decoration: isHovering
                           ? BoxDecoration(
-                              color: Colors.lightGreen.withOpacity(0.1),
+                              color: Colors.lightGreen.withValues(alpha: 0.1),
                               border: Border.all(
                                 color: Colors.lightGreen,
                                 width: 2,

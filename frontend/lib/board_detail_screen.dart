@@ -343,14 +343,28 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
     'card.update': (dynamic payload, MinimalUser sender) {
       TrelloCard updatedCard = TrelloCard.fromJson(payload);
       setState(() {
-        final index = _columns.indexWhere(
+        // First, remove the card from its old column (wherever it is)
+        for (int i = 0; i < _columns.length; i++) {
+          final hasCard = _columns[i].cards.any((c) => c.id == updatedCard.id);
+          if (hasCard) {
+            final updatedCards = _columns[i].cards
+                .where((card) => card.id != updatedCard.id)
+                .toList();
+            _columns[i] = _columns[i].update(cards: updatedCards);
+            break;
+          }
+        }
+
+        // Then, add it to the new column
+        final newColumnIndex = _columns.indexWhere(
           (col) => col.id == updatedCard.columnId,
         );
-        if (index != -1) {
-          final updatedCards = _columns[index].cards.map((card) {
-            return card.id == updatedCard.id ? updatedCard : card;
-          }).toList();
-          _columns[index] = _columns[index].update(cards: updatedCards);
+        if (newColumnIndex != -1) {
+          final updatedCards = [..._columns[newColumnIndex].cards, updatedCard]
+            ..sort((a, b) => a.index.compareTo(b.index));
+          _columns[newColumnIndex] = _columns[newColumnIndex].update(
+            cards: updatedCards,
+          );
         }
       });
     },
