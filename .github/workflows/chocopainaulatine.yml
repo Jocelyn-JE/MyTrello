@@ -55,6 +55,8 @@ jobs:
       - name: "Install dependencies"
         run: flutter pub get
         working-directory: ./frontend
+      - name: "Create dummy .env file"
+        run: echo "BACKEND_HOST=localhost:3000" > ./frontend/.env
       - name: "Run tests"
         run: flutter test
         working-directory: ./frontend
