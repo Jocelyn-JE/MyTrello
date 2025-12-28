@@ -6,6 +6,7 @@ import 'package:frontend/auth_service.dart';
 import 'package:frontend/board_permissions_service.dart';
 import 'package:frontend/board_service.dart';
 import 'package:frontend/board_settings_screen.dart';
+import 'package:frontend/config.dart';
 import 'package:frontend/models/board.dart';
 import 'package:frontend/protected_routes.dart';
 import 'package:frontend/websocket/websocket.dart';

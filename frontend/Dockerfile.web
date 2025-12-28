@@ -2,7 +2,7 @@
 FROM ubuntu:latest AS builder
 
 # Accept build arguments
-ARG BACKEND_URL=http://localhost:3000
+ARG BACKEND_HOST=localhost:3000
 ARG API_TIMEOUT=30000
 ARG DEBUG_MODE=false
 
@@ -36,7 +36,7 @@ COPY pubspec.yaml pubspec.lock ./
 RUN flutter pub get
 
 # Create .env file from build args
-RUN echo "BACKEND_URL=$BACKEND_URL" > .env && \
+RUN echo "BACKEND_HOST=$BACKEND_HOST" > .env && \
     echo "API_TIMEOUT=$API_TIMEOUT" >> .env && \
     echo "DEBUG_MODE=$DEBUG_MODE" >> .env
 

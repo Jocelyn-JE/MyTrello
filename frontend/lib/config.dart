@@ -1,13 +1,17 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AppConfig {
-  static String get backendUrl {
+  static String get backendHost {
     try {
-      return dotenv.env['BACKEND_URL'] ?? 'http://localhost:3000';
+      return dotenv.env['BACKEND_HOST'] ?? 'localhost:3000';
     } catch (e) {
       // dotenv not loaded, return default
-      return 'http://localhost:3000';
+      return 'localhost:3000';
     }
+  }
+
+  static String get backendUrl {
+    return 'http://${backendHost}';
   }
 
   static int get apiTimeout {

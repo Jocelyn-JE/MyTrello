@@ -17,7 +17,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.web
       args:
-        - BACKEND_URL=${BACKEND_URL}
+        - BACKEND_HOST=${BACKEND_HOST}
         - API_TIMEOUT=${API_TIMEOUT}
         - DEBUG_MODE=${DEBUG_MODE}
     restart: always
