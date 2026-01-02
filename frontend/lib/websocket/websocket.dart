@@ -18,4 +18,4 @@ export 'commands/card_commands.dart';
 export 'commands/message_commands.dart';
 
 // Commands - Assignees
-export 'commands/assignees_commands.dart';
+export 'commands/assignee_commands.dart';

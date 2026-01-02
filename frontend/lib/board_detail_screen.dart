@@ -328,6 +328,9 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
           _columns[index] = _columns[index].update(cards: cards);
         }
       });
+      for (var card in cards) {
+        WebsocketService.fetchAssignees(card.id);
+      }
     },
     'card.create': (dynamic payload, MinimalUser sender) {
       TrelloCard newCard = TrelloCard.fromJson(payload);
@@ -379,6 +382,30 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
               .where((card) => card.id != deletedCard.id)
               .toList();
           _columns[index] = _columns[index].update(cards: updatedCards);
+        }
+      });
+    },
+    'assignee.list': (dynamic payload, MinimalUser sender) {
+      if (sender.id != AuthService.userId) return;
+      List<TrelloUser> assignees = (payload['assignees'] as List)
+          .map((user) => TrelloUser.fromJson(user))
+          .toList();
+      String cardId = payload['cardId'];
+      // Update the relevant card with its assignees
+      setState(() {
+        for (int i = 0; i < _columns.length; i++) {
+          final cardIndex = _columns[i].cards.indexWhere(
+            (card) => card.id == cardId,
+          );
+          if (cardIndex != -1) {
+            final updatedCard = _columns[i].cards[cardIndex].update(
+              assignedUsers: assignees,
+            );
+            final updatedCards = [..._columns[i].cards];
+            updatedCards[cardIndex] = updatedCard;
+            _columns[i] = _columns[i].update(cards: updatedCards);
+            break;
+          }
         }
       });
     },

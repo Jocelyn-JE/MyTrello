@@ -87,6 +87,7 @@ class TrelloCard {
   final DateTime? dueDate;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final List<TrelloUser> assignedUsers;
 
   TrelloCard({
     required this.id,
@@ -99,6 +100,7 @@ class TrelloCard {
     this.dueDate,
     required this.createdAt,
     required this.updatedAt,
+    this.assignedUsers = const [],
   });
 
   factory TrelloCard.fromJson(Map<String, dynamic> json) {
@@ -117,6 +119,34 @@ class TrelloCard {
           : null,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
+    );
+  }
+
+  TrelloCard update({
+    String? id,
+    String? columnId,
+    String? tagId,
+    int? index,
+    String? title,
+    String? content,
+    DateTime? startDate,
+    DateTime? dueDate,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    List<TrelloUser>? assignedUsers,
+  }) {
+    return TrelloCard(
+      id: id ?? this.id,
+      columnId: columnId ?? this.columnId,
+      tagId: tagId ?? this.tagId,
+      index: index ?? this.index,
+      title: title ?? this.title,
+      content: content ?? this.content,
+      startDate: startDate ?? this.startDate,
+      dueDate: dueDate ?? this.dueDate,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      assignedUsers: assignedUsers ?? this.assignedUsers,
     );
   }
 }
