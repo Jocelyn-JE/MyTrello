@@ -1,3 +1,6 @@
+import { assigneeAssignAction } from "./assignees.assign";
+import { assigneeListingAction } from "./assignees.list";
+import { assigneeUnassignAction } from "./assignees.unassign";
 import { cardCreationAction } from "./card.create";
 import { cardDeletionAction } from "./card.delete";
 import { cardListingAction } from "./card.list";
@@ -28,5 +31,8 @@ export const actionIndex: SocketAction[] = [
     cardDeletionAction,
     cardUpdateAction,
     cardListingAction,
+    assigneeAssignAction,
+    assigneeUnassignAction,
+    assigneeListingAction,
     messageAction
 ];
