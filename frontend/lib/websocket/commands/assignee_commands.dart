@@ -10,7 +10,10 @@ class ListAssigneesCommand implements WebSocketCommand {
 
   @override
   Map<String, dynamic> toJson() {
-    return {'type': type, 'cardId': cardId};
+    return {
+      'type': type,
+      'data': {'cardId': cardId},
+    };
   }
 }
 
