@@ -16,6 +16,6 @@ export const assigneeListingAction: SocketAction = {
             orderBy: { username: "asc" }
         });
         console.info(`Assignees found: ${assignees.length}`);
-        return assignees;
+        return { cardId: listData.cardId, assignees };
     }
 };
