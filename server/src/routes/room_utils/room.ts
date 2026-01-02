@@ -123,7 +123,7 @@ export class Room {
         }
 
         // Restrict viewers to read-only actions
-        const allowedViewerActions = ["column.list", "card.list"];
+        const allowedViewerActions = ["column.list", "card.list", "assignee.list"];
         if (
             this.isViewer(client) &&
             !allowedViewerActions.includes(actionName)
