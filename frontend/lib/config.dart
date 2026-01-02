@@ -11,7 +11,7 @@ class AppConfig {
   }
 
   static String get backendUrl {
-    return 'http://${backendHost}';
+    return 'http://$backendHost';
   }
 
   static int get apiTimeout {
