@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/models/user.dart';
+import 'package:frontend/websocket/models/server_types.dart';
 import 'package:frontend/users_service.dart';
 import 'board_service.dart';
 
@@ -19,7 +19,7 @@ class UserSearchDialog extends StatefulWidget {
 
 class _UserSearchDialogState extends State<UserSearchDialog> {
   final TextEditingController _searchController = TextEditingController();
-  List<User> _searchResults = [];
+  List<TrelloUser> _searchResults = [];
   bool _loading = false;
   String _error = '';
 
@@ -94,7 +94,7 @@ class _UserSearchDialogState extends State<UserSearchDialog> {
     }
   }
 
-  Widget _buildUserItem(User user) {
+  Widget _buildUserItem(TrelloUser user) {
     return ListTile(
       title: Text(user.username),
       subtitle: Text(user.email),

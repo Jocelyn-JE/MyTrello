@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/auth_service.dart';
-import 'package:frontend/models/user.dart';
+import 'package:frontend/websocket/models/server_types.dart';
 import 'board_service.dart';
 import 'user_search_dialog.dart';
 
@@ -14,7 +14,7 @@ class BoardCreationScreen extends StatefulWidget {
 class _BoardCreationScreenState extends State<BoardCreationScreen> {
   final TextEditingController titleController = TextEditingController();
   final List<BoardUserInput> usersInput = [];
-  final List<User> users = [];
+  final List<TrelloUser> users = [];
   bool _isLoading = false;
 
   @override
@@ -148,7 +148,7 @@ class _BoardCreationScreenState extends State<BoardCreationScreen> {
                         onPressed: _isLoading
                             ? null
                             : () async {
-                                final newUser = await showDialog<User>(
+                                final newUser = await showDialog<TrelloUser>(
                                   context: context,
                                   builder: (context) => UserSearchDialog(
                                     excludedUserIds: users

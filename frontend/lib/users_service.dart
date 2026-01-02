@@ -1,7 +1,7 @@
+import 'package:frontend/websocket/models/server_types.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'config.dart';
-import 'models/user.dart';
 
 class SearchParameters {
   String? username;
@@ -13,13 +13,15 @@ class SearchParameters {
 }
 
 class UserService {
-  static Future<List<User>> getUsers() async {
+  static Future<List<TrelloUser>> getUsers() async {
     final response = await http.get(
       Uri.parse('${AppConfig.backendUrl}/api/users'),
     );
     final jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
-      return (jsonData as List).map((user) => User.fromJson(user)).toList();
+      return (jsonData as List)
+          .map((user) => TrelloUser.fromJson(user))
+          .toList();
     } else {
       throw Exception(
         'Failed to load users: ${jsonData['error'] ?? 'Unknown error'}',
@@ -27,7 +29,7 @@ class UserService {
     }
   }
 
-  static Future<List<User>> searchUsers(SearchParameters params) async {
+  static Future<List<TrelloUser>> searchUsers(SearchParameters params) async {
     final queryParameters = <String, String>{};
     if (params.username != null) queryParameters['username'] = params.username!;
     if (params.email != null) queryParameters['email'] = params.email!;
@@ -42,7 +44,9 @@ class UserService {
     );
     final jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
-      return (jsonData as List).map((user) => User.fromJson(user)).toList();
+      return (jsonData as List)
+          .map((user) => TrelloUser.fromJson(user))
+          .toList();
     } else {
       throw Exception(
         'Failed to load users: ${jsonData['error'] ?? 'Unknown error'}',

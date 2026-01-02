@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/auth_service.dart';
-import 'package:frontend/models/user.dart';
 import 'package:frontend/models/board.dart';
+import 'package:frontend/websocket/models/server_types.dart';
 import 'board_service.dart';
 import 'user_search_dialog.dart';
 
@@ -193,7 +193,7 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
   Future<void> _addUser() async {
     final excludedIds = [..._userPermissions.map((p) => p.userId)];
 
-    final newUser = await showDialog<User>(
+    final newUser = await showDialog<TrelloUser>(
       context: context,
       builder: (context) => UserSearchDialog(
         excludedUserIds: excludedIds,
