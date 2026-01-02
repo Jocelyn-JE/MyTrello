@@ -55,6 +55,7 @@ class TrelloColumn {
     );
   }
 
+  /// Creates a copy of this column with updated fields
   TrelloColumn update({
     String? id,
     String? boardId,
@@ -72,6 +73,49 @@ class TrelloColumn {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       cards: cards ?? this.cards,
+    );
+  }
+
+  /// Creates a copy of this column with a card removed
+  TrelloColumn removeCard(String cardId) {
+    return TrelloColumn(
+      id: id,
+      title: title,
+      cards: cards.where((card) => card.id != cardId).toList(),
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+      index: index,
+      boardId: boardId,
+    );
+  }
+
+  /// Creates a copy of this column with a card added
+  TrelloColumn addCard(TrelloCard card) {
+    final updatedCards = [...cards, card]
+      ..sort((a, b) => a.index.compareTo(b.index));
+    return TrelloColumn(
+      id: id,
+      title: title,
+      cards: updatedCards,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+      index: index,
+      boardId: boardId,
+    );
+  }
+
+  /// Creates a copy of this column with a card updated
+  TrelloColumn updateCard(TrelloCard updatedCard) {
+    return TrelloColumn(
+      id: id,
+      title: title,
+      cards: cards.map((card) {
+        return card.id == updatedCard.id ? updatedCard : card;
+      }).toList(),
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+      index: index,
+      boardId: boardId,
     );
   }
 }

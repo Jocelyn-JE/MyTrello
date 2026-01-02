@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/board_permissions_service.dart';
+import 'package:frontend/user_search_dialog.dart';
 import 'package:frontend/websocket/websocket.dart';
 
 class TrelloCardWidget extends StatefulWidget {
@@ -118,6 +121,20 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
     }
   }
 
+  Future<TrelloUser?> _showAssignUsersDialog(
+    List<TrelloUser> alreadyAssigned,
+  ) async {
+    // Implementation of user assignment dialog goes here
+    // This is a placeholder for demonstration purposes
+    return await showDialog(
+      context: context,
+      builder: (context) => UserSearchDialog(
+        excludedUserIds: alreadyAssigned.map((u) => u.id).toList(),
+        ownerId: '', // No owner filtering in this context
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final canEdit = BoardPermissionsService.canEdit;
@@ -126,92 +143,149 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Column(
           children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (canEdit)
-                    TextField(
-                      controller: _titleController,
-                      decoration: const InputDecoration(
-                        hintText: 'Card title',
-                        border: InputBorder.none,
-                        isDense: true,
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                      onSubmitted: (_) => _saveTitle(),
-                      onEditingComplete: () {
-                        _saveTitle();
-                        FocusScope.of(context).unfocus();
-                      },
-                    )
-                  else
-                    Text(
-                      widget.card.title,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  const SizedBox(height: 4),
-                  if (canEdit)
-                    TextField(
-                      controller: _contentController,
-                      focusNode: _contentFocusNode,
-                      decoration: const InputDecoration(
-                        hintText: 'Card description',
-                        border: InputBorder.none,
-                        isDense: true,
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
-                      maxLines: null,
-                      minLines: 1,
-                      keyboardType: TextInputType.multiline,
-                    )
-                  else
-                    Text(
-                      widget.card.content,
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                  if (widget.card.dueDate != null) ...[
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.calendar_today,
-                          size: 12,
-                          color: Colors.grey,
-                        ),
-                        const SizedBox(width: 4),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (canEdit)
+                        TextField(
+                          controller: _titleController,
+                          decoration: const InputDecoration(
+                            hintText: 'Card title',
+                            border: InputBorder.none,
+                            isDense: true,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          onSubmitted: (_) => _saveTitle(),
+                          onEditingComplete: () {
+                            _saveTitle();
+                            FocusScope.of(context).unfocus();
+                          },
+                        )
+                      else
                         Text(
-                          '${widget.card.dueDate!.month}/${widget.card.dueDate!.day}',
+                          widget.card.title,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      const SizedBox(height: 4),
+                      if (canEdit)
+                        TextField(
+                          controller: _contentController,
+                          focusNode: _contentFocusNode,
+                          decoration: const InputDecoration(
+                            hintText: 'Card description',
+                            border: InputBorder.none,
+                            isDense: true,
+                            contentPadding: EdgeInsets.zero,
+                          ),
                           style: const TextStyle(
-                            fontSize: 11,
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                          maxLines: null,
+                          minLines: 1,
+                          keyboardType: TextInputType.multiline,
+                        )
+                      else
+                        Text(
+                          widget.card.content,
+                          style: const TextStyle(
+                            fontSize: 12,
                             color: Colors.grey,
                           ),
                         ),
+                      if (widget.card.dueDate != null) ...[
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.calendar_today,
+                              size: 12,
+                              color: Colors.grey,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${widget.card.dueDate!.month}/${widget.card.dueDate!.day}',
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            if (canEdit)
-              Column(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.delete, size: 18),
-                    color: Colors.red,
-                    tooltip: 'Delete card',
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                    onPressed: _confirmDelete,
+                    ],
                   ),
-                ],
+                ),
+                if (canEdit)
+                  Column(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.delete, size: 18),
+                        color: Colors.red,
+                        tooltip: 'Delete card',
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                        onPressed: _confirmDelete,
+                      ),
+                      const SizedBox(height: 4),
+                      IconButton(
+                        icon: const Icon(Icons.person_add, size: 18),
+                        color: Colors.blue,
+                        tooltip: 'Assign users',
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                        onPressed: () async {
+                          final assignedUser = await _showAssignUsersDialog(
+                            widget.card.assignedUsers,
+                          );
+                          if (assignedUser != null) {
+                            WebsocketService.assignUserToCard(
+                              widget.card.id,
+                              assignedUser.id,
+                            );
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+              ],
+            ),
+            if (widget.card.assignedUsers.isNotEmpty) ...[
+              Divider(height: 12, color: Colors.grey[300]),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: widget.card.assignedUsers.map((user) {
+                    return CircleAvatar(
+                      radius: 12,
+                      backgroundColor:
+                          Colors.primaries[Random(
+                            user.id.hashCode,
+                          ).nextInt(Colors.primaries.length)],
+                      child: Text(
+                        user.username.isNotEmpty
+                            ? user.username[0].toUpperCase()
+                            : '?',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
               ),
+            ],
           ],
         ),
       ),
