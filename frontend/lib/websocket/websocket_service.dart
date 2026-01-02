@@ -171,4 +171,19 @@ class WebsocketService {
   static void deleteColumn(String columnId) {
     _sendCommand(DeleteColumnCommand(columnId: columnId));
   }
+
+  /// Ask the server for the list of assignees for a specific card
+  static void fetchAssignees(String cardId) {
+    _sendCommand(ListAssigneesCommand(cardId: cardId));
+  }
+
+  /// Ask the server to assign a user to a card
+  static void assignUserToCard(String cardId, String userId) {
+    _sendCommand(AssignCommand(cardId: cardId, userId: userId));
+  }
+
+  /// Ask the server to unassign a user from a card
+  static void unassignUserFromCard(String cardId, String userId) {
+    _sendCommand(UnassignCommand(cardId: cardId, userId: userId));
+  }
 }

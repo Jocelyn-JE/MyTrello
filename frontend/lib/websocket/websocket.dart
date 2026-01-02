@@ -16,3 +16,6 @@ export 'commands/card_commands.dart';
 
 // Commands - Messages
 export 'commands/message_commands.dart';
+
+// Commands - Assignees
+export 'commands/assignees_commands.dart';
