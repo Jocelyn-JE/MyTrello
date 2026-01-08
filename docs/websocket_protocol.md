@@ -58,6 +58,34 @@ Server -> client messages follow the same `{ type, ... }` pattern. There are a f
 
 The following commands are currently supported by the server. Each command must be sent as a JSON object with `type` and `data` fields.
 
+### Command reference
+
+**Column commands:**
+
+- [`column.create`](#columncreate) - Create a new column
+- [`column.list`](#columnlist) - List all columns
+- [`column.rename`](#columnrename) - Rename a column
+- [`column.delete`](#columndelete) - Delete a column
+
+**Card commands:**
+
+- [`card.create`](#cardcreate) - Create a new card
+- [`card.list`](#cardlist) - List all cards in a column
+- [`card.delete`](#carddelete) - Delete a card
+- [`card.update`](#cardupdate) - Update a card
+
+**Assignee commands:**
+
+- [`assignee.assign`](#assigneeassign) - Assign a user to a card
+- [`assignee.unassign`](#assigneeunassign) - Unassign a user from a card
+- [`assignee.list`](#assigneelist) - List all assignees of a card
+
+**Message commands:**
+
+- [`message`](#message) - Send a broadcast message
+
+---
+
 ### Column commands
 
 #### `column.create`
@@ -208,6 +236,8 @@ Deletes a column from the board.
   }
 }
 ```
+
+---
 
 ### Card commands
 
@@ -405,6 +435,8 @@ The server will respond with the full updated card object.
 }
 ```
 
+---
+
 ### Assignee commands
 
 #### `assignee.assign`
@@ -516,6 +548,8 @@ Lists all users assigned to a card.
   }
 }
 ```
+
+---
 
 ### Message commands
 
