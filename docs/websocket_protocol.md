@@ -366,8 +366,7 @@ Updates an existing card. Only fields provided in the request will be updated. A
     "tagId": "tag-uuid",
     "index": 2,
     "startDate": "2025-11-08T10:00:00Z",
-    "dueDate": "2025-11-15T18:00:00Z",
-    "assignees": ["user-uuid-1", "user-uuid-2"]
+    "dueDate": "2025-11-15T18:00:00Z"
   }
 }
 ```
@@ -376,7 +375,7 @@ Updates an existing card. Only fields provided in the request will be updated. A
 
 - Only `id` is required
 - Any combination of the other fields can be provided for partial updates
-- Set `tagId`, `startDate`, `dueDate`, or `assignees` to `null` to clear them
+- Set `tagId`, `startDate`, or `dueDate` to `null` to clear them
 - `columnId` can be changed to move the card between columns
 - `title` and `content` cannot be empty strings
 
@@ -398,6 +397,118 @@ The server will respond with the full updated card object.
     "dueDate": "2025-11-15T18:00:00.000Z",
     "createdAt": "2025-11-07T09:00:00.000Z",
     "updatedAt": "2025-11-21T14:30:00.000Z"
+  },
+  "sender": {
+    "username": "alice",
+    "email": "alice@example.com"
+  }
+}
+```
+
+### Assignee commands
+
+#### `assignee.assign`
+
+Assigns a user to a card.
+
+**Request (client -> server):**
+
+```json
+{
+  "type": "assignee.assign",
+  "data": {
+    "cardId": "card-uuid",
+    "userId": "user-uuid"
+  }
+}
+```
+
+**Response (server -> all clients including sender):**
+
+```json
+{
+  "type": "assignee.assign",
+  "data": {
+    "user": {
+      "id": "user-uuid",
+      "username": "bob",
+      "email": "bob@example.com"
+    },
+    "cardId": "card-uuid"
+  },
+  "sender": {
+    "username": "alice",
+    "email": "alice@example.com"
+  }
+}
+```
+
+#### `assignee.unassign`
+
+Unassigns a user from a card.
+
+**Request (client -> server):**
+
+```json
+{
+  "type": "assignee.unassign",
+  "data": {
+    "cardId": "card-uuid",
+    "userId": "user-uuid"
+  }
+}
+```
+
+**Response (server -> all clients including sender):**
+
+```json
+{
+  "type": "assignee.unassign",
+  "data": {
+    "userId": "user-uuid",
+    "cardId": "card-uuid"
+  },
+  "sender": {
+    "username": "alice",
+    "email": "alice@example.com"
+  }
+}
+```
+
+#### `assignee.list`
+
+Lists all users assigned to a card.
+
+**Request (client -> server):**
+
+```json
+{
+  "type": "assignee.list",
+  "data": {
+    "cardId": "card-uuid"
+  }
+}
+```
+
+**Response (server -> all clients including sender):**
+
+```json
+{
+  "type": "assignee.list",
+  "data": {
+    "cardId": "card-uuid",
+    "assignees": [
+      {
+        "id": "user-uuid-1",
+        "username": "bob",
+        "email": "bob@example.com"
+      },
+      {
+        "id": "user-uuid-2",
+        "username": "charlie",
+        "email": "charlie@example.com"
+      }
+    ]
   },
   "sender": {
     "username": "alice",
