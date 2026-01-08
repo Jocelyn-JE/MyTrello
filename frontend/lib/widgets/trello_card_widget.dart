@@ -295,34 +295,32 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
     if (canEdit && widget.isDraggable) {
       return Draggable<TrelloCard>(
         data: widget.card,
-        feedback: Opacity(
-          opacity: 0.8,
-          child: SizedBox(
-            width: 278,
-            child: Card(
-              elevation: 4,
-              margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      widget.card.title,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      widget.card.content,
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
-                    ),
-                  ],
-                ),
+        feedback: SizedBox(
+          width: 278,
+          child: Card(
+            elevation: 4,
+            margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    widget.card.title,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    widget.card.content,
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                ],
               ),
             ),
           ),
         ),
+        childWhenDragging: Opacity(opacity: 0.5, child: cardWidget),
         child: cardWidget,
       );
     }
