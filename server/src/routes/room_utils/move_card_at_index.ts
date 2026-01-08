@@ -15,10 +15,13 @@ export async function moveCardAtIndex(
     if (targetColumnId === undefined) targetColumnId = cardToInsert.columnId;
     if (targetIndex === undefined)
         targetIndex = (await getLastColumnIndex(targetColumnId)) + 1;
-    await decrementIndicesAfterMove(
-        cardToInsert.columnId,
-        cardToInsert.index
-    );
+    await decrementIndicesAfterMove(cardToInsert.columnId, cardToInsert.index);
+    // Adjust target index if moving within the same column downwards (to account for the removed card)
+    if (
+        cardToInsert.index > targetIndex &&
+        cardToInsert.columnId === targetColumnId
+    )
+        targetIndex -= 1;
     await incrementIndicesAfterMove(targetColumnId, targetIndex);
     // Update the card to be inserted with the new index and columnId
     await prisma.card.update({
