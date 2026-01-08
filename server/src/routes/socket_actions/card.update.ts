@@ -2,7 +2,7 @@ import { SocketAction } from "./action_type";
 import prisma from "../../utils/prisma.client";
 import { cardExists } from "../room_utils/get_card";
 import { tagExists } from "../room_utils/get_tag";
-import { insertCardAtIndex } from "../room_utils/insert_card_at_index";
+import { moveCardAtIndex } from "../room_utils/move_card_at_index";
 
 type CardUpdateData = {
     id: string;
@@ -47,7 +47,7 @@ export const cardUpdateAction: SocketAction = {
         };
 
         if (cardData.columnId !== undefined || cardData.index !== undefined)
-            await insertCardAtIndex(
+            await moveCardAtIndex(
                 cardData.columnId,
                 cardData.index,
                 cardData.id
