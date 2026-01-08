@@ -100,7 +100,9 @@ class _TrelloColumnWidgetState extends State<TrelloColumnWidget> {
               Expanded(
                 child: DragTarget<TrelloCard>(
                   onWillAcceptWithDetails: (details) {
-                    // Accept any card from any column
+                    final draggedCard = details.data;
+                    // Don't accept if the card is already in this column
+                    if (draggedCard.columnId == widget.column.id) return false;
                     return BoardPermissionsService.canEdit;
                   },
                   onAcceptWithDetails: (details) {
