@@ -1,6 +1,5 @@
 import { SocketAction } from "./action_type";
 import prisma from "../../utils/prisma.client";
-import { userExists } from "../room_utils/get_user";
 import { columnExists } from "../room_utils/get_column";
 import { tagExists } from "../room_utils/get_tag";
 
@@ -11,7 +10,6 @@ type CardCreateData = {
     startDate: Date | null;
     dueDate: Date | null;
     tagId: string | null;
-    assignees: string[] | null;
 };
 
 export const cardCreationAction: SocketAction = {
@@ -36,15 +34,6 @@ export const cardCreationAction: SocketAction = {
             console.error(`Tag with ID ${cardData.tagId} does not exist`);
             throw new Error("Tag does not exist");
         }
-        if (
-            cardData.assignees &&
-            cardData.assignees.some(async (id) => !(await userExists(id)))
-        ) {
-            console.error(
-                `One or more assignees do not exist: ${cardData.assignees}`
-            );
-            throw new Error("One or more assignees do not exist");
-        }
         const card = await prisma.card.create({
             data: {
                 title: cardData.title,
@@ -57,12 +46,7 @@ export const cardCreationAction: SocketAction = {
                 updatedAt: new Date(),
                 startDate: cardData.startDate,
                 dueDate: cardData.dueDate,
-                tagId: cardData.tagId,
-                assignees: {
-                    connect: cardData.assignees?.map((assigneeId) => ({
-                        id: assigneeId
-                    }))
-                }
+                tagId: cardData.tagId
             }
         });
         console.info(`Card created with ID: ${card.id}`);

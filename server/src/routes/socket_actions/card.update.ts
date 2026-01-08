@@ -2,7 +2,6 @@ import { SocketAction } from "./action_type";
 import prisma from "../../utils/prisma.client";
 import { cardExists, getCardInfo } from "../room_utils/get_card";
 import { tagExists } from "../room_utils/get_tag";
-import { userExists } from "../room_utils/get_user";
 
 type CardUpdateData = {
     id: string;
@@ -13,7 +12,6 @@ type CardUpdateData = {
     content?: string;
     startDate?: Date | null;
     dueDate?: Date | null;
-    assignees?: string[] | null;
 };
 
 export const cardUpdateAction: SocketAction = {
@@ -41,16 +39,6 @@ export const cardUpdateAction: SocketAction = {
         ) {
             console.error(`Tag with ID ${cardData.tagId} does not exist`);
             throw new Error("Tag does not exist");
-        }
-        if (
-            cardData.assignees !== undefined &&
-            cardData.assignees &&
-            cardData.assignees.some(async (id) => !(await userExists(id)))
-        ) {
-            console.error(
-                `One or more assignees do not exist: ${cardData.assignees}`
-            );
-            throw new Error("One or more assignees do not exist");
         }
         // Build update object with only provided fields
         const updateData: any = {
@@ -83,14 +71,6 @@ export const cardUpdateAction: SocketAction = {
             updateData.startDate = cardData.startDate;
         if (cardData.dueDate !== undefined)
             updateData.dueDate = cardData.dueDate;
-        if (cardData.assignees !== undefined) {
-            updateData.assignees = {
-                set: cardData.assignees
-                    ? cardData.assignees.map((id) => ({ id }))
-                    : []
-            };
-        }
-
         const card = await prisma.card.update({
             where: {
                 id: cardData.id
