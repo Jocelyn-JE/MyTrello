@@ -21,6 +21,6 @@ export const assigneeUnassignAction: SocketAction = {
             }
         });
         console.info(`User unassigned: ${assignee.id}`);
-        return {userId: assignee.id, cardId: listData.cardId};
+        return { userId: assignee.id, cardId: listData.cardId };
     }
 };

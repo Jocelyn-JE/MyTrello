@@ -48,12 +48,12 @@ export const cardUpdateAction: SocketAction = {
         // If columnId is changing but index is not provided, find next available index
         if (cardData.columnId !== undefined && cardData.index === undefined) {
             const currentCard = await getCardInfo(cardData.id);
-            
+
             // Only auto-assign index if moving to a different column
             if (currentCard && currentCard.columnId !== cardData.columnId) {
                 const maxIndexCard = await prisma.card.findFirst({
                     where: { columnId: cardData.columnId },
-                    orderBy: { index: 'desc' },
+                    orderBy: { index: "desc" },
                     select: { index: true }
                 });
                 updateData.index = maxIndexCard ? maxIndexCard.index + 1 : 0;
