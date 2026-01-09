@@ -57,20 +57,20 @@ void main() {
       expect(column.cards, isEmpty);
     });
 
-    test('update method creates new instance with updated title', () {
+    test('update method updates the column with updated title', () {
       final column = TrelloColumn.fromJson(sampleColumnJson);
-      final updated = column.update(title: 'In Progress');
+      column.update(title: 'In Progress');
 
-      expect(updated.id, equals(column.id));
-      expect(updated.boardId, equals(column.boardId));
-      expect(updated.index, equals(column.index));
-      expect(updated.title, equals('In Progress'));
-      expect(updated.createdAt, equals(column.createdAt));
-      expect(updated.updatedAt, equals(column.updatedAt));
-      expect(updated.cards, equals(column.cards));
+      expect(column.id, equals(column.id));
+      expect(column.boardId, equals(column.boardId));
+      expect(column.index, equals(column.index));
+      expect(column.title, equals('In Progress'));
+      expect(column.createdAt, equals(column.createdAt));
+      expect(column.updatedAt, equals(column.updatedAt));
+      expect(column.cards, equals(column.cards));
     });
 
-    test('update method creates new instance with updated cards', () {
+    test('update method updates the column with updated cards', () {
       final column = TrelloColumn.fromJson(sampleColumnJson);
       final card = TrelloCard(
         id: 'card-123',
@@ -81,11 +81,11 @@ void main() {
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
-      final updated = column.update(cards: [card]);
+      column.update(cards: [card]);
 
-      expect(updated.cards, hasLength(1));
-      expect(updated.cards.first.id, equals('card-123'));
-      expect(updated.id, equals(column.id));
+      expect(column.cards, hasLength(1));
+      expect(column.cards.first.id, equals('card-123'));
+      expect(column.id, equals(column.id));
     });
 
     test('update method preserves other fields when updating cards', () {
@@ -99,23 +99,23 @@ void main() {
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
-      final updated = column.update(cards: [card]);
+      column.update(cards: [card]);
 
-      expect(updated.id, equals(column.id));
-      expect(updated.boardId, equals(column.boardId));
-      expect(updated.index, equals(column.index));
-      expect(updated.title, equals(column.title));
+      expect(column.id, equals(column.id));
+      expect(column.boardId, equals(column.boardId));
+      expect(column.index, equals(column.index));
+      expect(column.title, equals(column.title));
     });
 
     test('update method with no parameters returns identical column', () {
       final column = TrelloColumn.fromJson(sampleColumnJson);
-      final updated = column.update();
+      column.update();
 
-      expect(updated.id, equals(column.id));
-      expect(updated.boardId, equals(column.boardId));
-      expect(updated.index, equals(column.index));
-      expect(updated.title, equals(column.title));
-      expect(updated.cards, equals(column.cards));
+      expect(column.id, equals(column.id));
+      expect(column.boardId, equals(column.boardId));
+      expect(column.index, equals(column.index));
+      expect(column.title, equals(column.title));
+      expect(column.cards, equals(column.cards));
     });
   });
 

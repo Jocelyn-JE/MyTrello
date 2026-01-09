@@ -1,9 +1,11 @@
+import 'package:flutter/material.dart';
+
 class TrelloBoard {
-  final String id;
-  final String ownerId;
-  final String title;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  String id;
+  String ownerId;
+  String title;
+  DateTime createdAt;
+  DateTime updatedAt;
 
   TrelloBoard({
     required this.id,
@@ -25,13 +27,13 @@ class TrelloBoard {
 }
 
 class TrelloColumn {
-  final String id;
-  final String boardId;
-  final int index;
-  final String title;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  final List<TrelloCard> cards;
+  String id;
+  String boardId;
+  int index;
+  String title;
+  DateTime createdAt;
+  DateTime updatedAt;
+  List<TrelloCard> cards;
 
   TrelloColumn({
     required this.id,
@@ -55,8 +57,8 @@ class TrelloColumn {
     );
   }
 
-  /// Creates a copy of this column with updated fields
-  TrelloColumn update({
+  /// Updates the properties of this column
+  void update({
     String? id,
     String? boardId,
     int? index,
@@ -65,73 +67,43 @@ class TrelloColumn {
     DateTime? updatedAt,
     List<TrelloCard>? cards,
   }) {
-    return TrelloColumn(
-      id: id ?? this.id,
-      boardId: boardId ?? this.boardId,
-      index: index ?? this.index,
-      title: title ?? this.title,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-      cards: cards ?? this.cards,
-    );
+    this.id = id ?? this.id;
+    this.boardId = boardId ?? this.boardId;
+    this.index = index ?? this.index;
+    this.title = title ?? this.title;
+    this.createdAt = createdAt ?? this.createdAt;
+    this.updatedAt = updatedAt ?? this.updatedAt;
+    this.cards = cards ?? this.cards;
   }
 
-  /// Creates a copy of this column with a card removed
-  TrelloColumn removeCard(String cardId) {
-    return TrelloColumn(
-      id: id,
-      title: title,
-      cards: cards.where((card) => card.id != cardId).toList(),
-      createdAt: createdAt,
-      updatedAt: updatedAt,
-      index: index,
-      boardId: boardId,
-    );
+  /// Removes a card by its ID
+  void removeCard(String cardId) {
+    cards.removeWhere((card) => card.id == cardId);
   }
 
-  /// Creates a copy of this column with a card added
-  TrelloColumn addCard(TrelloCard card) {
-    final updatedCards = [...cards, card]
-      ..sort((a, b) => a.index.compareTo(b.index));
-    return TrelloColumn(
-      id: id,
-      title: title,
-      cards: updatedCards,
-      createdAt: createdAt,
-      updatedAt: updatedAt,
-      index: index,
-      boardId: boardId,
-    );
+  /// Adds a card to this column
+  void addCard(TrelloCard card) {
+    cards.insert(card.index, card);
   }
 
-  /// Creates a copy of this column with a card updated
-  TrelloColumn updateCard(TrelloCard updatedCard) {
-    return TrelloColumn(
-      id: id,
-      title: title,
-      cards: cards.map((card) {
-        return card.id == updatedCard.id ? updatedCard : card;
-      }).toList(),
-      createdAt: createdAt,
-      updatedAt: updatedAt,
-      index: index,
-      boardId: boardId,
-    );
+  /// Replaces an existing card with updated data
+  void updateCard(TrelloCard updatedCard) {
+    cards[updatedCard.index] = updatedCard;
   }
 }
 
 class TrelloCard {
-  final String id;
-  final String columnId;
-  final String? tagId;
-  final int index;
-  final String title;
-  final String content;
-  final DateTime? startDate;
-  final DateTime? dueDate;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  final List<TrelloUser> assignedUsers;
+  String id;
+  String columnId;
+  String? tagId;
+  int index;
+  String title;
+  String content;
+  DateTime? startDate;
+  DateTime? dueDate;
+  DateTime createdAt;
+  DateTime updatedAt;
+  List<TrelloUser> assignedUsers = [];
 
   TrelloCard({
     required this.id,
@@ -144,7 +116,6 @@ class TrelloCard {
     this.dueDate,
     required this.createdAt,
     required this.updatedAt,
-    this.assignedUsers = const [],
   });
 
   factory TrelloCard.fromJson(Map<String, dynamic> json) {
@@ -166,7 +137,7 @@ class TrelloCard {
     );
   }
 
-  TrelloCard update({
+  void update({
     String? id,
     String? columnId,
     String? tagId,
@@ -179,29 +150,36 @@ class TrelloCard {
     DateTime? updatedAt,
     List<TrelloUser>? assignedUsers,
   }) {
-    return TrelloCard(
-      id: id ?? this.id,
-      columnId: columnId ?? this.columnId,
-      tagId: tagId ?? this.tagId,
-      index: index ?? this.index,
-      title: title ?? this.title,
-      content: content ?? this.content,
-      startDate: startDate ?? this.startDate,
-      dueDate: dueDate ?? this.dueDate,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-      assignedUsers: assignedUsers ?? this.assignedUsers,
-    );
+    this.id = id ?? this.id;
+    this.columnId = columnId ?? this.columnId;
+    this.tagId = tagId ?? this.tagId;
+    this.index = index ?? this.index;
+    this.title = title ?? this.title;
+    this.content = content ?? this.content;
+    this.startDate = startDate ?? this.startDate;
+    this.dueDate = dueDate ?? this.dueDate;
+    this.createdAt = createdAt ?? this.createdAt;
+    this.updatedAt = updatedAt ?? this.updatedAt;
+    this.assignedUsers = assignedUsers ?? this.assignedUsers;
+  }
+
+  void addAssignee(TrelloUser user) {
+    debugPrint('Adding assignee: ${user.username}');
+    assignedUsers.add(user);
+  }
+
+  void removeAssignee(String userId) {
+    assignedUsers.removeWhere((user) => user.id == userId);
   }
 }
 
 class TrelloTag {
-  final String id;
-  final String boardId;
-  final String name;
-  final String color;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  String id;
+  String boardId;
+  String name;
+  String color;
+  DateTime createdAt;
+  DateTime updatedAt;
 
   TrelloTag({
     required this.id,
@@ -225,11 +203,11 @@ class TrelloTag {
 }
 
 class TrelloUser {
-  final String id;
-  final String email;
-  final String username;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  String id;
+  String email;
+  String username;
+  DateTime createdAt;
+  DateTime updatedAt;
 
   TrelloUser({
     required this.id,

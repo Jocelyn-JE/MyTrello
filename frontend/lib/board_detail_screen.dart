@@ -295,15 +295,14 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
     },
     'column.rename': (dynamic payload, MinimalUser sender) {
       TrelloColumn renamedColumn = TrelloColumn.fromJson(payload);
-      _updateColumn(
-        renamedColumn.id,
-        (col) => col.update(title: renamedColumn.title),
-      );
+      setState(() {
+        _getColumnById(renamedColumn.id).update(title: renamedColumn.title);
+      });
     },
     'column.delete': (dynamic payload, MinimalUser sender) {
       TrelloColumn deletedColumn = TrelloColumn.fromJson(payload);
       setState(() {
-        _columns.removeWhere((col) => col.id == deletedColumn.id);
+        _removeColumnById(deletedColumn.id);
       });
     },
     'column.create': (dynamic payload, MinimalUser sender) {
@@ -320,7 +319,9 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
 
       // Get columnId from the first card
       final columnId = cards.first.columnId;
-      _updateColumn(columnId, (col) => col.update(cards: cards));
+      setState(() {
+        _getColumnById(columnId).cards = cards;
+      });
 
       for (var card in cards) {
         WebsocketService.fetchAssignees(card.id);
@@ -328,35 +329,27 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
     },
     'card.create': (dynamic payload, MinimalUser sender) {
       TrelloCard newCard = TrelloCard.fromJson(payload);
-      _updateColumn(newCard.columnId, (col) => col.addCard(newCard));
+      setState(() {
+        _getColumnById(newCard.columnId).addCard(newCard);
+      });
     },
     'card.update': (dynamic payload, MinimalUser sender) {
       TrelloCard updatedCard = TrelloCard.fromJson(payload);
       setState(() {
-        // Remove from old column
-        for (int i = 0; i < _columns.length; i++) {
-          if (_columns[i].cards.any((c) => c.id == updatedCard.id)) {
-            _columns[i] = _columns[i].removeCard(updatedCard.id);
-            break;
-          }
-        }
-        // Add to new column
-        final newColumnIndex = _columns.indexWhere(
-          (col) => col.id == updatedCard.columnId,
+        updatedCard.update(
+          assignedUsers: _getCardById(updatedCard.id).assignedUsers,
         );
-        if (newColumnIndex != -1) {
-          _columns[newColumnIndex] = _columns[newColumnIndex].addCard(
-            updatedCard,
-          );
-        }
+        setState(() {
+          _removeCardById(updatedCard.id);
+          _getColumnById(updatedCard.columnId).addCard(updatedCard);
+        });
       });
     },
     'card.delete': (dynamic payload, MinimalUser sender) {
       TrelloCard deletedCard = TrelloCard.fromJson(payload);
-      _updateColumn(
-        deletedCard.columnId,
-        (col) => col.removeCard(deletedCard.id),
-      );
+      setState(() {
+        _removeCardById(deletedCard.id);
+      });
     },
     'assignee.list': (dynamic payload, MinimalUser sender) {
       if (sender.id != AuthService.userId) return;
@@ -364,27 +357,22 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
           .map((user) => TrelloUser.fromJson(user))
           .toList();
       String cardId = payload['cardId'];
-      _updateCardInPlace(
-        cardId,
-        (card) => card.update(assignedUsers: assignees),
-      );
+      setState(() {
+        _getCardById(cardId).update(assignedUsers: assignees);
+      });
     },
     'assignee.assign': (dynamic payload, MinimalUser sender) {
       String cardId = payload['cardId'];
       TrelloUser newAssignee = TrelloUser.fromJson(payload['user']);
-      _updateCardInPlace(cardId, (card) {
-        return card.update(assignedUsers: [...card.assignedUsers, newAssignee]);
+      setState(() {
+        _getCardById(cardId).addAssignee(newAssignee);
       });
     },
     'assignee.unassign': (dynamic payload, MinimalUser sender) {
       String cardId = payload['cardId'];
       String userId = payload['userId'];
-      _updateCardInPlace(cardId, (card) {
-        return card.update(
-          assignedUsers: card.assignedUsers
-              .where((u) => u.id != userId)
-              .toList(),
-        );
+      setState(() {
+        _getCardById(cardId).removeAssignee(userId);
       });
     },
   };
@@ -398,42 +386,61 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
     }
   }
 
-  /// Updates a column by ID using a transformation function
-  void _updateColumn(
-    String columnId,
-    TrelloColumn Function(TrelloColumn) updateFn,
-  ) {
-    setState(() {
-      final index = _columns.indexWhere((col) => col.id == columnId);
-      if (index != -1) {
-        _columns[index] = updateFn(_columns[index]);
-      }
-    });
-  }
-
-  /// Updates a specific card in place using a transformation function
-  void _updateCardInPlace(
-    String cardId,
-    TrelloCard Function(TrelloCard) updateFn,
-  ) {
-    setState(() {
-      final columnIndex = _findColumnIndexByCardId(cardId);
-      if (columnIndex == -1) return;
-
-      final cardIndex = _columns[columnIndex].cards.indexWhere(
-        (card) => card.id == cardId,
-      );
-      if (cardIndex == -1) return;
-
-      final updatedCard = updateFn(_columns[columnIndex].cards[cardIndex]);
-      _columns[columnIndex] = _columns[columnIndex].updateCard(updatedCard);
-    });
-  }
-
-  /// Find the column index containing a card with the given ID
+  /// Find the index of the column containing the card with the given ID
   int _findColumnIndexByCardId(String cardId) {
-    return _columns.indexWhere(
-      (col) => col.cards.any((card) => card.id == cardId),
-    );
+    for (var i = 0; i < _columns.length; i++) {
+      if (_columns[i].cards.any((card) => card.id == cardId)) {
+        return i;
+      }
+    }
+    return -1; // Not found
+  }
+
+  /// Check if a card is already in a specific column
+  bool _cardInColumn(String cardId, String columnId) {
+    final columnIndex = _findColumnIndexByCardId(cardId);
+    if (columnIndex == -1) return false;
+    return _columns[columnIndex].id == columnId;
+  }
+
+  /// Retrieves a card by its ID
+  TrelloCard _getCardById(String cardId) {
+    for (var column in _columns) {
+      for (var card in column.cards) {
+        if (card.id == cardId) {
+          return card;
+        }
+      }
+    }
+    throw Exception('Card with ID $cardId not found');
+  }
+
+  /// Retrieves a column by its ID
+  TrelloColumn _getColumnById(String columnId) {
+    for (var column in _columns) {
+      if (column.id == columnId) {
+        return column;
+      }
+    }
+    throw Exception('Column with ID $columnId not found');
+  }
+
+  /// Remove a column by its ID
+  void _removeColumnById(String columnId) {
+    setState(() {
+      _columns.removeWhere((col) => col.id == columnId);
+    });
+  }
+
+  /// Remove a card by its ID
+  void _removeCardById(String cardId) {
+    final columnIndex = _findColumnIndexByCardId(cardId);
+    if (columnIndex != -1) {
+      setState(() {
+        _columns[columnIndex].removeCard(cardId);
+      });
+      return;
+    }
+    throw Exception('Card with ID $cardId not found');
   }
 }
