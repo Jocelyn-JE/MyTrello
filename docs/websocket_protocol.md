@@ -407,6 +407,7 @@ Updates an existing card. Only fields provided in the request will be updated. A
 - Any combination of the other fields can be provided for partial updates
 - Set `tagId`, `startDate`, or `dueDate` to `null` to clear them
 - `columnId` can be changed to move the card between columns
+- `index` can be changed to reorder the card within its column (or new column if `columnId` is also changed). It is up to the server to adjust other cards' indices accordingly when a card is moved within the same column.
 - `title` and `content` cannot be empty strings
 
 **Response (server -> all clients including sender):**
