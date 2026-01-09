@@ -21,7 +21,27 @@ export const columnDeletionAction: SocketAction = {
                 id: columnData.id
             }
         });
+        await updateColumnIndicesAfterDeletion(boardId, column.index);
         console.info(`Column deleted with ID: ${column.id}`);
         return column;
     }
 };
+
+async function updateColumnIndicesAfterDeletion(
+    boardId: string,
+    deletedIndex: number
+): Promise<void> {
+    await prisma.column.updateMany({
+        where: {
+            boardId: boardId,
+            index: {
+                gt: deletedIndex
+            }
+        },
+        data: {
+            index: {
+                decrement: 1
+            }
+        }
+    });
+}
