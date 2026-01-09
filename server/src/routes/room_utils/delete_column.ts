@@ -40,7 +40,7 @@ export async function incrementColumnIndicesAfter(
 ): Promise<void> {
     const columnsToUpdate = await prisma.column.findMany({
         where: {
-        boardId: boardId,
+            boardId: boardId,
             index: {
                 gte: startIndex
             }
