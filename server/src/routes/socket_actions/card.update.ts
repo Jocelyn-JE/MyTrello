@@ -7,7 +7,7 @@ import { moveCardAtIndex } from "../room_utils/move_card_at_index";
 type CardUpdateData = {
     id: string;
     columnId?: string;
-    index?: number;
+    newPos?: string; // ID of an existing card
     tagId?: string | null;
     title?: string;
     content?: string;
@@ -46,10 +46,10 @@ export const cardUpdateAction: SocketAction = {
             updatedAt: new Date()
         };
 
-        if (cardData.columnId !== undefined || cardData.index !== undefined)
+        if (cardData.columnId !== undefined || cardData.newPos !== undefined)
             await moveCardAtIndex(
                 cardData.columnId,
-                cardData.index,
+                cardData.newPos,
                 cardData.id
             );
         if (cardData.tagId !== undefined) updateData.tagId = cardData.tagId;
@@ -64,7 +64,7 @@ export const cardUpdateAction: SocketAction = {
             where: {
                 id: cardData.id
             },
-            data: updateData
+            data: { ...updateData, updatedAt: new Date() }
         });
         console.info(`Card updated with ID: ${card.id}`);
         return card;
