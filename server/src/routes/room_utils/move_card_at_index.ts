@@ -40,7 +40,7 @@ export async function moveCardAtIndex(
         _min: { index: true }
     });
     const tempIndex = (minIndex._min.index ?? 0) - 1;
-    
+
     await prisma.card.update({
         where: { id: cardId },
         data: {
