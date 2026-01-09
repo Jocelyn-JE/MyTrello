@@ -2,6 +2,7 @@ import { SocketAction } from "./action_type";
 import prisma from "../../utils/prisma.client";
 import { columnExists } from "../room_utils/get_column";
 import { tagExists } from "../room_utils/get_tag";
+import { getNextCardIndex } from "../room_utils/get_next_card_index";
 
 type CardCreateData = {
     title: string;
@@ -39,9 +40,7 @@ export const cardCreationAction: SocketAction = {
                 title: cardData.title,
                 columnId: cardData.columnId,
                 content: cardData.content,
-                index: await prisma.card.count({
-                    where: { columnId: cardData.columnId }
-                }),
+                index: await getNextCardIndex(cardData.columnId),
                 createdAt: new Date(),
                 updatedAt: new Date(),
                 startDate: cardData.startDate,
