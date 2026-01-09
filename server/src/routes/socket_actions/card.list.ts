@@ -11,11 +11,11 @@ export const cardListingAction: SocketAction = {
         console.info(
             `Listing cards in column ${listData.columnId} of board ${boardId}`
         );
-        const columns = await prisma.card.findMany({
+        const cards = await prisma.card.findMany({
             where: { columnId: listData.columnId },
             orderBy: { index: "asc" }
         });
-        console.info(`Cards found: ${columns.length}`);
-        return columns;
+        console.info(`Cards found: ${cards.length}`);
+        return cards;
     }
 };
