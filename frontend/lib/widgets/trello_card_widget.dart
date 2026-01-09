@@ -8,10 +8,12 @@ import 'package:frontend/websocket/websocket.dart';
 class TrelloCardWidget extends StatefulWidget {
   final TrelloCard card;
   final bool isDraggable;
+  final String? cardAboveId;
 
   const TrelloCardWidget({
     super.key,
     required this.card,
+    this.cardAboveId,
     this.isDraggable = false,
   });
 
@@ -291,39 +293,85 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
       ),
     );
 
-    // Wrap with Draggable if editing is enabled and isDraggable is true
     if (canEdit && widget.isDraggable) {
-      return Draggable<TrelloCard>(
-        data: widget.card,
-        feedback: SizedBox(
-          width: 278,
-          child: Card(
-            elevation: 4,
-            margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
+      return DragTarget<TrelloCard>(
+        onWillAcceptWithDetails: (details) {
+          return BoardPermissionsService.canEdit;
+        },
+        onAcceptWithDetails: (details) {
+          final draggedCard = details.data;
+          // Don't update if the card is the same position
+          if (draggedCard.id == widget.card.id) return;
+          // Don't update if dropped under itself
+          if (widget.cardAboveId != null &&
+              widget.cardAboveId == draggedCard.id) {
+            return;
+          }
+          // Move card to this card's position
+          WebsocketService.updateCard(
+            cardId: draggedCard.id,
+            columnId: widget.card.columnId,
+            newPos: widget.card.id,
+          );
+        },
+        builder: (context, candidateData, rejectedData) {
+          final isHovering =
+              candidateData.isNotEmpty &&
+              candidateData[0]?.id != widget.card.id;
+          if (isHovering) {
+            return _draggableCard(
+              Column(
                 children: [
-                  Text(
-                    widget.card.title,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  Container(
+                    height: 4,
+                    margin: const EdgeInsets.symmetric(vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.lightBlue,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    widget.card.content,
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
-                  ),
+                  cardWidget,
                 ],
               ),
-            ),
-          ),
-        ),
-        childWhenDragging: Opacity(opacity: 0.5, child: cardWidget),
-        child: cardWidget,
+            );
+          }
+          return _draggableCard(cardWidget);
+        },
       );
     }
     return cardWidget;
+  }
+
+  Widget _draggableCard(Widget card) {
+    return Draggable<TrelloCard>(
+      data: widget.card,
+      feedback: SizedBox(
+        width: 278,
+        child: Card(
+          elevation: 4,
+          margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  widget.card.title,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  widget.card.content,
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      childWhenDragging: Opacity(opacity: 0.5, child: card),
+      child: card,
+    );
   }
 }

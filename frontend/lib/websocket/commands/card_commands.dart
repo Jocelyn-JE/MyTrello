@@ -76,7 +76,7 @@ class UpdateCardCommand implements WebSocketCommand {
   final String? title;
   final String? content;
   final String? tagId;
-  final int? index;
+  final String? newPos;
   final DateTime? startDate;
   final DateTime? dueDate;
   final List<String>? assignees;
@@ -87,7 +87,7 @@ class UpdateCardCommand implements WebSocketCommand {
     this.title,
     this.content,
     this.tagId,
-    this.index,
+    this.newPos,
     this.startDate,
     this.dueDate,
     this.assignees,
@@ -102,7 +102,7 @@ class UpdateCardCommand implements WebSocketCommand {
       if (title != null) 'title': title,
       if (content != null) 'content': content,
       if (tagId != null) 'tagId': tagId,
-      if (index != null) 'index': index,
+      if (newPos != null) 'newPos': newPos,
       if (startDate != null) 'startDate': startDate!.toIso8601String(),
       if (dueDate != null) 'dueDate': dueDate!.toIso8601String(),
       if (assignees != null) 'assignees': assignees,

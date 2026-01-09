@@ -77,8 +77,8 @@ class _TrelloColumnWidgetState extends State<TrelloColumnWidget> {
                     fontWeight: FontWeight.bold,
                   ),
                   textAlign: TextAlign.center,
-                  onSubmitted: (_) => _saveTitle(),
-                  onEditingComplete: () {
+                  onEditingComplete: () => _saveTitle(),
+                  onSubmitted: (_) {
                     _saveTitle();
                     FocusScope.of(context).unfocus();
                   },
@@ -100,17 +100,10 @@ class _TrelloColumnWidgetState extends State<TrelloColumnWidget> {
               Expanded(
                 child: DragTarget<TrelloCard>(
                   onWillAcceptWithDetails: (details) {
-                    final draggedCard = details.data;
-                    // Don't accept if the card is already in this column
-                    if (draggedCard.columnId == widget.column.id) return false;
                     return BoardPermissionsService.canEdit;
                   },
                   onAcceptWithDetails: (details) {
                     final draggedCard = details.data;
-                    // Don't do anything if dropped in the same column
-                    if (draggedCard.columnId == widget.column.id) {
-                      return;
-                    }
                     // Move card to this column let server assign the index
                     WebsocketService.updateCard(
                       cardId: draggedCard.id,
@@ -148,6 +141,9 @@ class _TrelloColumnWidgetState extends State<TrelloColumnWidget> {
                                 return TrelloCardWidget(
                                   card: card,
                                   isDraggable: true,
+                                  cardAboveId: index > 0
+                                      ? widget.column.cards[index - 1].id
+                                      : null,
                                 );
                               },
                             ),
