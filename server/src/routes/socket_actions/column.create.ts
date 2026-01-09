@@ -1,5 +1,6 @@
 import { SocketAction } from "./action_type";
 import prisma from "../../utils/prisma.client";
+import { getNextColumnIndex } from "../room_utils/get_next_column_index";
 
 type ColumnCreateData = {
     title: string;
@@ -16,19 +17,11 @@ export const columnCreationAction: SocketAction = {
             throw new Error("Column title cannot be empty");
         }
 
-        // Find the maximum index and add 1, or use 0 if no columns exist
-        const maxIndexColumn = await prisma.column.findFirst({
-            where: { boardId },
-            orderBy: { index: "desc" },
-            select: { index: true }
-        });
-        const nextIndex = maxIndexColumn ? maxIndexColumn.index + 1 : 0;
-
         const column = await prisma.column.create({
             data: {
                 title: columnData.title,
                 boardId,
-                index: nextIndex,
+                index: await getNextColumnIndex(boardId),
                 createdAt: new Date(),
                 updatedAt: new Date()
             }
