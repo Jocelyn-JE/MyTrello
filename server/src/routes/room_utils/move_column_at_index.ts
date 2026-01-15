@@ -7,7 +7,7 @@ import { getColumnInfo } from "./get_column";
 import { getNextColumnIndex } from "./get_next_column_index";
 
 export async function moveColumnAtIndex(
-    targetColumnId: string | undefined = undefined,
+    targetColumnId: string | null = null,
     columnId: string
 ): Promise<void> {
     let columnToInsert = await getColumnInfo(columnId);
@@ -20,7 +20,7 @@ export async function moveColumnAtIndex(
         return;
     }
     if (
-        targetColumnId !== undefined &&
+        targetColumnId !== null &&
         !(await getColumnInfo(targetColumnId))
     ) {
         console.error(`Column with ID ${targetColumnId} does not exist`);
@@ -47,7 +47,7 @@ export async function moveColumnAtIndex(
 
     // Determine the target index
     let targetIndex: number = 0;
-    if (targetColumnId === undefined) {
+    if (targetColumnId === null) {
         // Insert at end
         targetIndex = await getNextColumnIndex(columnToInsert.boardId);
     } else {

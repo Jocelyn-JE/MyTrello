@@ -4,7 +4,7 @@ import { moveColumnAtIndex } from "../room_utils/move_column_at_index";
 
 type ColumnMoveData = {
     id: string;
-    newPos?: string; // New position before which to move the column, if not provided, move to end
+    newPos: string | null; // New position before which to move the column, if not provided, move to end
 };
 
 export const columnMoveAction: SocketAction = {
