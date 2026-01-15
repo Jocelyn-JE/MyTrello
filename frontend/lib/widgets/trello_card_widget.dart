@@ -268,21 +268,10 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
                   spacing: 6,
                   runSpacing: 6,
                   children: widget.card.assignedUsers.map((user) {
-                    return CircleAvatar(
-                      radius: 12,
-                      backgroundColor:
-                          Colors.primaries[Random(
-                            user.id.hashCode,
-                          ).nextInt(Colors.primaries.length)],
-                      child: Text(
-                        user.username.isNotEmpty
-                            ? user.username[0].toUpperCase()
-                            : '?',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                        ),
-                      ),
+                    return _AssignedUserAvatar(
+                      user: user,
+                      cardId: widget.card.id,
+                      canEdit: canEdit,
                     );
                   }).toList(),
                 ),
@@ -372,6 +361,88 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
       ),
       childWhenDragging: Opacity(opacity: 0.5, child: card),
       child: card,
+    );
+  }
+}
+
+class _AssignedUserAvatar extends StatefulWidget {
+  final TrelloUser user;
+  final String cardId;
+  final bool canEdit;
+
+  const _AssignedUserAvatar({
+    required this.user,
+    required this.cardId,
+    required this.canEdit,
+  });
+
+  @override
+  State<_AssignedUserAvatar> createState() => _AssignedUserAvatarState();
+}
+
+class _AssignedUserAvatarState extends State<_AssignedUserAvatar> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: widget.user.username,
+      child: MouseRegion(
+        onEnter: (_) {
+          if (widget.canEdit) {
+            setState(() => _isHovered = true);
+          }
+        },
+        onExit: (_) {
+          if (widget.canEdit) {
+            setState(() => _isHovered = false);
+          }
+        },
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            CircleAvatar(
+              radius: 12,
+              backgroundColor:
+                  Colors.primaries[Random(
+                    widget.user.id.hashCode,
+                  ).nextInt(Colors.primaries.length)],
+              child: Text(
+                widget.user.username.isNotEmpty
+                    ? widget.user.username[0].toUpperCase()
+                    : '?',
+                style: const TextStyle(color: Colors.white, fontSize: 12),
+              ),
+            ),
+            if (_isHovered && widget.canEdit)
+              Positioned(
+                top: -4,
+                right: -4,
+                child: GestureDetector(
+                  onTap: () {
+                    WebsocketService.unassignUserFromCard(
+                      widget.cardId,
+                      widget.user.id,
+                    );
+                  },
+                  child: Container(
+                    width: 16,
+                    height: 16,
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.close,
+                      size: 12,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }
