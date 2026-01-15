@@ -57,7 +57,7 @@ export async function moveColumnAtIndex(
             throw new Error("Target column does not exist");
         }
         targetIndex = targetColumn.index;
-        await incrementColumnIndicesAfter(targetColumnId, targetIndex); // Make space for the moved column
+        await incrementColumnIndicesAfter(columnToInsert.boardId, targetIndex); // Make space for the moved column
     }
     await prisma.column.update({
         where: { id: columnId },
