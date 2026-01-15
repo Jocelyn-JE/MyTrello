@@ -172,6 +172,11 @@ class WebsocketService {
     _sendCommand(DeleteColumnCommand(columnId: columnId));
   }
 
+  /// Ask the server to move a column to a new position
+  static void moveColumn(String columnId, String? newPos) {
+    _sendCommand(MoveColumnCommand(columnId: columnId, newPos: newPos));
+  }
+
   /// Ask the server for the list of assignees for a specific card
   static void fetchAssignees(String cardId) {
     _sendCommand(ListAssigneesCommand(cardId: cardId));

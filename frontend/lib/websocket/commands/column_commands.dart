@@ -57,3 +57,19 @@ class DeleteColumnCommand implements WebSocketCommand {
     'data': {'id': columnId},
   };
 }
+
+/// Move a column to a new position in the board
+class MoveColumnCommand implements WebSocketCommand {
+  @override
+  final String type = 'column.move';
+  final String columnId;
+  final String? newPos; // null means move to the end
+
+  MoveColumnCommand({required this.columnId, required this.newPos});
+
+  @override
+  Map<String, dynamic> toJson() => {
+    'type': type,
+    'data': {'id': columnId, 'newPos': newPos},
+  };
+}

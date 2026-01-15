@@ -201,20 +201,53 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
         itemCount: _columns.length + (BoardPermissionsService.canEdit ? 1 : 0),
         itemBuilder: (context, index) {
           if (index == _columns.length && BoardPermissionsService.canEdit) {
-            return ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.lightGreen.shade200,
-              ),
-              onPressed: () {
-                WebsocketService.createColumn('New Column');
+            // Add column button with drag target
+            return DragTarget<TrelloColumn>(
+              onWillAcceptWithDetails: (details) => true,
+              onAcceptWithDetails: (details) {
+                final draggedColumn = details.data;
+                // Move to end by passing null as newPos
+                WebsocketService.moveColumn(draggedColumn.id, null);
               },
-              child: const Icon(Icons.add),
+              builder: (context, candidateData, rejectedData) {
+                final isHovering =
+                    candidateData.isNotEmpty &&
+                    candidateData[0]!.index != _columns.length - 1;
+                final button = ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.lightGreen.shade200,
+                  ),
+                  onPressed: () {
+                    WebsocketService.createColumn('New Column');
+                  },
+                  child: const Icon(Icons.add),
+                );
+
+                if (isHovering) {
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Container(
+                        width: 4,
+                        margin: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                        decoration: BoxDecoration(
+                          color: Colors.lightBlue,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                      button,
+                    ],
+                  );
+                }
+                return button;
+              },
             );
           }
           final column = _columns[index];
           return TrelloColumnWidget(
             column: column,
             onAddCard: () => _showAddCardDialog(column.id),
+            columnBeforeId: index > 0 ? _columns[index - 1].id : null,
           );
         },
       ),
@@ -311,6 +344,21 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
         _columns.add(newColumn);
       });
     },
+    'column.move': (dynamic payload, MinimalUser sender) {
+      TrelloColumn movedColumn = TrelloColumn.fromJson(payload);
+      setState(() {
+        // Find and preserve the existing column with its cards
+        final oldIndex = _columns.indexWhere((col) => col.id == movedColumn.id);
+        if (oldIndex != -1) {
+          final existingColumn = _columns.removeAt(oldIndex);
+          // Update the index on the existing column (preserves cards)
+          existingColumn.update(index: movedColumn.index);
+          // Insert at new position based on index
+          final newIndex = movedColumn.index.clamp(0, _columns.length);
+          _columns.insert(newIndex, existingColumn);
+        }
+      });
+    },
     'card.list': (dynamic payload, MinimalUser sender) {
       if (sender.id != AuthService.userId) return;
       List<TrelloCard> cards = (payload as List)
@@ -394,13 +442,6 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
       }
     }
     return -1; // Not found
-  }
-
-  /// Check if a card is already in a specific column
-  bool _cardInColumn(String cardId, String columnId) {
-    final columnIndex = _findColumnIndexByCardId(cardId);
-    if (columnIndex == -1) return false;
-    return _columns[columnIndex].id == columnId;
   }
 
   /// Retrieves a card by its ID

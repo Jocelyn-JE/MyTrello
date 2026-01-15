@@ -304,9 +304,14 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
           );
         },
         builder: (context, candidateData, rejectedData) {
+          final draggedCard = candidateData.isNotEmpty
+              ? candidateData[0]
+              : null;
           final isHovering =
-              candidateData.isNotEmpty &&
-              candidateData[0]?.id != widget.card.id;
+              draggedCard != null &&
+              draggedCard.id != widget.card.id &&
+              widget.cardAboveId != draggedCard.id;
+
           if (isHovering) {
             return _draggableCard(
               Column(
