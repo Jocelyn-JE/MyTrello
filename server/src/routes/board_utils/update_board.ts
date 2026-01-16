@@ -31,9 +31,9 @@ export async function updateBoard(
             viewers: { set: viewers.map((user) => ({ id: user.id })) }
         },
         include: {
-            owner: { select: { id: true, username: true } },
-            members: { select: { id: true, username: true } },
-            viewers: { select: { id: true, username: true } }
+            owner: { select: { id: true, username: true, email: true } },
+            members: { select: { id: true, username: true, email: true } },
+            viewers: { select: { id: true, username: true, email: true } }
         }
     });
 }
