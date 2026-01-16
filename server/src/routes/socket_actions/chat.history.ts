@@ -3,9 +3,9 @@ import prisma from "../../utils/prisma.client";
 
 export const chatHistoryAction: SocketAction = {
     actionName: "chat.history",
-    async execute(boardId: string, data: string, userId: string) {
+    async execute(boardId: string, data: string, _userId: string) {
         console.info(
-            `Fetching chat history in board ${boardId} for user ${userId}`
+            `Fetching chat history in board ${boardId} for user ${_userId}`
         );
         const messages = await prisma.message.findMany({
             where: { boardId },
