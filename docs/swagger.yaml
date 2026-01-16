@@ -164,7 +164,7 @@ paths:
             format: uuid
         - name: member
           in: query
-          description: Filter for users who are members (of specified board if boardId provided, or any board)
+          description: Filter for users who are members or owners (of specified board if boardId provided, or any board). Board owners are always included when filtering for members.
           schema:
             type: boolean
         - name: viewer

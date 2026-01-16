@@ -111,11 +111,20 @@ router.get("/search", async (req, res) => {
             const boardConditions: any[] = [];
 
             if (queryFilters.member) {
-                boardConditions.push({
-                    member_boards: queryFilters.boardId
-                        ? { some: { id: queryFilters.boardId } }
-                        : { some: {} }
-                });
+                // Include both members and owners when searching for members
+                const memberConditions = [
+                    {
+                        member_boards: queryFilters.boardId
+                            ? { some: { id: queryFilters.boardId } }
+                            : { some: {} }
+                    },
+                    {
+                        owned_boards: queryFilters.boardId
+                            ? { some: { id: queryFilters.boardId } }
+                            : { some: {} }
+                    }
+                ];
+                boardConditions.push(...memberConditions);
             }
 
             if (queryFilters.viewer) {
@@ -126,15 +135,16 @@ router.get("/search", async (req, res) => {
                 });
             }
 
-            // If both member and viewer are true, use OR logic
+            // Use OR logic to combine all conditions
             if (boardConditions.length > 1) {
                 where.OR = boardConditions;
             } else {
                 Object.assign(where, boardConditions[0]);
             }
         } else if (queryFilters.boardId) {
-            // If only boardId is provided without member/viewer flags, search both
+            // If only boardId is provided without member/viewer flags, search owners, members, and viewers
             where.OR = [
+                { owned_boards: { some: { id: queryFilters.boardId } } },
                 { member_boards: { some: { id: queryFilters.boardId } } },
                 { viewed_boards: { some: { id: queryFilters.boardId } } }
             ];
@@ -160,7 +170,10 @@ router.get("/search", async (req, res) => {
             orderBy.email = queryFilters.order;
         const take = queryFilters.count || undefined;
 
-        console.debug("Search parameters:", { where, orderBy, take });
+        console.debug(
+            "Search parameters:",
+            JSON.stringify({ where, orderBy, take }, null, 2)
+        );
         const users = await prisma.user.findMany({
             where,
             orderBy,
