@@ -66,6 +66,9 @@ type QueryValues = {
     email?: string;
     order?: "asc" | "desc";
     count?: number;
+    boardId?: string;
+    member?: boolean;
+    viewer?: boolean;
 };
 
 router.get("/search", async (req, res) => {
@@ -83,6 +86,9 @@ router.get("/search", async (req, res) => {
         });
         if (query.order) queryFilters.order = query.order;
         if (query.count) queryFilters.count = parseInt(query.count, 10);
+        if (query.boardId) queryFilters.boardId = query.boardId;
+        if (query.member) queryFilters.member = query.member === "true";
+        if (query.viewer) queryFilters.viewer = query.viewer === "true";
 
         const where: any = {};
         if (queryFilters.username)
@@ -95,6 +101,40 @@ router.get("/search", async (req, res) => {
                 startsWith: queryFilters.email,
                 mode: "insensitive"
             };
+        
+        // Handle board filtering
+        if (queryFilters.member || queryFilters.viewer) {
+            const boardConditions: any[] = [];
+            
+            if (queryFilters.member) {
+                boardConditions.push({
+                    member_boards: queryFilters.boardId
+                        ? { some: { id: queryFilters.boardId } }
+                        : { some: {} }
+                });
+            }
+            
+            if (queryFilters.viewer) {
+                boardConditions.push({
+                    viewed_boards: queryFilters.boardId
+                        ? { some: { id: queryFilters.boardId } }
+                        : { some: {} }
+                });
+            }
+            
+            // If both member and viewer are true, use OR logic
+            if (boardConditions.length > 1) {
+                where.OR = boardConditions;
+            } else {
+                Object.assign(where, boardConditions[0]);
+            }
+        } else if (queryFilters.boardId) {
+            // If only boardId is provided without member/viewer flags, search both
+            where.OR = [
+                { member_boards: { some: { id: queryFilters.boardId } } },
+                { viewed_boards: { some: { id: queryFilters.boardId } } }
+            ];
+        }
         const orderBy: any = {};
         if (queryFilters.order && queryFilters.username)
             orderBy.username = queryFilters.order;
