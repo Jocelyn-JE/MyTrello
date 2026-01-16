@@ -10,6 +10,7 @@ class TrelloCardWidget extends StatefulWidget {
   final bool isDraggable;
   final String? cardAboveId;
   final String searchQuery;
+  final String boardId;
 
   const TrelloCardWidget({
     super.key,
@@ -17,6 +18,7 @@ class TrelloCardWidget extends StatefulWidget {
     this.cardAboveId,
     this.isDraggable = false,
     this.searchQuery = '',
+    required this.boardId,
   });
 
   @override

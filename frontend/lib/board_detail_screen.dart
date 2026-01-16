@@ -287,6 +287,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
             onAddCard: () => _showAddCardDialog(column.id),
             columnBeforeId: index > 0 ? _columns[index - 1].id : null,
             searchQuery: _searchQuery,
+            boardId: _boardId,
           );
         },
       ),

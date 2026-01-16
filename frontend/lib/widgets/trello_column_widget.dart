@@ -8,6 +8,7 @@ class TrelloColumnWidget extends StatefulWidget {
   final VoidCallback onAddCard;
   final String? columnBeforeId;
   final String searchQuery;
+  final String boardId;
 
   const TrelloColumnWidget({
     super.key,
@@ -15,6 +16,7 @@ class TrelloColumnWidget extends StatefulWidget {
     required this.onAddCard,
     this.columnBeforeId,
     this.searchQuery = '',
+    required this.boardId,
   });
 
   @override
@@ -149,6 +151,7 @@ class _TrelloColumnWidgetState extends State<TrelloColumnWidget> {
                                       ? widget.column.cards[index - 1].id
                                       : null,
                                   searchQuery: widget.searchQuery,
+                                  boardId: widget.boardId,
                                 );
                               },
                             ),
