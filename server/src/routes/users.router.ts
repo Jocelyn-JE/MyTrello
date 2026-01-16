@@ -19,6 +19,46 @@ router.get("/", async (req, res) => {
     }
 });
 
+router.get("/:boardId/members", async (req, res) => {
+    const { boardId } = req.params;
+    console.debug(
+        `/api/users/${boardId}/members: Fetching members for board ${boardId}`
+    );
+    try {
+        const users = await prisma.user.findMany({
+            where: {
+                member_boards: { some: { id: boardId } }
+            },
+            orderBy: { username: "asc" },
+            omit: { password_hash: true }
+        });
+        res.status(200).json(users);
+    } catch (error) {
+        console.error(`Error fetching users for board ${boardId}:`, error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+router.get("/:boardId/viewers", async (req, res) => {
+    const { boardId } = req.params;
+    console.debug(
+        `/api/users/${boardId}/viewers: Fetching viewers for board ${boardId}`
+    );
+    try {
+        const users = await prisma.user.findMany({
+            where: {
+                viewed_boards: { some: { id: boardId } }
+            },
+            orderBy: { username: "asc" },
+            omit: { password_hash: true }
+        });
+        res.status(200).json(users);
+    } catch (error) {
+        console.error(`Error fetching users for board ${boardId}:`, error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
 const filters = ["username", "email"];
 
 type QueryValues = {
