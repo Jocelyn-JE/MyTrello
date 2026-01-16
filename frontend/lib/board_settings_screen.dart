@@ -37,6 +37,7 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
           userId: member.id,
           username: member.username,
           role: 'member',
+          email: member.email,
         ),
       );
     }
@@ -48,6 +49,7 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
           userId: viewer.id,
           username: viewer.username,
           role: 'viewer',
+          email: viewer.email,
         ),
       );
     }
@@ -208,6 +210,7 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
             userId: newUser.id,
             username: newUser.username,
             role: 'member',
+            email: newUser.email,
           ),
         );
       });
@@ -228,6 +231,7 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
         userId: _userPermissions[index].userId,
         username: _userPermissions[index].username,
         role: newRole,
+        email: _userPermissions[index].email,
       );
     });
     _markChanged();
@@ -239,7 +243,7 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
       child: ListTile(
-        title: Text(permission.username),
+        title: Text('${permission.username} (${permission.email})'),
         subtitle: DropdownButton<String>(
           value: permission.role,
           isExpanded: true,
@@ -419,11 +423,13 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
 class BoardUserPermission {
   final String userId;
   final String username;
+  final String email;
   final String role;
 
   BoardUserPermission({
     required this.userId,
     required this.username,
+    required this.email,
     required this.role,
   });
 }

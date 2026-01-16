@@ -102,8 +102,8 @@ router.get("/", verifyToken, async (req, res) => {
             },
             include: {
                 owner: { select: { id: true, username: true } },
-                members: { select: { id: true, username: true } },
-                viewers: { select: { id: true, username: true } }
+                members: { select: { id: true, username: true, email: true } },
+                viewers: { select: { id: true, username: true, email: true } }
             }
         });
         console.info(`Retrieved ${boards.length} boards for user ${userId}`);
@@ -132,8 +132,8 @@ router.get("/:boardId", verifyToken, async (req, res) => {
             where: { id: boardId },
             include: {
                 owner: { select: { id: true, username: true } },
-                members: { select: { id: true, username: true } },
-                viewers: { select: { id: true, username: true } }
+                members: { select: { id: true, username: true, email: true } },
+                viewers: { select: { id: true, username: true, email: true } }
             }
         });
         if (!board) {
