@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'config.dart';
-import 'regex.dart';
-import 'widgets/password_field.dart';
-import 'services/auth_service.dart';
+import 'package:frontend/config.dart';
+import 'package:frontend/regex.dart';
+import 'package:frontend/widgets/password_field.dart';
+import 'package:frontend/services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

@@ -2,12 +2,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/protected_routes.dart';
-import 'login_screen.dart';
-import 'register_screen.dart';
-import 'home_screen.dart';
-import 'services/auth_service.dart';
-import 'board_creation_screen.dart';
-import 'board_detail_screen.dart';
+import 'package:frontend/login_screen.dart';
+import 'package:frontend/register_screen.dart';
+import 'package:frontend/home_screen.dart';
+import 'package:frontend/services/auth_service.dart';
+import 'package:frontend/board_creation_screen.dart';
+import 'package:frontend/board_detail_screen.dart';
 
 void main() async {
   // Ensure that widget binding is initialized

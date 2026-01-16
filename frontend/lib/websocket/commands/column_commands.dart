@@ -1,4 +1,4 @@
-import 'websocket_command.dart';
+import 'package:frontend/websocket/commands/websocket_command.dart';
 
 /// Create a new column in the board
 class CreateColumnCommand implements WebSocketCommand {

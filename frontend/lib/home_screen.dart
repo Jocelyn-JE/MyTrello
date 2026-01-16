@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'services/auth_service.dart';
-import 'services/board_service.dart';
-import 'models/board.dart';
+import 'package:frontend/services/auth_service.dart';
+import 'package:frontend/services/board_service.dart';
+import 'package:frontend/models/board.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

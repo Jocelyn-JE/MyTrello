@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import 'websocket.dart';
-import '../services/auth_service.dart';
+import 'package:frontend/websocket/websocket.dart';
+import 'package:frontend/services/auth_service.dart';
 
 class WebsocketService {
   static WebSocketChannel? _channel;

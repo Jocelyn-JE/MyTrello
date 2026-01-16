@@ -1,4 +1,4 @@
-import 'websocket_command.dart';
+import 'package:frontend/websocket/commands/websocket_command.dart';
 
 /// Send a message in the board
 class SendMessageCommand implements WebSocketCommand {
