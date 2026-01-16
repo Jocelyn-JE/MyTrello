@@ -172,6 +172,17 @@ paths:
           description: Filter for users who are viewers (of specified board if boardId provided, or any board)
           schema:
             type: boolean
+        - name: cardId
+          in: query
+          description: Filter by card ID (for checking card assignments)
+          schema:
+            type: string
+            format: uuid
+        - name: assigned
+          in: query
+          description: Filter for users assigned/not assigned to the card specified by cardId. If false, returns users NOT assigned to the card (useful for showing assignable users). If true or omitted with cardId, returns users assigned to the card.
+          schema:
+            type: boolean
       responses:
         "200":
           description: Users found successfully
