@@ -186,6 +186,8 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
                             contentPadding: EdgeInsets.zero,
                           ),
                           style: const TextStyle(fontWeight: FontWeight.bold),
+                          maxLines: null,
+                          keyboardType: TextInputType.multiline,
                           onSubmitted: (_) => _saveTitle(),
                           onEditingComplete: () {
                             _saveTitle();
@@ -196,6 +198,8 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
                         Text(
                           widget.card.title,
                           style: const TextStyle(fontWeight: FontWeight.bold),
+                          softWrap: true,
+                          overflow: TextOverflow.visible,
                         ),
                       const SizedBox(height: 4),
                       if (canEdit)
