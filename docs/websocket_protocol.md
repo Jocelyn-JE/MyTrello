@@ -65,6 +65,7 @@ The following commands are currently supported by the server. Each command must 
 - [`column.create`](#columncreate) - Create a new column
 - [`column.list`](#columnlist) - List all columns
 - [`column.rename`](#columnrename) - Rename a column
+- [`column.move`](#columnmove) - Move a column to a different position
 - [`column.delete`](#columndelete) - Delete a column
 
 **Card commands:**
@@ -80,9 +81,10 @@ The following commands are currently supported by the server. Each command must 
 - [`assignee.unassign`](#assigneeunassign) - Unassign a user from a card
 - [`assignee.list`](#assigneelist) - List all assignees of a card
 
-**Message commands:**
+**Chat commands:**
 
-- [`message`](#message) - Send a broadcast message
+- [`chat.send`](#chatsend) - Send a chat message to the board
+- [`chat.history`](#chathistory) - Retrieve chat message history for the board
 
 ---
 
@@ -192,6 +194,44 @@ Renames an existing column in the board.
     "title": "New Column Title",
     "boardId": "board-uuid",
     "index": 0,
+    "createdAt": "2025-11-07T09:00:00.000Z",
+    "updatedAt": "2025-11-07T09:30:00.000Z"
+  },
+  "sender": {
+    "username": "alice",
+    "email": "alice@example.com"
+  }
+}
+```
+
+#### `column.move`
+
+Moves a column to a different position in the board.
+
+**Request (client -> server):**
+
+```json
+{
+  "type": "column.move",
+  "data": {
+    "id": "column-uuid",
+    "newPos": "target-column-uuid"
+  }
+}
+```
+
+**Note:** `newPos` is the ID of the column before which the moved column should be placed. If `newPos` is `null`, the column will be moved to the end.
+
+**Response (server -> all clients including sender):**
+
+```json
+{
+  "type": "column.move",
+  "data": {
+    "id": "column-uuid",
+    "title": "Column Title",
+    "boardId": "board-uuid",
+    "index": 2,
     "createdAt": "2025-11-07T09:00:00.000Z",
     "updatedAt": "2025-11-07T09:30:00.000Z"
   },
@@ -552,18 +592,18 @@ Lists all users assigned to a card.
 
 ---
 
-### Message commands
+### Chat commands
 
-#### `message`
+#### `chat.send`
 
-Sends a message/text to all clients in the board room (simple broadcast).
+Sends a chat message that is persisted to the database and broadcasted to all clients in the board room.
 
 **Request (client -> server):**
 
 ```json
 {
-  "type": "message",
-  "data": "Hello, everyone!"
+  "type": "chat.send",
+  "data": "Hello, this is my message!"
 }
 ```
 
@@ -571,8 +611,62 @@ Sends a message/text to all clients in the board room (simple broadcast).
 
 ```json
 {
-  "type": "message",
-  "data": "Hello, everyone!",
+  "type": "chat.send",
+  "data": {
+    "content": "Hello, this is my message!",
+    "createdAt": "2025-11-07T09:30:00.000Z"
+  },
+  "sender": {
+    "username": "alice",
+    "email": "alice@example.com"
+  }
+}
+```
+
+#### `chat.history`
+
+Retrieves the chat message history for the current board.
+
+**Request (client -> server):**
+
+```json
+{
+  "type": "chat.history",
+  "data": null
+}
+```
+
+**Response (server -> requesting client only):**
+
+```json
+{
+  "type": "chat.history",
+  "data": [
+    {
+      "id": "message-uuid-1",
+      "content": "First message",
+      "createdAt": "2025-11-07T09:00:00.000Z",
+      "user": {
+        "id": "user-uuid-1",
+        "username": "alice",
+        "email": "alice@example.com",
+        "createdAt": "2025-11-01T10:00:00.000Z",
+        "updatedAt": "2025-11-01T10:00:00.000Z"
+      }
+    },
+    {
+      "id": "message-uuid-2",
+      "content": "Second message",
+      "createdAt": "2025-11-07T09:15:00.000Z",
+      "user": {
+        "id": "user-uuid-2",
+        "username": "bob",
+        "email": "bob@example.com",
+        "createdAt": "2025-11-02T10:00:00.000Z",
+        "updatedAt": "2025-11-02T10:00:00.000Z"
+      }
+    }
+  ],
   "sender": {
     "username": "alice",
     "email": "alice@example.com"
