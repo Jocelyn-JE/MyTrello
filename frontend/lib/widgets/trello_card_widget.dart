@@ -1,8 +1,7 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:frontend/services/board_permissions_service.dart';
 import 'package:frontend/user_search_dialog.dart';
+import 'package:frontend/utils/user_color.dart';
 import 'package:frontend/websocket/websocket.dart';
 
 class TrelloCardWidget extends StatefulWidget {
@@ -437,10 +436,7 @@ class _AssignedUserAvatarState extends State<_AssignedUserAvatar> {
           children: [
             CircleAvatar(
               radius: 12,
-              backgroundColor:
-                  Colors.primaries[Random(
-                    widget.user.id.hashCode,
-                  ).nextInt(Colors.primaries.length)],
+              backgroundColor: getUserColor(widget.user.id),
               child: Text(
                 widget.user.username.isNotEmpty
                     ? widget.user.username[0].toUpperCase()
