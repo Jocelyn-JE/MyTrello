@@ -69,6 +69,8 @@ type QueryValues = {
     boardId?: string;
     member?: boolean;
     viewer?: boolean;
+    cardId?: string;
+    assigned?: boolean;
 };
 
 router.get("/search", async (req, res) => {
@@ -89,6 +91,8 @@ router.get("/search", async (req, res) => {
         if (query.boardId) queryFilters.boardId = query.boardId;
         if (query.member) queryFilters.member = query.member === "true";
         if (query.viewer) queryFilters.viewer = query.viewer === "true";
+        if (query.cardId) queryFilters.cardId = query.cardId;
+        if (query.assigned) queryFilters.assigned = query.assigned === "true";
 
         const where: any = {};
         if (queryFilters.username)
@@ -135,6 +139,20 @@ router.get("/search", async (req, res) => {
                 { viewed_boards: { some: { id: queryFilters.boardId } } }
             ];
         }
+        
+        // Handle card assignment filtering
+        if (queryFilters.cardId !== undefined) {
+            if (queryFilters.assigned === false) {
+                // Filter users NOT assigned to the card
+                where.NOT = {
+                    assigned_cards: { some: { id: queryFilters.cardId } }
+                };
+            } else {
+                // Filter users assigned to the card (default if assigned is true or not specified)
+                where.assigned_cards = { some: { id: queryFilters.cardId } };
+            }
+        }
+        
         const orderBy: any = {};
         if (queryFilters.order && queryFilters.username)
             orderBy.username = queryFilters.order;
