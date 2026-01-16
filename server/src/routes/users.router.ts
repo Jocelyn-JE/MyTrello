@@ -105,11 +105,11 @@ router.get("/search", async (req, res) => {
                 startsWith: queryFilters.email,
                 mode: "insensitive"
             };
-        
+
         // Handle board filtering
         if (queryFilters.member || queryFilters.viewer) {
             const boardConditions: any[] = [];
-            
+
             if (queryFilters.member) {
                 boardConditions.push({
                     member_boards: queryFilters.boardId
@@ -117,7 +117,7 @@ router.get("/search", async (req, res) => {
                         : { some: {} }
                 });
             }
-            
+
             if (queryFilters.viewer) {
                 boardConditions.push({
                     viewed_boards: queryFilters.boardId
@@ -125,7 +125,7 @@ router.get("/search", async (req, res) => {
                         : { some: {} }
                 });
             }
-            
+
             // If both member and viewer are true, use OR logic
             if (boardConditions.length > 1) {
                 where.OR = boardConditions;
@@ -139,7 +139,7 @@ router.get("/search", async (req, res) => {
                 { viewed_boards: { some: { id: queryFilters.boardId } } }
             ];
         }
-        
+
         // Handle card assignment filtering
         if (queryFilters.cardId !== undefined) {
             if (queryFilters.assigned === false) {
@@ -152,7 +152,7 @@ router.get("/search", async (req, res) => {
                 where.assigned_cards = { some: { id: queryFilters.cardId } };
             }
         }
-        
+
         const orderBy: any = {};
         if (queryFilters.order && queryFilters.username)
             orderBy.username = queryFilters.order;
