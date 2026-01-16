@@ -9,10 +9,18 @@ void main() {
       'ownerId': 'owner-123',
       'owner': {'id': 'owner-123', 'username': 'testowner'},
       'members': [
-        {'id': 'member-123', 'username': 'testmember'},
+        {
+          'id': 'member-123',
+          'username': 'testmember',
+          'email': 'testmember@example.com',
+        },
       ],
       'viewers': [
-        {'id': 'viewer-123', 'username': 'testviewer'},
+        {
+          'id': 'viewer-123',
+          'username': 'testviewer',
+          'email': 'testviewer@example.com',
+        },
       ],
       'createdAt': '2024-01-01T00:00:00.000Z',
       'updatedAt': '2024-01-01T00:00:00.000Z',
@@ -30,9 +38,11 @@ void main() {
         expect(board.members, hasLength(1));
         expect(board.members.first.id, equals('member-123'));
         expect(board.members.first.username, equals('testmember'));
+        expect(board.members.first.email, equals('testmember@example.com'));
         expect(board.viewers, hasLength(1));
         expect(board.viewers.first.id, equals('viewer-123'));
         expect(board.viewers.first.username, equals('testviewer'));
+        expect(board.viewers.first.email, equals('testviewer@example.com'));
         expect(board.createdAt, isA<DateTime>());
         expect(board.updatedAt, isA<DateTime>());
       });
@@ -78,7 +88,11 @@ void main() {
   });
 
   group('BoardUser Model Tests', () {
-    final sampleUserJson = {'id': 'user-123', 'username': 'testuser'};
+    final sampleUserJson = {
+      'id': 'user-123',
+      'username': 'testuser',
+      'email': 'testuser@example.com',
+    };
 
     group('BoardUser.fromJson', () {
       test('creates BoardUser from valid JSON', () {
@@ -86,6 +100,7 @@ void main() {
 
         expect(user.id, equals('user-123'));
         expect(user.username, equals('testuser'));
+        expect(user.email, equals('testuser@example.com'));
       });
     });
 
@@ -96,6 +111,7 @@ void main() {
 
         expect(json['id'], equals('user-123'));
         expect(json['username'], equals('testuser'));
+        expect(json['email'], equals('testuser@example.com'));
       });
     });
   });
