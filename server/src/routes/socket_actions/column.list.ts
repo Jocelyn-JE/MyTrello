@@ -3,7 +3,7 @@ import prisma from "../../utils/prisma.client";
 
 export const columnListingAction: SocketAction = {
     actionName: "column.list",
-    async execute(boardId: string, _data: null) {
+    async execute(boardId: string, _data: null, _userId: string) {
         console.info(`Listing columns in board ${boardId}`);
         const columns = await prisma.column.findMany({
             where: { boardId },

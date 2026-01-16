@@ -17,7 +17,7 @@ type CardUpdateData = {
 
 export const cardUpdateAction: SocketAction = {
     actionName: "card.update",
-    async execute(boardId: string, cardData: CardUpdateData) {
+    async execute(boardId: string, cardData: CardUpdateData, _userId: string) {
         console.info(
             `Updating card with ID "${cardData.id}" to "${cardData}" in board ${boardId}`
         );

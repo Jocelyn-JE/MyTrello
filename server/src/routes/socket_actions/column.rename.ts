@@ -9,7 +9,7 @@ type ColumnRenameData = {
 
 export const columnRenameAction: SocketAction = {
     actionName: "column.rename",
-    async execute(boardId: string, columnData: ColumnRenameData) {
+    async execute(boardId: string, columnData: ColumnRenameData, _userId: string) {
         console.info(
             `Renaming column with ID "${columnData.id}" to "${columnData.title}" in board ${boardId}`
         );

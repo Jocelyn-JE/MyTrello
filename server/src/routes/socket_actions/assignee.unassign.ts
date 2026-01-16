@@ -8,7 +8,7 @@ type AssigneeUnassignData = {
 
 export const assigneeUnassignAction: SocketAction = {
     actionName: "assignee.unassign",
-    async execute(boardId: string, listData: AssigneeUnassignData) {
+    async execute(boardId: string, listData: AssigneeUnassignData, _userId: string) {
         console.info(
             `Unassigning user ${listData.userId} from card ${listData.cardId} in board ${boardId}`
         );

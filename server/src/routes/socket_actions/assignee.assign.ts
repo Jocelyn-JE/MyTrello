@@ -8,7 +8,7 @@ type AssigneeAssignData = {
 
 export const assigneeAssignAction: SocketAction = {
     actionName: "assignee.assign",
-    async execute(boardId: string, listData: AssigneeAssignData) {
+    async execute(boardId: string, listData: AssigneeAssignData, _userId: string) {
         console.info(
             `Assigning user ${listData.userId} to card ${listData.cardId} in board ${boardId}`
         );

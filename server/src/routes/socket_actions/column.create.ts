@@ -8,7 +8,7 @@ type ColumnCreateData = {
 
 export const columnCreationAction: SocketAction = {
     actionName: "column.create",
-    async execute(boardId: string, columnData: ColumnCreateData) {
+    async execute(boardId: string, columnData: ColumnCreateData, _userId: string) {
         console.info(
             `Creating column with title "${columnData.title}" in board ${boardId}`
         );

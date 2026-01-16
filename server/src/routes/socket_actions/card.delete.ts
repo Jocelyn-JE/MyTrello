@@ -8,7 +8,7 @@ type CardDeleteData = {
 
 export const cardDeletionAction: SocketAction = {
     actionName: "card.delete",
-    async execute(boardId: string, cardData: CardDeleteData) {
+    async execute(boardId: string, cardData: CardDeleteData, _userId: string) {
         console.info(
             `Deleting card with ID "${cardData.id}" from board ${boardId}`
         );

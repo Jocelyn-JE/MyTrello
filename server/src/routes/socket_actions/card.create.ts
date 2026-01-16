@@ -15,7 +15,7 @@ type CardCreateData = {
 
 export const cardCreationAction: SocketAction = {
     actionName: "card.create",
-    async execute(boardId: string, cardData: CardCreateData) {
+    async execute(boardId: string, cardData: CardCreateData, _userId: string) {
         console.info(
             `Creating card with title "${cardData.title}" in board ${boardId}`
         );

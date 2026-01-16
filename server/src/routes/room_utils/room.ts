@@ -142,7 +142,7 @@ export class Room {
             return;
         }
         try {
-            let result = await action.execute(this.boardId, data);
+            let result = await action.execute(this.boardId, data, userId);
             this.broadcast(client, {
                 type: actionName,
                 data: result,

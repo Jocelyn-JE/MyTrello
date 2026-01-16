@@ -7,7 +7,7 @@ type CardListData = {
 
 export const cardListingAction: SocketAction = {
     actionName: "card.list",
-    async execute(boardId: string, listData: CardListData) {
+    async execute(boardId: string, listData: CardListData, _userId: string) {
         console.info(
             `Listing cards in column ${listData.columnId} of board ${boardId}`
         );

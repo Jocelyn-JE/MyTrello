@@ -10,7 +10,7 @@ import { columnDeletionAction } from "./column.delete";
 import { columnListingAction } from "./column.list";
 import { columnMoveAction } from "./column.move";
 import { columnRenameAction } from "./column.rename";
-import { messageAction } from "./message";
+import { messageAction } from "./chat.send";
 
 export type SocketAction = {
     actionName: string;
@@ -20,7 +20,7 @@ export type SocketAction = {
      * that action (i.e columnData for column.create), and return a Promise
      * that resolves to a created or modified resource.
      */
-    execute(boardId: string, data: Object | null): Promise<Object>;
+    execute(boardId: string, data: Object | null, userId: string): Promise<Object>;
 };
 
 export const actionIndex: SocketAction[] = [

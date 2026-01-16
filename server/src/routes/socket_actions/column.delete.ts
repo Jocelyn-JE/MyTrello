@@ -8,7 +8,7 @@ type ColumnDeleteData = {
 
 export const columnDeletionAction: SocketAction = {
     actionName: "column.delete",
-    async execute(boardId: string, columnData: ColumnDeleteData) {
+    async execute(boardId: string, columnData: ColumnDeleteData, _userId: string) {
         console.info(
             `Deleting column with ID "${columnData.id}" from board ${boardId}`
         );

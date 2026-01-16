@@ -9,7 +9,7 @@ type ColumnMoveData = {
 
 export const columnMoveAction: SocketAction = {
     actionName: "column.move",
-    async execute(boardId: string, columnData: ColumnMoveData) {
+    async execute(boardId: string, columnData: ColumnMoveData, _userId: string) {
         console.info(
             `Moving column with ID "${columnData.id}" in board ${boardId}`
         );
