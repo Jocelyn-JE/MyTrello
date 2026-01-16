@@ -170,6 +170,58 @@ paths:
         "500":
           $ref: "#/components/responses/Error500"
 
+  /api/users/{boardId}/members:
+    get:
+      tags:
+        - users
+      summary: Get board members
+      description: Retrieve all users who are members of a specific board
+      parameters:
+        - name: boardId
+          in: path
+          required: true
+          description: The ID of the board
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Board members retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        "500":
+          $ref: "#/components/responses/Error500"
+
+  /api/users/{boardId}/viewers:
+    get:
+      tags:
+        - users
+      summary: Get board viewers
+      description: Retrieve all users who are viewers of a specific board
+      parameters:
+        - name: boardId
+          in: path
+          required: true
+          description: The ID of the board
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Board viewers retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        "500":
+          $ref: "#/components/responses/Error500"
+
   /api/boards:
     post:
       tags:
@@ -463,6 +515,9 @@ components:
                     format: uuid
                   username:
                     type: string
+                  email:
+                    type: string
+                    format: email
             viewers:
               type: array
               items:
@@ -473,6 +528,9 @@ components:
                     format: uuid
                   username:
                     type: string
+                  email:
+                    type: string
+                    format: email
   responses:
     Error400:
       description: Bad request
