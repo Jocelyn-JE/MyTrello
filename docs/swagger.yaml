@@ -132,7 +132,7 @@ paths:
       tags:
         - users
       summary: Search users with filters
-      description: Search for users by username or email with optional ordering and count limit
+      description: Search for users by username or email with optional ordering and count limit. Can also filter by board membership and role.
       parameters:
         - name: username
           in: query
@@ -156,6 +156,22 @@ paths:
           schema:
             type: integer
             minimum: 1
+        - name: boardId
+          in: query
+          description: Filter by board ID (returns members and/or viewers of this board)
+          schema:
+            type: string
+            format: uuid
+        - name: member
+          in: query
+          description: Filter for users who are members (of specified board if boardId provided, or any board)
+          schema:
+            type: boolean
+        - name: viewer
+          in: query
+          description: Filter for users who are viewers (of specified board if boardId provided, or any board)
+          schema:
+            type: boolean
       responses:
         "200":
           description: Users found successfully
