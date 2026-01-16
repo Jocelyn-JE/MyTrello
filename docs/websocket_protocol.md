@@ -46,7 +46,7 @@ General form (client -> server):
 When the server broadcasts a client's message to other clients in the same board room it will attach a `sender` object with minimal public profile information:
 
 ```json
-{ "type": "<event.type>", "data": { "..." }, "sender": { "username": "alice", "email": "alice@example.com" } }
+{ "type": "<event.type>", "data": { "..." }, "sender": { "id": "user-uuid", "username": "alice", "email": "alice@example.com" } }
 ```
 
 Server -> client messages follow the same `{ type, ... }` pattern. There are a few reserved message types used by the server:
@@ -119,6 +119,7 @@ Creates a new column in the board.
     "updatedAt": "2025-11-07T09:30:00.000Z"
   },
   "sender": {
+    "id": "user-uuid",
     "username": "alice",
     "email": "alice@example.com"
   }
@@ -162,6 +163,7 @@ Lists all columns in the board.
     }
   ],
   "sender": {
+    "id": "user-uuid",
     "username": "alice",
     "email": "alice@example.com"
   }
@@ -198,6 +200,7 @@ Renames an existing column in the board.
     "updatedAt": "2025-11-07T09:30:00.000Z"
   },
   "sender": {
+    "id": "user-uuid",
     "username": "alice",
     "email": "alice@example.com"
   }
@@ -236,6 +239,7 @@ Moves a column to a different position in the board.
     "updatedAt": "2025-11-07T09:30:00.000Z"
   },
   "sender": {
+    "id": "user-uuid",
     "username": "alice",
     "email": "alice@example.com"
   }
@@ -271,6 +275,7 @@ Deletes a column from the board.
     "updatedAt": "2025-11-07T09:00:00.000Z"
   },
   "sender": {
+    "id": "user-uuid",
     "username": "alice",
     "email": "alice@example.com"
   }
@@ -321,6 +326,7 @@ Creates a new card in a column.
     "updatedAt": "2025-11-07T09:30:00.000Z"
   },
   "sender": {
+    "id": "user-uuid",
     "username": "alice",
     "email": "alice@example.com"
   }
@@ -374,6 +380,7 @@ Lists all cards in a column.
     }
   ],
   "sender": {
+    "id": "user-uuid",
     "username": "alice",
     "email": "alice@example.com"
   }
@@ -413,6 +420,7 @@ Deletes a card from a column.
     "updatedAt": "2025-11-07T09:00:00.000Z"
   },
   "sender": {
+    "id": "user-uuid",
     "username": "alice",
     "email": "alice@example.com"
   }
@@ -470,6 +478,7 @@ The server will respond with the full updated card object.
     "updatedAt": "2025-11-21T14:30:00.000Z"
   },
   "sender": {
+    "id": "user-uuid",
     "username": "alice",
     "email": "alice@example.com"
   }
@@ -510,6 +519,7 @@ Assigns a user to a card.
     "cardId": "card-uuid"
   },
   "sender": {
+    "id": "user-uuid",
     "username": "alice",
     "email": "alice@example.com"
   }
@@ -542,8 +552,26 @@ Unassigns a user from a card.
     "cardId": "card-uuid"
   },
   "sender": {
+    "id": "user-uuid",
     "username": "alice",
     "email": "alice@example.com"
+  }
+}
+```
+
+**Note:** This action can also be broadcasted automatically by the server when a board member is removed via the PUT `/api/boards/:boardId` endpoint. In this case, the broadcast will include a system sender:
+
+```json
+{
+  "type": "assignee.unassign",
+  "data": {
+    "cardId": "card-uuid",
+    "userId": "user-uuid"
+  },
+  "sender": {
+    "id": "system",
+    "username": "system",
+    "email": "system@trello.local"
   }
 }
 ```
@@ -583,8 +611,7 @@ Lists all users assigned to a card.
       }
     ]
   },
-  "sender": {
-    "username": "alice",
+  "sender": {    "id": "user-uuid",    "username": "alice",
     "email": "alice@example.com"
   }
 }
@@ -617,6 +644,7 @@ Sends a chat message that is persisted to the database and broadcasted to all cl
     "createdAt": "2025-11-07T09:30:00.000Z"
   },
   "sender": {
+    "id": "user-uuid",
     "username": "alice",
     "email": "alice@example.com"
   }
@@ -668,6 +696,7 @@ Retrieves the chat message history for the current board.
     }
   ],
   "sender": {
+    "id": "user-uuid",
     "username": "alice",
     "email": "alice@example.com"
   }
@@ -717,7 +746,7 @@ Example server broadcast (received by all clients including sender):
 {
   "type": "column.create",
   "data": { "id": "col123", "title": "New Column", "boardId": "board456", "index": 2 },
-  "sender": { "username": "alice", "email": "alice@example.com" }
+  "sender": { "id": "user-uuid", "username": "alice", "email": "alice@example.com" }
 }
 ```
 
