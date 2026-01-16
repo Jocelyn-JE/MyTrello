@@ -1,6 +1,7 @@
 import prisma from "../../utils/prisma.client";
 
 export type UserInfo = {
+    id: string;
     username: string;
     email: string;
 };
