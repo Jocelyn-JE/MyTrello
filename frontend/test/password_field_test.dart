@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:frontend/password_field.dart';
+import 'package:frontend/widgets/password_field.dart';
 
 void main() {
   group('PasswordField Widget Tests', () {

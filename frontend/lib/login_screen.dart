@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'config.dart';
 import 'regex.dart';
-import 'password_field.dart';
+import 'widgets/password_field.dart';
 import 'auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
