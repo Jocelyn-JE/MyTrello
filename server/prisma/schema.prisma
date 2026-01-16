@@ -24,6 +24,7 @@ model User {
   member_boards   Board[]   @relation("BoardMembers")
   viewed_boards   Board[]   @relation("BoardViewers")
   assigned_cards  Card[]    @relation("CardAssignees")
+  messages        Message[]
 }
 
 model Board {
@@ -37,6 +38,7 @@ model Board {
   viewers         User[]    @relation("BoardViewers")
   columns         Column[]
   tags            Tag[]
+  messages        Message[]
 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -95,4 +97,20 @@ model Tag {
 
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+}
+
+model Message {
+  id              String    @id @default(uuid())
+  boardId         String
+  userId          String
+
+  content         String
+
+  board           Board     @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt       DateTime  @default(now())
+
+  @@index([boardId])
+  @@index([userId])
 }
