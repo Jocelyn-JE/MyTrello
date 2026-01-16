@@ -9,12 +9,14 @@ class TrelloCardWidget extends StatefulWidget {
   final TrelloCard card;
   final bool isDraggable;
   final String? cardAboveId;
+  final String searchQuery;
 
   const TrelloCardWidget({
     super.key,
     required this.card,
     this.cardAboveId,
     this.isDraggable = false,
+    this.searchQuery = '',
   });
 
   @override
@@ -137,12 +139,31 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
     );
   }
 
+  bool _matchesSearch() {
+    if (widget.searchQuery.isEmpty) return false;
+    final query = widget.searchQuery.toLowerCase();
+    return widget.card.title.toLowerCase().contains(query) ||
+        widget.card.content.toLowerCase().contains(query) ||
+        widget.card.assignedUsers.any(
+          (user) => user.username.toLowerCase().contains(query),
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
     final canEdit = BoardPermissionsService.canEdit;
+    final isHighlighted = _matchesSearch();
 
     final cardWidget = Card(
       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
+      color: isHighlighted ? Colors.yellow.shade100 : null,
+      elevation: isHighlighted ? 4 : 1,
+      shape: isHighlighted
+          ? RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4),
+              side: BorderSide(color: Colors.orange.shade400, width: 2),
+            )
+          : null,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(

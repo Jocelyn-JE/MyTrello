@@ -35,6 +35,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
   String? _boardTitle;
   late List<TrelloColumn> _columns = [];
   final ScrollController _scrollController = ScrollController();
+  String _searchQuery = '';
 
   String get _boardId =>
       widget.boardId ??
@@ -167,15 +168,52 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
-        child: Scrollbar(
-          controller: _scrollController,
-          thumbVisibility: true,
-          thickness: 6.0,
-          radius: const Radius.circular(4),
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 8.0),
-            child: _columnList(),
-          ),
+        child: Column(
+          children: [
+            // Search bar
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: 'Search cards...',
+                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon: _searchQuery.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            setState(() {
+                              _searchQuery = '';
+                            });
+                          },
+                        )
+                      : null,
+                  border: const OutlineInputBorder(),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    _searchQuery = value.toLowerCase();
+                  });
+                },
+              ),
+            ),
+            // Column list
+            Expanded(
+              child: Scrollbar(
+                controller: _scrollController,
+                thumbVisibility: true,
+                thickness: 6.0,
+                radius: const Radius.circular(4),
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: _columnList(),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -248,6 +286,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
             column: column,
             onAddCard: () => _showAddCardDialog(column.id),
             columnBeforeId: index > 0 ? _columns[index - 1].id : null,
+            searchQuery: _searchQuery,
           );
         },
       ),
