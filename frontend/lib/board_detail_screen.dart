@@ -6,9 +6,9 @@ import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/services/board_permissions_service.dart';
 import 'package:frontend/services/board_service.dart';
 import 'package:frontend/board_settings_screen.dart';
-import 'package:frontend/config.dart';
+import 'package:frontend/utils/config.dart';
 import 'package:frontend/models/board.dart';
-import 'package:frontend/protected_routes.dart';
+import 'package:frontend/utils/protected_routes.dart';
 import 'package:frontend/websocket/websocket.dart';
 import 'package:frontend/widgets/trello_column_widget.dart';
 

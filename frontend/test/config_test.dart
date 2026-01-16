@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:frontend/config.dart';
+import 'package:frontend/utils/config.dart';
 
 void main() {
   group('AppConfig Tests', () {

@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:frontend/protected_routes.dart';
+import 'package:frontend/utils/protected_routes.dart';
 import 'package:frontend/login_screen.dart';
 import 'package:frontend/register_screen.dart';
 import 'package:frontend/home_screen.dart';

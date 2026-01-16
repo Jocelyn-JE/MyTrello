@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:frontend/regex.dart';
+import 'package:frontend/utils/regex.dart';
 
 void main() {
   group('Email Validation Tests', () {

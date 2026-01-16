@@ -1,7 +1,7 @@
 import 'package:frontend/websocket/models/server_types.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:frontend/config.dart';
+import 'package:frontend/utils/config.dart';
 
 class SearchParameters {
   String? username;

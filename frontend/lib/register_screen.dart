@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:frontend/config.dart';
-import 'package:frontend/regex.dart';
+import 'package:frontend/utils/config.dart';
+import 'package:frontend/utils/regex.dart';
 import 'package:frontend/widgets/password_field.dart';
 
 class RegisterScreen extends StatefulWidget {
