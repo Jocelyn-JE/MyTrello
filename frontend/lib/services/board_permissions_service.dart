@@ -1,4 +1,4 @@
-import 'package:frontend/auth_service.dart';
+import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/models/board.dart';
 
 /// Service to manage board permissions and check user roles

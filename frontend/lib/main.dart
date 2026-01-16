@@ -5,7 +5,7 @@ import 'package:frontend/protected_routes.dart';
 import 'login_screen.dart';
 import 'register_screen.dart';
 import 'home_screen.dart';
-import 'auth_service.dart';
+import 'services/auth_service.dart';
 import 'board_creation_screen.dart';
 import 'board_detail_screen.dart';
 

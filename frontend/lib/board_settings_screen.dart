@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/auth_service.dart';
+import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/models/board.dart';
 import 'package:frontend/websocket/models/server_types.dart';
-import 'board_service.dart';
+import 'services/board_service.dart';
 import 'user_search_dialog.dart';
 
 class BoardSettingsScreen extends StatefulWidget {

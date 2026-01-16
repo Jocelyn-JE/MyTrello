@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'auth_service.dart';
-import 'board_service.dart';
+import 'services/auth_service.dart';
+import 'services/board_service.dart';
 import 'models/board.dart';
 
 class HomeScreen extends StatefulWidget {

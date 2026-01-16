@@ -1,8 +1,8 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'config.dart';
+import '../config.dart';
 import 'auth_service.dart';
-import 'models/board.dart';
+import '../models/board.dart';
 
 class BoardService {
   static Future<List<Board>> getBoards() async {

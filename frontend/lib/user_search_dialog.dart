@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/websocket/models/server_types.dart';
-import 'package:frontend/users_service.dart';
-import 'board_service.dart';
+import 'package:frontend/services/users_service.dart';
+import 'services/board_service.dart';
 
 class UserSearchDialog extends StatefulWidget {
   final List<String> excludedUserIds;

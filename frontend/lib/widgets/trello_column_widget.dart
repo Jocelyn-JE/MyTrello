@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/board_permissions_service.dart';
+import 'package:frontend/services/board_permissions_service.dart';
 import 'package:frontend/websocket/websocket.dart';
 import 'package:frontend/widgets/trello_card_widget.dart';
 

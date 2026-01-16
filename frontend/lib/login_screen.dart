@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'config.dart';
 import 'regex.dart';
 import 'widgets/password_field.dart';
-import 'auth_service.dart';
+import 'services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
