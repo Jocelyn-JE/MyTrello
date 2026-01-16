@@ -13,7 +13,7 @@ import { isUserViewer } from "./room_utils/is_user_viewer";
 import { sendToUser } from "./room_utils/send_to_user";
 
 const router = new Router();
-const rooms: Map<string, Room> = new Map();
+export const rooms: Map<string, Room> = new Map();
 const clients: Map<string, Set<ExtendedWebSocket>> = new Map();
 
 function handleConnect(userId: string, ws: ExtendedWebSocket, room: Room) {
