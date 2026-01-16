@@ -1,15 +1,17 @@
 import { SocketAction } from "./action_type";
 import prisma from "../../utils/prisma.client";
 
-export const messageAction: SocketAction = {
+export const chatSendAction: SocketAction = {
     actionName: "chat.send",
     async execute(boardId: string, data: string, userId: string) {
-        console.info(`Message "${data}" sent in board ${boardId} by user ${userId}`);
+        console.info(
+            `Message "${data}" sent in board ${boardId} by user ${userId}`
+        );
         const message = await prisma.message.create({
             data: {
                 boardId: boardId,
                 userId: userId,
-                content: data,
+                content: data
             }
         });
         if (!message) {

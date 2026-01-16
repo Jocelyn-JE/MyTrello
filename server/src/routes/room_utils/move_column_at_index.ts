@@ -19,10 +19,7 @@ export async function moveColumnAtIndex(
     if (columnToInsert.id === targetColumnId) {
         return;
     }
-    if (
-        targetColumnId !== null &&
-        !(await getColumnInfo(targetColumnId))
-    ) {
+    if (targetColumnId !== null && !(await getColumnInfo(targetColumnId))) {
         console.error(`Column with ID ${targetColumnId} does not exist`);
         throw new Error("Target column does not exist");
     }

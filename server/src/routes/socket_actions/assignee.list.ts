@@ -7,7 +7,11 @@ type AssigneeListData = {
 
 export const assigneeListingAction: SocketAction = {
     actionName: "assignee.list",
-    async execute(boardId: string, listData: AssigneeListData, _userId: string) {
+    async execute(
+        boardId: string,
+        listData: AssigneeListData,
+        _userId: string
+    ) {
         console.info(
             `Listing assignees of card ${listData.cardId} in board ${boardId}`
         );
