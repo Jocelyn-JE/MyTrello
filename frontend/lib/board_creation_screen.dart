@@ -151,10 +151,12 @@ class _BoardCreationScreenState extends State<BoardCreationScreen> {
                                 final newUser = await showDialog<TrelloUser>(
                                   context: context,
                                   builder: (context) => UserSearchDialog(
-                                    excludedUserIds: users
-                                        .map((u) => u.id)
-                                        .toList(),
-                                    ownerId: AuthService.userId ?? '',
+                                    excludedUserIds: [
+                                      ...users.map((u) => u.id),
+                                      if (AuthService.userId != null)
+                                        AuthService.userId!,
+                                    ],
+                                    searchMode: UserSearchMode.allUsers,
                                   ),
                                 );
                                 if (newUser != null) {

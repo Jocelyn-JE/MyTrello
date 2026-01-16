@@ -136,7 +136,9 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
       context: context,
       builder: (context) => UserSearchDialog(
         excludedUserIds: alreadyAssigned.map((u) => u.id).toList(),
-        ownerId: '', // No owner filtering in this context
+        searchMode: UserSearchMode.boardMembersNotAssignedToCard,
+        boardId: widget.boardId,
+        cardId: widget.card.id,
       ),
     );
   }

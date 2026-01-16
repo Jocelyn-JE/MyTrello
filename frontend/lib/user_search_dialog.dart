@@ -3,14 +3,29 @@ import 'package:frontend/websocket/models/server_types.dart';
 import 'package:frontend/services/users_service.dart';
 import 'package:frontend/services/board_service.dart';
 
+enum UserSearchMode {
+  /// Show all users (for board creation)
+  allUsers,
+
+  /// Show users not in the board (for adding members/viewers after creation)
+  usersNotInBoard,
+
+  /// Show board members not assigned to a card (for card assignment)
+  boardMembersNotAssignedToCard,
+}
+
 class UserSearchDialog extends StatefulWidget {
   final List<String> excludedUserIds;
-  final String ownerId;
+  final UserSearchMode searchMode;
+  final String? boardId;
+  final String? cardId;
 
   const UserSearchDialog({
     super.key,
     this.excludedUserIds = const [],
-    required this.ownerId,
+    this.searchMode = UserSearchMode.allUsers,
+    this.boardId,
+    this.cardId,
   });
 
   @override
@@ -32,21 +47,65 @@ class _UserSearchDialogState extends State<UserSearchDialog> {
   Future<void> _loadInitialUsers() async {
     setState(() => _loading = true);
     try {
-      final users = await UserService.getUsers();
+      List<TrelloUser> users;
+
+      switch (widget.searchMode) {
+        case UserSearchMode.allUsers:
+          // For board creation - show all users
+          users = await UserService.getUsers();
+          break;
+
+        case UserSearchMode.usersNotInBoard:
+          // For adding members/viewers - show users not in the board
+          if (widget.boardId == null) {
+            throw Exception('boardId required for usersNotInBoard mode');
+          }
+          // Search for users who are NOT members or viewers of the board
+          users = await UserService.searchUsers(
+            SearchParameters(
+              boardId: widget.boardId,
+              member: true,
+              viewer: true,
+              count: 100,
+            ),
+          );
+          // Get all users and filter out those already in the board
+          final allUsers = await UserService.getUsers();
+          final boardUserIds = users.map((u) => u.id).toSet();
+          users = allUsers
+              .where((user) => !boardUserIds.contains(user.id))
+              .toList();
+          break;
+
+        case UserSearchMode.boardMembersNotAssignedToCard:
+          // For card assignment - show board members not assigned to the card
+          if (widget.boardId == null || widget.cardId == null) {
+            throw Exception(
+              'boardId and cardId required for boardMembersNotAssignedToCard mode',
+            );
+          }
+          users = await UserService.searchUsers(
+            SearchParameters(
+              boardId: widget.boardId,
+              member: true,
+              cardId: widget.cardId,
+              assigned: false,
+              count: 100,
+            ),
+          );
+          break;
+      }
+
       if (!mounted) return;
       setState(() {
         _searchResults = users
-            .where(
-              (user) =>
-                  !widget.excludedUserIds.contains(user.id) &&
-                  user.id != widget.ownerId,
-            )
+            .where((user) => !widget.excludedUserIds.contains(user.id))
             .toList();
       });
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = 'Failed to load users';
+        _error = 'Failed to load users: ${e.toString()}';
       });
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -60,37 +119,91 @@ class _UserSearchDialogState extends State<UserSearchDialog> {
   }
 
   Future<void> _doSearch() async {
-    final SearchParameters query = SearchParameters(
-      username: _searchController.text.trim(),
-      count: 100,
-    );
-    if (query.username == null) return;
+    final searchText = _searchController.text.trim();
+    if (searchText.isEmpty) {
+      // Reload initial users if search is cleared
+      _loadInitialUsers();
+      return;
+    }
+
     setState(() {
       _loading = true;
       _error = '';
       _searchResults = [];
     });
+
     try {
-      final results = await UserService.searchUsers(query);
+      List<TrelloUser> results;
+
+      switch (widget.searchMode) {
+        case UserSearchMode.allUsers:
+          // Search all users by username
+          results = await UserService.searchUsers(
+            SearchParameters(username: searchText, count: 100),
+          );
+          break;
+
+        case UserSearchMode.usersNotInBoard:
+          // Search users not in the board
+          if (widget.boardId == null) {
+            throw Exception('boardId required for usersNotInBoard mode');
+          }
+          // Get all users matching search
+          final searchResults = await UserService.searchUsers(
+            SearchParameters(username: searchText, count: 100),
+          );
+          // Get board members/viewers
+          final boardUsers = await UserService.searchUsers(
+            SearchParameters(
+              boardId: widget.boardId,
+              member: true,
+              viewer: true,
+              count: 100,
+            ),
+          );
+          final boardUserIds = boardUsers.map((u) => u.id).toSet();
+          results = searchResults
+              .where((user) => !boardUserIds.contains(user.id))
+              .toList();
+          break;
+
+        case UserSearchMode.boardMembersNotAssignedToCard:
+          // Search board members not assigned to the card
+          if (widget.boardId == null || widget.cardId == null) {
+            throw Exception(
+              'boardId and cardId required for boardMembersNotAssignedToCard mode',
+            );
+          }
+          results = await UserService.searchUsers(
+            SearchParameters(
+              username: searchText,
+              boardId: widget.boardId,
+              member: true,
+              cardId: widget.cardId,
+              assigned: false,
+              count: 100,
+            ),
+          );
+          break;
+      }
+
       if (!mounted) return;
       setState(() {
         _searchResults = results
-            .where(
-              (user) =>
-                  !widget.excludedUserIds.contains(user.id) &&
-                  user.id != widget.ownerId,
-            )
+            .where((user) => !widget.excludedUserIds.contains(user.id))
             .toList();
       });
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = 'Search failed';
+        _error = 'Search failed: ${e.toString()}';
       });
     } finally {
-      setState(() {
-        _loading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _loading = false;
+        });
+      }
     }
   }
 
@@ -173,6 +286,6 @@ Future<BoardUserInput?> showUserSearchDialog(
 }) {
   return showDialog<BoardUserInput?>(
     context: context,
-    builder: (context) => UserSearchDialog(excludedUserIds: [], ownerId: ''),
+    builder: (context) => UserSearchDialog(),
   );
 }

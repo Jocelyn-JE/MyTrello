@@ -104,6 +104,14 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
         onDone: () {
           debugPrint('WebSocket stream closed');
           WebsocketService.close();
+          BoardPermissionsService.clearCurrentBoard();
+          if (mounted) {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              '/home',
+              (route) => false, // Remove all previous routes
+            );
+          }
         },
       );
       WebsocketService.fetchColumns();

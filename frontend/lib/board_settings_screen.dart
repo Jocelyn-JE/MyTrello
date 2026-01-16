@@ -199,7 +199,8 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
       context: context,
       builder: (context) => UserSearchDialog(
         excludedUserIds: excludedIds,
-        ownerId: widget.board.ownerId,
+        searchMode: UserSearchMode.usersNotInBoard,
+        boardId: widget.board.id,
       ),
     );
 
