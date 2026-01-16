@@ -150,10 +150,6 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
       if (mounted) {
         Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
       }
-    } else if (result == true) {
-      // Board was updated, reconnect to get fresh data
-      _disconnectFromBoard();
-      _connectToBoard();
     }
   }
 
