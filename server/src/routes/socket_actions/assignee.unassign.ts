@@ -22,7 +22,8 @@ export const assigneeUnassignAction: SocketAction = {
                 assigned_cards: {
                     disconnect: { id: listData.cardId }
                 }
-            }
+            },
+            omit: { password_hash: true }
         });
         console.info(`User unassigned: ${assignee.id}`);
         return { userId: assignee.id, cardId: listData.cardId };

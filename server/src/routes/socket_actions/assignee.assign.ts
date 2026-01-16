@@ -22,7 +22,8 @@ export const assigneeAssignAction: SocketAction = {
                 assigned_cards: {
                     connect: { id: listData.cardId }
                 }
-            }
+            },
+            omit: { password_hash: true }
         });
         console.info(`User assigned: ${assignee.id}`);
         return { user: assignee, cardId: listData.cardId };
