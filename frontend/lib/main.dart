@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
         '/createBoard': (context) =>
             const ProtectedRoute(child: BoardCreationScreen()),
       },
-      // Handle dynamic routes like '/board/123'
+      // Handle dynamic routes like '/board/186eca85-c43a-46db-a826-fb4a5b112cde'
       onGenerateRoute: (RouteSettings settings) {
         final name = settings.name ?? '';
         if (name.startsWith('/board/')) {
@@ -55,6 +55,8 @@ class MyApp extends StatelessWidget {
         }
         return null;
       },
+      debugShowCheckedModeBanner: false,
+      debugShowMaterialGrid: false,
     );
   }
 }
