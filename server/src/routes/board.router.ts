@@ -314,19 +314,22 @@ router.put("/:boardId", verifyToken, async (req, res) => {
                     if (room) {
                         // Broadcast to all users (server-initiated, no sender)
                         for (const userWs of room.getUsers()) {
-                            if (userWs.readyState === 1) { // WebSocket.OPEN
-                                userWs.send(JSON.stringify({
-                                    type: "assignee.unassign",
-                                    data: {
-                                        cardId: card.id,
-                                        userId: removedUserId
-                                    },
-                                    sender: {
-                                        id: "system",
-                                        username: "system",
-                                        email: "system@trello.local"
-                                    }
-                                }));
+                            if (userWs.readyState === 1) {
+                                // WebSocket.OPEN
+                                userWs.send(
+                                    JSON.stringify({
+                                        type: "assignee.unassign",
+                                        data: {
+                                            cardId: card.id,
+                                            userId: removedUserId
+                                        },
+                                        sender: {
+                                            id: "system",
+                                            username: "system",
+                                            email: "system@trello.local"
+                                        }
+                                    })
+                                );
                             }
                         }
                         console.debug(
