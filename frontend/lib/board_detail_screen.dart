@@ -145,7 +145,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
       ),
     );
 
-    // If board was deleted or modified, navigate back to home
+    // If board was deleted, navigate back to home
     if (result == 'deleted') {
       if (mounted) {
         Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
