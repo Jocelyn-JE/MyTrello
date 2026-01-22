@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class TrelloBoard {
   String id;
   String ownerId;
@@ -164,7 +162,6 @@ class TrelloCard {
   }
 
   void addAssignee(TrelloUser user) {
-    debugPrint('Adding assignee: ${user.username}');
     assignedUsers.add(user);
   }
 
