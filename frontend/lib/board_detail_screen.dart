@@ -13,15 +13,17 @@ import 'package:frontend/websocket/websocket.dart';
 import 'package:frontend/widgets/trello_column_widget.dart';
 
 class BoardDetailScreen extends StatefulWidget {
-  final String? boardId;
-  const BoardDetailScreen({super.key, this.boardId});
+  final String boardId;
+  const BoardDetailScreen({super.key, required this.boardId});
 
   /// Helper to create a route from a route name like '/board/:id'
-  static Route<dynamic> routeFromSettings(RouteSettings settings) {
-    final name = settings.name ?? '';
-    final id = name.split('/').isNotEmpty ? name.split('/').last : null;
+  static Route<dynamic> routeFromSettings(
+    RouteSettings settings,
+    String boardId,
+  ) {
     return MaterialPageRoute(
-      builder: (_) => ProtectedRoute(child: BoardDetailScreen(boardId: id)),
+      builder: (_) =>
+          ProtectedRoute(child: BoardDetailScreen(boardId: boardId)),
       settings: settings,
     );
   }
@@ -37,10 +39,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
   final ScrollController _scrollController = ScrollController();
   String _searchQuery = '';
 
-  String get _boardId =>
-      widget.boardId ??
-      ModalRoute.of(context)?.settings.name?.split('/').last ??
-      '';
+  String get _boardId => widget.boardId; // Shortcut to access boardId
 
   @override
   void initState() {

@@ -8,6 +8,7 @@ import 'package:frontend/home_screen.dart';
 import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/board_creation_screen.dart';
 import 'package:frontend/board_detail_screen.dart';
+import 'package:frontend/utils/regex.dart';
 
 void main() async {
   // Ensure that widget binding is initialized
@@ -49,14 +50,23 @@ class MyApp extends StatelessWidget {
       },
       // Handle dynamic routes like '/board/186eca85-c43a-46db-a826-fb4a5b112cde'
       onGenerateRoute: (RouteSettings settings) {
-        final name = settings.name ?? '';
-        if (name.startsWith('/board/')) {
-          return BoardDetailScreen.routeFromSettings(settings);
+        final route = settings.name ?? '';
+        if (_boardRouteIsValid(route)) {
+          final boardId = route.substring('/board/'.length);
+          return BoardDetailScreen.routeFromSettings(settings, boardId);
         }
         return null;
       },
       debugShowCheckedModeBanner: false,
       debugShowMaterialGrid: false,
     );
+  }
+
+  bool _boardRouteIsValid(String route) {
+    final startsWithBoard = route.startsWith('/board/');
+    if (!startsWithBoard) return false;
+    final boardId = route.substring('/board/'.length);
+    if (boardId.isEmpty || !isValidUUIDv4(boardId)) return false;
+    return true;
   }
 }
