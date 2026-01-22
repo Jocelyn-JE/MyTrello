@@ -14,8 +14,8 @@ export 'package:frontend/websocket/commands/column_commands.dart';
 // Commands - Card operations
 export 'package:frontend/websocket/commands/card_commands.dart';
 
-// Commands - Messages
-export 'package:frontend/websocket/commands/message_commands.dart';
+// Commands - Messages / Chat
+export 'package:frontend/websocket/commands/chat_commands.dart';
 
 // Commands - Assignees
 export 'package:frontend/websocket/commands/assignee_commands.dart';

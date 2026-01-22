@@ -191,4 +191,14 @@ class WebsocketService {
   static void unassignUserFromCard(String cardId, String userId) {
     _sendCommand(UnassignCommand(cardId: cardId, userId: userId));
   }
+
+  /// Ask the server to send a message in the board chat
+  static void sendChatMessage(String message) {
+    _sendCommand(SendChatMessageCommand(message: message));
+  }
+
+  /// Ask the server to list chat messages in the board
+  static void listChatMessages() {
+    _sendCommand(ListChatMessagesCommand());
+  }
 }
