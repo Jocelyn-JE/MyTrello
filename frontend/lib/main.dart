@@ -1,6 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:frontend/utils/config.dart';
+import 'package:frontend/utils/print_to_console.dart';
 import 'package:frontend/utils/protected_routes.dart';
 import 'package:frontend/login_screen.dart';
 import 'package:frontend/register_screen.dart';
@@ -20,11 +21,11 @@ void main() async {
   // Load environment variables (optional)
   try {
     await dotenv.load(fileName: '.env');
+    printToConsole('.env file loaded successfully');
+    AppConfig.printConfig();
   } catch (e) {
     // .env file not found or failed to load - use default values
-    if (kDebugMode) {
-      print('Warning: .env file not found, using default configuration');
-    }
+    printToConsole('Warning: .env file not found, using default configuration');
   }
 
   runApp(const MyApp());

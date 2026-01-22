@@ -8,6 +8,7 @@ import 'package:frontend/services/board_service.dart';
 import 'package:frontend/board_settings_screen.dart';
 import 'package:frontend/utils/config.dart';
 import 'package:frontend/models/board.dart';
+import 'package:frontend/utils/print_to_console.dart';
 import 'package:frontend/utils/protected_routes.dart';
 import 'package:frontend/websocket/websocket.dart';
 import 'package:frontend/widgets/trello_column_widget.dart';
@@ -70,7 +71,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
   }
 
   void _connectToBoard() async {
-    debugPrint('Connecting to board $_boardId');
+    printToConsole('Connecting to board $_boardId');
     if (_boardId.isEmpty) return;
     try {
       TrelloBoard? result = await WebsocketService.connectToBoard(
@@ -78,14 +79,14 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
         host: AppConfig.backendHost,
       );
       if (result == null) return; // already connected
-      debugPrint('Connected to board: ${result.title}');
+      printToConsole('Connected to board: ${result.title}');
 
       // Fetch full board info to get members and viewers
       try {
         Board fullBoard = await BoardService.getBoard(_boardId);
         BoardPermissionsService.setCurrentBoard(fullBoard);
       } catch (e) {
-        debugPrint('Error fetching full board info: $e');
+        printToConsole('Error fetching full board info: $e');
       }
 
       setState(() {
@@ -100,16 +101,16 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
             final payload = data['data'];
             final sender = MinimalUser.fromJson(data['sender']);
             handleIncomingAction(type, payload, sender);
-            debugPrint('Received WebSocket message: $data');
+            printToConsole('Received WebSocket message: $data');
           } catch (e) {
-            debugPrint('Error processing WebSocket message: $e');
+            printToConsole('Error processing WebSocket message: $e');
           }
         },
         onError: (err) {
-          debugPrint('WebSocket stream error: $err');
+          printToConsole('WebSocket stream error: $err');
         },
         onDone: () {
-          debugPrint('WebSocket stream closed');
+          printToConsole('WebSocket stream closed');
           WebsocketService.close();
           BoardPermissionsService.clearCurrentBoard();
           if (mounted) {
@@ -119,7 +120,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
       );
       WebsocketService.fetchColumns();
     } catch (e) {
-      debugPrint('Error connecting to board: $e');
+      printToConsole('Error connecting to board: $e');
       _disconnectFromBoard();
       if (mounted) {
         _goHome();
@@ -128,7 +129,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
   }
 
   void _disconnectFromBoard() {
-    debugPrint('Disconnecting from board');
+    printToConsole('Disconnecting from board');
     _sub?.cancel();
     WebsocketService.close();
     BoardPermissionsService.clearCurrentBoard();
@@ -482,7 +483,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
     if (action != null) {
       action(payload, sender);
     } else {
-      debugPrint('Unknown action type: $type');
+      printToConsole('Unknown action type: $type');
     }
   }
 
