@@ -62,6 +62,14 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
     super.dispose();
   }
 
+  void _goHome() {
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      '/home',
+      (route) => false, // Remove all previous routes
+    );
+  }
+
   void _connectToBoard() async {
     debugPrint('Connecting to board $_boardId');
     if (_boardId.isEmpty) return;
@@ -106,11 +114,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
           WebsocketService.close();
           BoardPermissionsService.clearCurrentBoard();
           if (mounted) {
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              '/home',
-              (route) => false, // Remove all previous routes
-            );
+            _goHome();
           }
         },
       );
@@ -119,11 +123,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
       debugPrint('Error connecting to board: $e');
       _disconnectFromBoard();
       if (mounted) {
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          '/home',
-          (route) => false, // Remove all previous routes
-        );
+        _goHome();
       }
     }
   }
@@ -148,7 +148,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
     // If board was deleted, navigate back to home
     if (result == 'deleted') {
       if (mounted) {
-        Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+        _goHome();
       }
     }
   }
@@ -174,11 +174,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
           icon: const Icon(Icons.home),
           onPressed: () {
             _disconnectFromBoard();
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              '/home',
-              (route) => false, // Remove all previous routes
-            );
+            _goHome();
           },
           tooltip: 'Home',
         ),
