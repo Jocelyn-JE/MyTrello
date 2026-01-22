@@ -243,3 +243,26 @@ class MinimalUser {
     );
   }
 }
+
+class TrelloChatMessage {
+  String id;
+  String content;
+  DateTime createdAt;
+  TrelloUser user;
+
+  TrelloChatMessage({
+    required this.id,
+    required this.content,
+    required this.createdAt,
+    required this.user,
+  });
+
+  factory TrelloChatMessage.fromJson(Map<String, dynamic> json) {
+    return TrelloChatMessage(
+      id: json['id'] as String,
+      content: json['content'] as String,
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      user: TrelloUser.fromJson(json['user'] as Map<String, dynamic>),
+    );
+  }
+}
