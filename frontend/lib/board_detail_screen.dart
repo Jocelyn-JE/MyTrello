@@ -169,6 +169,19 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
               tooltip: 'Board Settings',
             ),
         ],
+        automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: const Icon(Icons.home),
+          onPressed: () {
+            _disconnectFromBoard();
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              '/home',
+              (route) => false, // Remove all previous routes
+            );
+          },
+          tooltip: 'Home',
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
