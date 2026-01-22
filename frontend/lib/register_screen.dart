@@ -92,7 +92,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Register'),
+        title: const Text('MyTrello - Register'),
         backgroundColor: Colors.lightGreen,
         shadowColor: Colors.grey,
       ),
