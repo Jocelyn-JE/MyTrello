@@ -13,7 +13,7 @@
     },
     "scripts": {
         "start-with-migrate": "prisma migrate reset --force && prisma migrate dev --name init --skip-generate && ts-node ./src/app.ts",
-        "start": "prisma generate && ts-node ./src/app.ts",
+        "start": "prisma generate --no-hints && ts-node ./src/app.ts",
         "test": "node --no-warnings ./node_modules/jest/bin/jest.js",
         "lint": "eslint . --ext .ts",
         "format": "prettier --write \"src/**/*.{ts,js,json}\"",
