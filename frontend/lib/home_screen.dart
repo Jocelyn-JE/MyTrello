@@ -73,10 +73,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.pushReplacementNamed(context, '/login');
               }
             },
+            tooltip: 'Logout',
           ),
         ],
         backgroundColor: Colors.lightGreen,
         shadowColor: Colors.grey,
+        automaticallyImplyLeading: false,
       ),
       body: RefreshIndicator(onRefresh: _refreshBoards, child: _buildBody()),
       floatingActionButton: FloatingActionButton(
