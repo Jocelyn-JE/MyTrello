@@ -16,10 +16,7 @@ void main() {
       await tester.pumpWidget(const MaterialApp(home: RegisterScreen()));
 
       expect(find.byType(AppBar), findsOneWidget);
-      expect(
-        find.text('Register'),
-        findsNWidgets(2),
-      ); // AppBar title + Button text
+      expect(find.text('MyTrello - Register'), findsOneWidget); // AppBar title
       expect(
         find.byType(TextField),
         findsNWidgets(4),

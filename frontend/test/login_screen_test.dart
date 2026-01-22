@@ -15,10 +15,7 @@ void main() {
       await tester.pumpWidget(const MaterialApp(home: LoginScreen()));
 
       expect(find.byType(AppBar), findsOneWidget);
-      expect(
-        find.text('Login'),
-        findsNWidgets(2),
-      ); // AppBar title + Button text
+      expect(find.text('MyTrello - Login'), findsOneWidget); // AppBar title
       expect(find.byType(TextField), findsNWidgets(2));
       expect(find.text('Email'), findsOneWidget);
       expect(find.text('Password'), findsOneWidget);
