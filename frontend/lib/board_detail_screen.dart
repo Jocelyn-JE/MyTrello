@@ -160,6 +160,14 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
     }
   }
 
+  void _sendChatMessage() {
+    final content = _chatController.text.trim();
+    if (content.isNotEmpty) {
+      WebsocketService.sendChatMessage(content);
+      _chatController.clear();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final title = _boardTitle ?? 'Board Details';
@@ -277,23 +285,11 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
                   border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.send, color: Colors.blue),
-                    onPressed: () {
-                      final content = _chatController.text.trim();
-                      if (content.isNotEmpty) {
-                        WebsocketService.sendChatMessage(content);
-                        _chatController.clear();
-                      }
-                    },
+                    onPressed: _sendChatMessage,
                     tooltip: 'Send',
                   ),
                 ),
-                onSubmitted: (value) {
-                  final content = value.trim();
-                  if (content.isNotEmpty) {
-                    WebsocketService.sendChatMessage(content);
-                    _chatController.clear();
-                  }
-                },
+                onSubmitted: (_) => _sendChatMessage(),
               ),
             ),
           ],
