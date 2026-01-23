@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/services/board_permissions_service.dart';
 import 'package:frontend/websocket/websocket.dart';
-import 'package:frontend/widgets/trello_card_widget.dart';
+import 'package:frontend/screens/board_detail/widgets/trello_card_widget.dart';
 
 class TrelloColumnWidget extends StatefulWidget {
   final TrelloColumn column;

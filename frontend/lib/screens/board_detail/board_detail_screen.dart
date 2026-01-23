@@ -12,7 +12,7 @@ import 'package:frontend/utils/print_to_console.dart';
 import 'package:frontend/utils/protected_routes.dart';
 import 'package:frontend/utils/user_color.dart';
 import 'package:frontend/websocket/websocket.dart';
-import 'package:frontend/widgets/trello_column_widget.dart';
+import 'package:frontend/screens/board_detail/widgets/trello_column_widget.dart';
 
 class BoardDetailScreen extends StatefulWidget {
   final String boardId;
