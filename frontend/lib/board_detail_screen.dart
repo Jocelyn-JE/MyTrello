@@ -35,13 +35,15 @@ class BoardDetailScreen extends StatefulWidget {
 }
 
 class _BoardDetailScreenState extends State<BoardDetailScreen> {
-  StreamSubscription? _sub;
+  StreamSubscription? _sub; // Subscription to WebSocket stream
   String? _boardTitle;
   late List<TrelloColumn> _columns = [];
-  late List<TrelloChatMessage> _chatMessages = [];
+  late List<TrelloChatMessage> _chatMessages =
+      []; // Messages stored from most recent to oldest
   bool _newMessage = false;
   bool _isChatDrawerOpen = false;
-  final ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController =
+      ScrollController(); // For horizontal scrolling
   final TextEditingController _chatController = TextEditingController();
   String _searchQuery = '';
 
@@ -124,6 +126,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
           }
         },
       );
+      // Initial data fetches
       WebsocketService.fetchColumns();
       WebsocketService.fetchChatMessages();
     } catch (e) {
@@ -186,6 +189,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
         shadowColor: Colors.grey,
         actions: [
           if (BoardPermissionsService.canEdit) ...[
+            // Chat button
             Builder(
               builder: (BuildContext context) {
                 return IconButton(
@@ -202,6 +206,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
                 );
               },
             ),
+            // Settings button
             IconButton(
               icon: const Icon(Icons.settings),
               onPressed: _openBoardSettings,
@@ -210,6 +215,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
           ],
         ],
         automaticallyImplyLeading: false,
+        // Home button
         leading: IconButton(
           icon: const Icon(Icons.home),
           onPressed: () {
@@ -219,6 +225,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
           tooltip: 'Home',
         ),
       ),
+      // Chat drawer
       endDrawer: Drawer(
         width: MediaQuery.of(context).size.width * 0.4,
         child: Column(
@@ -232,6 +239,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
                 ),
               ),
             ),
+            // Chat messages list
             Expanded(
               child: ListView.builder(
                 shrinkWrap: true,
@@ -276,6 +284,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
                 },
               ),
             ),
+            // Chat input field
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextField(
@@ -283,6 +292,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
                 decoration: InputDecoration(
                   labelText: 'Type a message',
                   border: const OutlineInputBorder(),
+                  // Send button
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.send, color: Colors.blue),
                     onPressed: _sendChatMessage,
