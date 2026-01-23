@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/board_detail/widgets/add_card_dialog.dart';
 import 'package:frontend/services/board_permissions_service.dart';
 import 'package:frontend/websocket/websocket.dart';
 import 'package:frontend/screens/board_detail/widgets/trello_card_widget.dart';
 
 class TrelloColumnWidget extends StatefulWidget {
   final TrelloColumn column;
-  final VoidCallback onAddCard;
   final String? columnBeforeId;
   final String searchQuery;
   final String boardId;
@@ -13,7 +13,6 @@ class TrelloColumnWidget extends StatefulWidget {
   const TrelloColumnWidget({
     super.key,
     required this.column,
-    required this.onAddCard,
     this.columnBeforeId,
     this.searchQuery = '',
     required this.boardId,
@@ -65,7 +64,7 @@ class _TrelloColumnWidgetState extends State<TrelloColumnWidget> {
     final columnWidget = SizedBox(
       width: 300,
       child: Card(
-        margin: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+        margin: const EdgeInsets.fromLTRB(0, 0, 8, 8),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
@@ -168,7 +167,13 @@ class _TrelloColumnWidgetState extends State<TrelloColumnWidget> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.lightGreen.shade100,
                   ),
-                  onPressed: widget.onAddCard,
+                  onPressed: () {
+                    showDialog(
+                      builder: (context) =>
+                          AddCardDialog(columnId: widget.column.id),
+                      context: context,
+                    );
+                  },
                 ),
                 const SizedBox(height: 8),
                 // Delete column button
@@ -223,7 +228,7 @@ class _TrelloColumnWidgetState extends State<TrelloColumnWidget> {
               children: [
                 Container(
                   width: 4,
-                  margin: const EdgeInsets.fromLTRB(0, 0, 8, 0),
+                  margin: const EdgeInsets.fromLTRB(0, 0, 8, 8),
                   decoration: BoxDecoration(
                     color: Colors.lightBlue,
                     borderRadius: BorderRadius.circular(2),

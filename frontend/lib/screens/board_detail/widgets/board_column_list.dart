@@ -1,6 +1,5 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/screens/board_detail/widgets/add_card_dialog.dart';
 import 'package:frontend/screens/board_detail/widgets/trello_column_widget.dart';
 import 'package:frontend/services/board_permissions_service.dart';
 import 'package:frontend/websocket/models/server_types.dart';
@@ -57,55 +56,11 @@ class _BoardColumnListState extends State<BoardColumnList> {
             itemBuilder: (context, index) {
               if (index == widget._columns.length &&
                   BoardPermissionsService.canEdit) {
-                // Add column button with drag target
-                return DragTarget<TrelloColumn>(
-                  onWillAcceptWithDetails: (details) => true,
-                  onAcceptWithDetails: (details) {
-                    final draggedColumn = details.data;
-                    // Move to end by passing null as newPos
-                    WebsocketService.moveColumn(draggedColumn.id, null);
-                  },
-                  builder: (context, candidateData, rejectedData) {
-                    final isHovering =
-                        candidateData.isNotEmpty &&
-                        candidateData[0]!.index != widget._columns.length - 1;
-                    final button = ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.lightGreen.shade200,
-                      ),
-                      onPressed: () {
-                        WebsocketService.createColumn('New Column');
-                      },
-                      child: const Icon(Icons.add),
-                    );
-
-                    if (isHovering) {
-                      return Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Container(
-                            width: 4,
-                            margin: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-                            decoration: BoxDecoration(
-                              color: Colors.lightBlue,
-                              borderRadius: BorderRadius.circular(2),
-                            ),
-                          ),
-                          button,
-                        ],
-                      );
-                    }
-                    return button;
-                  },
-                );
+                return _newColumnButton();
               }
               final column = widget._columns[index];
               return TrelloColumnWidget(
                 column: column,
-                onAddCard: () => showDialog(
-                  builder: (context) => AddCardDialog(columnId: column.id),
-                  context: context,
-                ),
                 columnBeforeId: index > 0
                     ? widget._columns[index - 1].id
                     : null,
@@ -116,6 +71,53 @@ class _BoardColumnListState extends State<BoardColumnList> {
           ),
         ),
       ),
+    );
+  }
+
+  /// Button to create a new column
+  Widget _newColumnButton() {
+    return DragTarget<TrelloColumn>(
+      onWillAcceptWithDetails: (details) => true,
+      onAcceptWithDetails: (details) {
+        final draggedColumn = details.data;
+        // Move to end by passing null as newPos
+        WebsocketService.moveColumn(draggedColumn.id, null);
+      },
+      builder: (context, candidateData, rejectedData) {
+        final isHovering =
+            candidateData.isNotEmpty &&
+            candidateData[0]!.index != widget._columns.length - 1;
+        final button = Padding(
+          padding: const EdgeInsets.only(bottom: 8.0),
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.lightGreen.shade200,
+            ),
+            onPressed: () {
+              WebsocketService.createColumn('New Column');
+            },
+            child: const Icon(Icons.add),
+          ),
+        );
+
+        if (isHovering) {
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                width: 4,
+                margin: const EdgeInsets.only(right: 8, bottom: 8),
+                decoration: BoxDecoration(
+                  color: Colors.lightBlue,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              button,
+            ],
+          );
+        }
+        return button;
+      },
     );
   }
 }

@@ -215,7 +215,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
       // Chat drawer
       endDrawer: BoardChatDrawer(chatMessages: _chatMessages),
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
             // Search bar
