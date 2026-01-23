@@ -10,6 +10,7 @@ import 'package:frontend/utils/config.dart';
 import 'package:frontend/models/board.dart';
 import 'package:frontend/utils/print_to_console.dart';
 import 'package:frontend/utils/protected_routes.dart';
+import 'package:frontend/utils/user_color.dart';
 import 'package:frontend/websocket/websocket.dart';
 import 'package:frontend/widgets/trello_column_widget.dart';
 
@@ -37,7 +38,11 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
   StreamSubscription? _sub;
   String? _boardTitle;
   late List<TrelloColumn> _columns = [];
+  late List<TrelloChatMessage> _chatMessages = [];
+  bool _newMessage = false;
+  bool _isChatDrawerOpen = false;
   final ScrollController _scrollController = ScrollController();
+  final TextEditingController _chatController = TextEditingController();
   String _searchQuery = '';
 
   String get _boardId => widget.boardId; // Shortcut to access boardId
@@ -57,6 +62,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
     // Clean up: cancel subscription and close the socket
     _sub?.cancel();
     _scrollController.dispose();
+    _chatController.dispose();
     WebsocketService.close();
     BoardPermissionsService.clearCurrentBoard();
     super.dispose();
@@ -119,6 +125,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
         },
       );
       WebsocketService.fetchColumns();
+      WebsocketService.fetchChatMessages();
     } catch (e) {
       printToConsole('Error connecting to board: $e');
       _disconnectFromBoard();
@@ -157,17 +164,42 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
   Widget build(BuildContext context) {
     final title = _boardTitle ?? 'Board Details';
     return Scaffold(
+      onEndDrawerChanged: (isOpened) {
+        setState(() {
+          _isChatDrawerOpen = isOpened;
+          if (isOpened) {
+            _newMessage = false;
+          }
+        });
+      },
       appBar: AppBar(
         title: Text(title),
         backgroundColor: Colors.lightGreen,
         shadowColor: Colors.grey,
         actions: [
-          if (BoardPermissionsService.canEdit)
+          if (BoardPermissionsService.canEdit) ...[
+            Builder(
+              builder: (BuildContext context) {
+                return IconButton(
+                  onPressed: () {
+                    Scaffold.of(context).openEndDrawer();
+                    setState(() {
+                      _newMessage = false;
+                      _isChatDrawerOpen = true;
+                    });
+                  },
+                  icon: Icon(
+                    _newMessage ? Icons.mark_unread_chat_alt : Icons.chat,
+                  ),
+                );
+              },
+            ),
             IconButton(
               icon: const Icon(Icons.settings),
               onPressed: _openBoardSettings,
               tooltip: 'Board Settings',
             ),
+          ],
         ],
         automaticallyImplyLeading: false,
         leading: IconButton(
@@ -177,6 +209,92 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
             _goHome();
           },
           tooltip: 'Home',
+        ),
+      ),
+      endDrawer: Drawer(
+        width: MediaQuery.of(context).size.width * 0.4,
+        child: Column(
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(color: Colors.lightGreen.shade200),
+              child: const Center(
+                child: Text(
+                  'Board Chat',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _chatMessages.length,
+                itemBuilder: (context, index) {
+                  final message = _chatMessages[index];
+                  final now = DateTime.now();
+                  final isToday =
+                      message.createdAt.year == now.year &&
+                      message.createdAt.month == now.month &&
+                      message.createdAt.day == now.day;
+
+                  final timeString =
+                      '${message.createdAt.hour.toString().padLeft(2, '0')}:${message.createdAt.minute.toString().padLeft(2, '0')}';
+                  final dateString =
+                      '${message.createdAt.day.toString().padLeft(2, '0')}/${message.createdAt.month.toString().padLeft(2, '0')}/${message.createdAt.year}';
+
+                  return ListTile(
+                    leading: Tooltip(
+                      message:
+                          '${message.user.username} (${message.user.email})',
+                      child: CircleAvatar(
+                        backgroundColor: getUserColor(message.user.id),
+                        child: Text(
+                          message.user.username[0].toUpperCase(),
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                    title: Text(
+                      message.user.username,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text(message.content),
+                    trailing: Text(
+                      isToday ? timeString : '$dateString\n$timeString',
+                      style: const TextStyle(fontSize: 12),
+                      textAlign: TextAlign.right,
+                    ),
+                  );
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: _chatController,
+                decoration: InputDecoration(
+                  labelText: 'Type a message',
+                  border: const OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.send, color: Colors.blue),
+                    onPressed: () {
+                      final content = _chatController.text.trim();
+                      if (content.isNotEmpty) {
+                        WebsocketService.sendChatMessage(content);
+                        _chatController.clear();
+                      }
+                    },
+                    tooltip: 'Send',
+                  ),
+                ),
+                onSubmitted: (value) {
+                  final content = value.trim();
+                  if (content.isNotEmpty) {
+                    WebsocketService.sendChatMessage(content);
+                    _chatController.clear();
+                  }
+                },
+              ),
+            ),
+          ],
         ),
       ),
       body: Padding(
@@ -474,6 +592,24 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
       String userId = payload['userId'];
       setState(() {
         _getCardById(cardId).removeAssignee(userId);
+      });
+    },
+    'chat.history': (dynamic payload, MinimalUser sender) {
+      if (sender.id != AuthService.userId) return;
+      List<TrelloChatMessage> messages = (payload as List)
+          .map((msg) => TrelloChatMessage.fromJson(msg))
+          .toList();
+      setState(() {
+        _chatMessages = messages;
+      });
+    },
+    'chat.send': (dynamic payload, MinimalUser sender) {
+      TrelloChatMessage newMessage = TrelloChatMessage.fromJson(payload);
+      setState(() {
+        _chatMessages.add(newMessage);
+        if (!_isChatDrawerOpen) {
+          _newMessage = true;
+        }
       });
     },
   };
