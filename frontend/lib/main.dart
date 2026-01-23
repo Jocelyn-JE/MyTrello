@@ -5,7 +5,7 @@ import 'package:frontend/utils/print_to_console.dart';
 import 'package:frontend/utils/protected_routes.dart';
 import 'package:frontend/screens/login_screen.dart';
 import 'package:frontend/screens/register_screen.dart';
-import 'package:frontend/screens/home_screen.dart';
+import 'package:frontend/screens/home_screen/home_screen.dart';
 import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/screens/board_creation_screen.dart';
 import 'package:frontend/screens/board_detail/board_detail_screen.dart';
