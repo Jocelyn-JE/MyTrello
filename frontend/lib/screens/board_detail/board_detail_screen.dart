@@ -11,6 +11,7 @@ import 'package:frontend/utils/app_config.dart';
 import 'package:frontend/models/board.dart';
 import 'package:frontend/utils/print_to_console.dart';
 import 'package:frontend/utils/protected_routes.dart';
+import 'package:frontend/utils/snackbar.dart';
 import 'package:frontend/websocket/websocket.dart';
 
 class BoardDetailScreen extends StatefulWidget {
@@ -141,7 +142,20 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
   }
 
   Future<void> _openBoardSettings() async {
-    Board? boardInfo = await BoardService.getBoard(_boardId);
+    Board boardInfo;
+    try {
+      boardInfo = await BoardService.getBoard(_boardId);
+    } catch (e) {
+      if (mounted) {
+        showSnackBarError(
+          context,
+          'Failed to load board settings: ${e.toString()}',
+        );
+        _disconnectFromBoard();
+        _goHome();
+      }
+      return;
+    }
     if (!mounted) return;
     final result = await Navigator.push(
       context,
