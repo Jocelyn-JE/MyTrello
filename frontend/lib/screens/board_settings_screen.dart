@@ -4,6 +4,7 @@ import 'package:frontend/models/board.dart';
 import 'package:frontend/websocket/models/server_types.dart';
 import 'package:frontend/services/board_service.dart';
 import 'package:frontend/widgets/user_search_dialog.dart';
+import 'package:frontend/utils/snackbar.dart';
 
 class BoardSettingsScreen extends StatefulWidget {
   final Board board;
@@ -77,12 +78,7 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
     final title = _titleController.text.trim();
 
     if (title.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Board title cannot be empty'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      showSnackBarWarning(context, 'Board title cannot be empty');
       return;
     }
 
@@ -106,12 +102,7 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
           _isLoading = false;
           _hasChanges = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Board updated successfully!'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        showSnackBarSuccess(context, 'Board updated successfully!');
         Navigator.pop(
           context,
           true,
@@ -122,12 +113,7 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
         setState(() {
           _isLoading = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to update board: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        showSnackBarError(context, 'Failed to update board: ${e.toString()}');
       }
     }
   }
@@ -167,12 +153,7 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
       await BoardService.deleteBoard(widget.board.id);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Board deleted successfully'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        showSnackBarSuccess(context, 'Board deleted successfully');
         // Pop twice: once for this screen, once to return to home
         Navigator.pop(context);
         Navigator.pop(context, 'deleted');
@@ -182,12 +163,7 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
         setState(() {
           _isLoading = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to delete board: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        showSnackBarError(context, 'Failed to delete board: ${e.toString()}');
       }
     }
   }

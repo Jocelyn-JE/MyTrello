@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/utils/snackbar.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:frontend/utils/app_config.dart';
@@ -19,13 +20,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _usernameController = TextEditingController();
   bool _isLoading = false;
 
-  void _showSnackBar(String message, {Color? color}) {
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message), backgroundColor: color));
-  }
-
   Future<void> _handleRegister() async {
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
@@ -42,7 +36,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     ];
     for (final (condition, message) in validations) {
       if (condition) {
-        _showSnackBar(message, color: Colors.red);
+        showSnackBarWarning(context, message);
         return;
       }
     }
@@ -63,22 +57,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       if (response.statusCode == 201) {
         if (mounted) {
-          _showSnackBar('Registration successful!', color: Colors.green);
+          showSnackBarSuccess(context, 'Registration successful!');
           Navigator.pop(context);
         }
       } else {
         if (mounted) {
           final errorData = json.decode(response.body);
           final errorMessage = errorData['error'] ?? 'Unknown error';
-          _showSnackBar(
-            'Registration failed: $errorMessage',
-            color: Colors.orangeAccent,
-          );
+          showSnackBarWarning(context, 'Registration failed: $errorMessage');
         }
       }
     } catch (e) {
       // Handle network error
-      if (mounted) _showSnackBar('Error: $e');
+      if (mounted) showSnackBarError(context, 'Error: $e');
     }
 
     if (mounted) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/utils/snackbar.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:frontend/utils/app_config.dart';
@@ -33,13 +34,6 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  void _showSnackBar(String message, {Color? color}) {
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message), backgroundColor: color));
-  }
-
   Future<void> _handleLogin() async {
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
@@ -51,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
     ];
     for (final (condition, message) in validations) {
       if (condition) {
-        _showSnackBar(message, color: Colors.red);
+        showSnackBarWarning(context, message);
         return;
       }
     }
@@ -72,25 +66,21 @@ class _LoginScreenState extends State<LoginScreen> {
           final token = responseData['token'] ?? '';
           final userId = responseData['user']['id'] ?? '';
 
+          showSnackBarSuccess(context, 'Login successful!');
           // Set the authentication state
           await AuthService.login(token, userId);
-
-          _showSnackBar('Login successful!', color: Colors.green);
           if (mounted) Navigator.pushReplacementNamed(context, '/home');
         }
       } else {
         if (mounted) {
           final errorData = json.decode(response.body);
           final errorMessage = errorData['error'] ?? 'Unknown error';
-          _showSnackBar(
-            'Login failed: $errorMessage',
-            color: Colors.orangeAccent,
-          );
+          showSnackBarWarning(context, 'Login failed: $errorMessage');
         }
       }
     } catch (e) {
       // Handle network error
-      if (mounted) _showSnackBar('Error: $e');
+      if (mounted) showSnackBarError(context, 'Error: $e');
     }
 
     if (mounted) {

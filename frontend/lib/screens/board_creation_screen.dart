@@ -3,6 +3,7 @@ import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/websocket/models/server_types.dart';
 import 'package:frontend/services/board_service.dart';
 import 'package:frontend/widgets/user_search_dialog.dart';
+import 'package:frontend/utils/snackbar.dart';
 
 class BoardCreationScreen extends StatefulWidget {
   const BoardCreationScreen({super.key});
@@ -35,12 +36,7 @@ class _BoardCreationScreenState extends State<BoardCreationScreen> {
         setState(() {
           _isLoading = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Board created successfully!'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        showSnackBarSuccess(context, 'Board created successfully!');
       }
 
       return true;
@@ -49,12 +45,7 @@ class _BoardCreationScreenState extends State<BoardCreationScreen> {
         setState(() {
           _isLoading = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to create board: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        showSnackBarError(context, 'Failed to create board: ${e.toString()}');
       }
       return false;
     }
@@ -63,12 +54,7 @@ class _BoardCreationScreenState extends State<BoardCreationScreen> {
   Future<void> _verifyParameters() async {
     final title = titleController.text.trim();
     if (title.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter a board title'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      showSnackBarWarning(context, 'Please enter a board title');
       return;
     }
     final success = await _createBoard(title, usersInput);
