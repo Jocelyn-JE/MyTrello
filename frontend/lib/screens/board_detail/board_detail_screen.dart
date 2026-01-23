@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/board_detail/widgets/board_chat_drawer.dart';
+import 'package:frontend/screens/board_detail/widgets/board_column_list.dart';
 import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/services/board_permissions_service.dart';
 import 'package:frontend/services/board_service.dart';
@@ -12,7 +12,6 @@ import 'package:frontend/models/board.dart';
 import 'package:frontend/utils/print_to_console.dart';
 import 'package:frontend/utils/protected_routes.dart';
 import 'package:frontend/websocket/websocket.dart';
-import 'package:frontend/screens/board_detail/widgets/trello_column_widget.dart';
 
 class BoardDetailScreen extends StatefulWidget {
   final String boardId;
@@ -253,152 +252,14 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
             ),
             // Column list
             Expanded(
-              child: Scrollbar(
-                controller: _scrollController,
-                thumbVisibility: true,
-                thickness: 6.0,
-                radius: const Radius.circular(4),
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 8.0),
-                  child: _columnList(),
-                ),
+              child: BoardColumnList(
+                columns: _columns,
+                searchQuery: _searchQuery,
+                boardId: _boardId,
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _columnList() {
-    return Listener(
-      onPointerSignal: (pointerSignal) {
-        if (pointerSignal is PointerScrollEvent) {
-          // Convert vertical scroll to horizontal scroll
-          final offset = pointerSignal.scrollDelta.dy;
-          _scrollController.jumpTo(
-            (_scrollController.offset + offset).clamp(
-              0.0,
-              _scrollController.position.maxScrollExtent,
-            ),
-          );
-        }
-      },
-      child: ListView.builder(
-        controller: _scrollController,
-        scrollDirection: Axis.horizontal,
-        itemCount: _columns.length + (BoardPermissionsService.canEdit ? 1 : 0),
-        itemBuilder: (context, index) {
-          if (index == _columns.length && BoardPermissionsService.canEdit) {
-            // Add column button with drag target
-            return DragTarget<TrelloColumn>(
-              onWillAcceptWithDetails: (details) => true,
-              onAcceptWithDetails: (details) {
-                final draggedColumn = details.data;
-                // Move to end by passing null as newPos
-                WebsocketService.moveColumn(draggedColumn.id, null);
-              },
-              builder: (context, candidateData, rejectedData) {
-                final isHovering =
-                    candidateData.isNotEmpty &&
-                    candidateData[0]!.index != _columns.length - 1;
-                final button = ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.lightGreen.shade200,
-                  ),
-                  onPressed: () {
-                    WebsocketService.createColumn('New Column');
-                  },
-                  child: const Icon(Icons.add),
-                );
-
-                if (isHovering) {
-                  return Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Container(
-                        width: 4,
-                        margin: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-                        decoration: BoxDecoration(
-                          color: Colors.lightBlue,
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                      ),
-                      button,
-                    ],
-                  );
-                }
-                return button;
-              },
-            );
-          }
-          final column = _columns[index];
-          return TrelloColumnWidget(
-            column: column,
-            onAddCard: () => _showAddCardDialog(column.id),
-            columnBeforeId: index > 0 ? _columns[index - 1].id : null,
-            searchQuery: _searchQuery,
-            boardId: _boardId,
-          );
-        },
-      ),
-    );
-  }
-
-  /*
-   * Show dialog to add a new card
-   */
-  void _showAddCardDialog(String columnId) {
-    final titleController = TextEditingController();
-    final contentController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Add Card'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: titleController,
-              decoration: const InputDecoration(
-                labelText: 'Title',
-                border: OutlineInputBorder(),
-              ),
-              autofocus: true,
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: contentController,
-              decoration: const InputDecoration(
-                labelText: 'Description',
-                border: OutlineInputBorder(),
-              ),
-              maxLines: 3,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final title = titleController.text.trim();
-              final content = contentController.text.trim();
-              if (title.isNotEmpty && content.isNotEmpty) {
-                WebsocketService.createCard(
-                  columnId: columnId,
-                  title: title,
-                  content: content,
-                );
-                Navigator.pop(context);
-              }
-            },
-            child: const Text('Add'),
-          ),
-        ],
       ),
     );
   }
