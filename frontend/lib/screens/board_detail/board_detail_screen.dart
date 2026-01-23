@@ -102,10 +102,8 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
           // Handle incoming actions
           try {
             final data = jsonDecode(event);
-            final type = data['type'];
-            final payload = data['data'];
             final sender = MinimalUser.fromJson(data['sender']);
-            handleIncomingAction(type, payload, sender);
+            handleIncomingAction(data['type'], data['data'], sender);
             printToConsole('Received WebSocket message: $data');
           } catch (e) {
             printToConsole('Error processing WebSocket message: $e');
@@ -162,7 +160,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final title = _boardTitle ?? 'Board Details';
+    final title = _boardTitle ?? 'Loading...';
     return Scaffold(
       onEndDrawerChanged: (isOpened) {
         setState(() {
