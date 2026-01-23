@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/board_detail/widgets/board_chat_drawer.dart';
 import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/services/board_permissions_service.dart';
 import 'package:frontend/services/board_service.dart';
@@ -10,7 +11,6 @@ import 'package:frontend/utils/app_config.dart';
 import 'package:frontend/models/board.dart';
 import 'package:frontend/utils/print_to_console.dart';
 import 'package:frontend/utils/protected_routes.dart';
-import 'package:frontend/utils/user_color.dart';
 import 'package:frontend/websocket/websocket.dart';
 import 'package:frontend/screens/board_detail/widgets/trello_column_widget.dart';
 
@@ -44,7 +44,6 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
   bool _isChatDrawerOpen = false;
   final ScrollController _scrollController =
       ScrollController(); // For horizontal scrolling
-  final TextEditingController _chatController = TextEditingController();
   String _searchQuery = '';
 
   String get _boardId => widget.boardId; // Shortcut to access boardId
@@ -64,7 +63,6 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
     // Clean up: cancel subscription and close the socket
     _sub?.cancel();
     _scrollController.dispose();
-    _chatController.dispose();
     WebsocketService.close();
     BoardPermissionsService.clearCurrentBoard();
     super.dispose();
@@ -163,14 +161,6 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
     }
   }
 
-  void _sendChatMessage() {
-    final content = _chatController.text.trim();
-    if (content.isNotEmpty) {
-      WebsocketService.sendChatMessage(content);
-      _chatController.clear();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final title = _boardTitle ?? 'Board Details';
@@ -226,85 +216,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
         ),
       ),
       // Chat drawer
-      endDrawer: Drawer(
-        width: MediaQuery.of(context).size.width * 0.4,
-        child: Column(
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(color: Colors.lightGreen.shade200),
-              child: const Center(
-                child: Text(
-                  'Board Chat',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-            // Chat messages list
-            Expanded(
-              child: ListView.builder(
-                shrinkWrap: true,
-                reverse: true,
-                itemCount: _chatMessages.length,
-                itemBuilder: (context, index) {
-                  final message = _chatMessages[index];
-                  final now = DateTime.now();
-                  final isToday =
-                      message.createdAt.year == now.year &&
-                      message.createdAt.month == now.month &&
-                      message.createdAt.day == now.day;
-
-                  final timeString =
-                      '${message.createdAt.hour.toString().padLeft(2, '0')}:${message.createdAt.minute.toString().padLeft(2, '0')}';
-                  final dateString =
-                      '${message.createdAt.day.toString().padLeft(2, '0')}/${message.createdAt.month.toString().padLeft(2, '0')}/${message.createdAt.year}';
-
-                  return ListTile(
-                    leading: Tooltip(
-                      message:
-                          '${message.user.username} (${message.user.email})',
-                      child: CircleAvatar(
-                        backgroundColor: getUserColor(message.user.id),
-                        child: Text(
-                          message.user.username[0].toUpperCase(),
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ),
-                    title: Text(
-                      message.user.username,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle: Text(message.content),
-                    trailing: Text(
-                      isToday ? timeString : '$dateString\n$timeString',
-                      style: const TextStyle(fontSize: 12),
-                      textAlign: TextAlign.right,
-                    ),
-                  );
-                },
-              ),
-            ),
-            // Chat input field
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                controller: _chatController,
-                decoration: InputDecoration(
-                  labelText: 'Type a message',
-                  border: const OutlineInputBorder(),
-                  // Send button
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.send, color: Colors.blue),
-                    onPressed: _sendChatMessage,
-                    tooltip: 'Send',
-                  ),
-                ),
-                onSubmitted: (_) => _sendChatMessage(),
-              ),
-            ),
-          ],
-        ),
-      ),
+      endDrawer: BoardChatDrawer(chatMessages: _chatMessages),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
         child: Column(
