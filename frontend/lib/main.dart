@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:frontend/utils/config.dart';
+import 'package:frontend/utils/app_config.dart';
 import 'package:frontend/utils/print_to_console.dart';
 import 'package:frontend/utils/protected_routes.dart';
-import 'package:frontend/login_screen.dart';
-import 'package:frontend/register_screen.dart';
-import 'package:frontend/home_screen.dart';
+import 'package:frontend/screens/login_screen.dart';
+import 'package:frontend/screens/register_screen.dart';
+import 'package:frontend/screens/home_screen.dart';
 import 'package:frontend/services/auth_service.dart';
-import 'package:frontend/board_creation_screen.dart';
-import 'package:frontend/board_detail_screen.dart';
+import 'package:frontend/screens/board_creation_screen.dart';
+import 'package:frontend/screens/board_detail_screen.dart';
 import 'package:frontend/utils/regex.dart';
 
 void main() async {

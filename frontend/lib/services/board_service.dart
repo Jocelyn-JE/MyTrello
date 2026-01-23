@@ -1,6 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:frontend/utils/config.dart';
+import 'package:frontend/utils/app_config.dart';
 import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/models/board.dart';
 

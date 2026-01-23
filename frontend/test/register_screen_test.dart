@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-import 'package:frontend/register_screen.dart';
+import 'package:frontend/screens/register_screen.dart';
 
 void main() {
   setUpAll(() async {

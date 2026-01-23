@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:frontend/utils/config.dart';
+import 'package:frontend/utils/app_config.dart';
 import 'package:frontend/utils/regex.dart';
-import 'package:frontend/widgets/password_field.dart';
+import 'package:frontend/widgets/password_field_widget.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});

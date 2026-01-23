@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/services/board_permissions_service.dart';
-import 'package:frontend/user_search_dialog.dart';
+import 'package:frontend/widgets/user_search_dialog.dart';
 import 'package:frontend/utils/user_color.dart';
 import 'package:frontend/websocket/websocket.dart';
 

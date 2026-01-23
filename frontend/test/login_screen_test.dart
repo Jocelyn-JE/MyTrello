@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:frontend/login_screen.dart';
+import 'package:frontend/screens/login_screen.dart';
 
 void main() {
   setUpAll(() async {
