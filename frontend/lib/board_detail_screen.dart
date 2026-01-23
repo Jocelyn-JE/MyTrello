@@ -226,6 +226,8 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
             ),
             Expanded(
               child: ListView.builder(
+                shrinkWrap: true,
+                reverse: true,
                 itemCount: _chatMessages.length,
                 itemBuilder: (context, index) {
                   final message = _chatMessages[index];
@@ -600,13 +602,13 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
           .map((msg) => TrelloChatMessage.fromJson(msg))
           .toList();
       setState(() {
-        _chatMessages = messages;
+        _chatMessages = messages.reversed.toList();
       });
     },
     'chat.send': (dynamic payload, MinimalUser sender) {
       TrelloChatMessage newMessage = TrelloChatMessage.fromJson(payload);
       setState(() {
-        _chatMessages.add(newMessage);
+        _chatMessages.insert(0, newMessage);
         if (!_isChatDrawerOpen) {
           _newMessage = true;
         }
