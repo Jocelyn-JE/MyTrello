@@ -197,8 +197,8 @@ class WebsocketService {
     _sendCommand(SendChatMessageCommand(message: message));
   }
 
-  /// Ask the server to list chat messages in the board
-  static void listChatMessages() {
-    _sendCommand(ListChatMessagesCommand());
+  /// Ask the server to fetch chat messages in the board
+  static void fetchChatMessages() {
+    _sendCommand(FetchChatMessagesCommand());
   }
 }

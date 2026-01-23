@@ -13,12 +13,12 @@ class SendChatMessageCommand implements WebSocketCommand {
   Map<String, dynamic> toJson() => {'type': type, 'data': message};
 }
 
-/// List chat messages in the board
-class ListChatMessagesCommand implements WebSocketCommand {
+/// Fetch chat messages in the board
+class FetchChatMessagesCommand implements WebSocketCommand {
   @override
   final String type = 'chat.history';
 
-  ListChatMessagesCommand();
+  FetchChatMessagesCommand();
 
   @override
   Map<String, dynamic> toJson() => {'type': type, 'data': null};
