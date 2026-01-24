@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/home_screen/widgets/board_card_widget.dart';
+import 'package:frontend/screens/home_screen/widgets/assigned_card_widget.dart';
 import 'package:frontend/services/api/auth_service.dart';
 import 'package:frontend/services/api/board_service.dart';
+import 'package:frontend/services/api/card_service.dart';
 import 'package:frontend/models/api/board.dart';
+import 'package:frontend/models/api/assigned_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,27 +16,32 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<Board> _boards = [];
+  List<AssignedCard> _assignedCards = [];
   bool _isLoading = true;
   String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
-    _loadBoards();
+    _loadData();
   }
 
-  Future<void> _loadBoards() async {
+  Future<void> _loadData() async {
     try {
       setState(() {
         _isLoading = true;
         _errorMessage = null;
       });
 
-      final boards = await BoardService.getBoards();
+      final results = await Future.wait([
+        BoardService.getBoards(),
+        CardService.getAssignedCards(),
+      ]);
 
       if (mounted) {
         setState(() {
-          _boards = boards;
+          _boards = results[0] as List<Board>;
+          _assignedCards = results[1] as List<AssignedCard>;
           _isLoading = false;
         });
       }
@@ -55,8 +63,8 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<void> _refreshBoards() async {
-    await _loadBoards();
+  Future<void> _refreshData() async {
+    await _loadData();
   }
 
   @override
@@ -85,11 +93,11 @@ class _HomeScreenState extends State<HomeScreen> {
         shadowColor: Colors.grey,
         automaticallyImplyLeading: false,
       ),
-      body: RefreshIndicator(onRefresh: _refreshBoards, child: _buildBody()),
+      body: RefreshIndicator(onRefresh: _refreshData, child: _buildBody()),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final result = await Navigator.pushNamed(context, '/createBoard');
-          if (result == true) _refreshBoards();
+          if (result == true) _refreshData();
         },
         tooltip: 'Create New Board',
         child: const Icon(Icons.add),
@@ -124,13 +132,13 @@ class _HomeScreenState extends State<HomeScreen> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
-            ElevatedButton(onPressed: _loadBoards, child: const Text('Retry')),
+            ElevatedButton(onPressed: _loadData, child: const Text('Retry')),
           ],
         ),
       );
     }
 
-    if (_boards.isEmpty) {
+    if (_boards.isEmpty && _assignedCards.isEmpty) {
       return const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -150,25 +158,53 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: ListView(
         children: [
+          if (_assignedCards.isNotEmpty) ...[
+            Text(
+              'Assigned to You',
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _assignedCards.length,
+              itemBuilder: (context, index) {
+                final card = _assignedCards[index];
+                return AssignedCardWidget(card: card);
+              },
+            ),
+            const SizedBox(height: 24),
+          ],
           Text(
             'Your Boards',
             style: Theme.of(
               context,
-            ).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: ListView.builder(
+          const SizedBox(height: 12),
+          if (_boards.isEmpty)
+            const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                'No boards yet. Create your first board!',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.grey),
+              ),
+            )
+          else
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
               itemCount: _boards.length,
               itemBuilder: (context, index) {
                 final board = _boards[index];
                 return BoardCardWidget(board: board);
               },
             ),
-          ),
         ],
       ),
     );
