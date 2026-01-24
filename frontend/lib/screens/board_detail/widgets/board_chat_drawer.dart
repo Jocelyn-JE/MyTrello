@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/utils/user_color.dart';
 import 'package:frontend/models/websocket/server_types.dart';
 import 'package:frontend/services/websocket/websocket_service.dart';
+import 'package:intl/intl.dart';
 
 class BoardChatDrawer extends StatefulWidget {
   final List<TrelloChatMessage> _chatMessages;
@@ -46,10 +47,12 @@ class _BoardChatDrawerState extends State<BoardChatDrawer> {
                     message.createdAt.month == now.month &&
                     message.createdAt.day == now.day;
 
-                final timeString =
-                    '${message.createdAt.hour.toString().padLeft(2, '0')}:${message.createdAt.minute.toString().padLeft(2, '0')}';
-                final dateString =
-                    '${message.createdAt.day.toString().padLeft(2, '0')}/${message.createdAt.month.toString().padLeft(2, '0')}/${message.createdAt.year}';
+                final timeString = DateFormat(
+                  'HH:mm',
+                ).format(message.createdAt);
+                final dateString = DateFormat(
+                  'dd/MM/yyyy',
+                ).format(message.createdAt);
 
                 return ListTile(
                   leading: Tooltip(

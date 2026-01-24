@@ -4,6 +4,7 @@ import 'package:frontend/services/board_permissions_service.dart';
 import 'package:frontend/services/websocket/websocket_service.dart';
 import 'package:frontend/widgets/user_search_dialog.dart';
 import 'package:frontend/utils/user_color.dart';
+import 'package:intl/intl.dart';
 
 class TrelloCardWidget extends StatefulWidget {
   final TrelloCard card;
@@ -243,7 +244,9 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              '${widget.card.dueDate!.month}/${widget.card.dueDate!.day}',
+                              DateFormat(
+                                'dd/MM/yyyy',
+                              ).format(widget.card.dueDate!),
                               style: const TextStyle(
                                 fontSize: 11,
                                 color: Colors.grey,
