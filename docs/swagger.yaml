@@ -10,6 +10,8 @@ tags:
     description: User authentication and management
   - name: boards
     description: Board management operations
+  - name: cards
+    description: Card management operations
 servers:
   - url: http://localhost:3000
     description: Local development server
@@ -452,6 +454,34 @@ paths:
         "500":
           $ref: "#/components/responses/Error500"
 
+  /api/cards/assigned:
+    get:
+      tags:
+        - cards
+      summary: Get cards assigned to the authenticated user
+      description: Retrieve all cards that are assigned to the currently authenticated user, including board and column information for navigation
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Assigned cards retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Assigned cards retrieved successfully
+                  cards:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/AssignedCard"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "500":
+          $ref: "#/components/responses/Error500"
+
 components:
   securitySchemes:
     bearerAuth:
@@ -558,6 +588,43 @@ components:
                   email:
                     type: string
                     format: email
+    AssignedCard:
+      type: object
+      description: Card with board and column information for navigation
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        content:
+          type: string
+        startDate:
+          type: string
+          format: date-time
+          nullable: true
+        dueDate:
+          type: string
+          format: date-time
+          nullable: true
+        columnId:
+          type: string
+          format: uuid
+        columnTitle:
+          type: string
+          description: Title of the column containing this card
+        boardId:
+          type: string
+          format: uuid
+        boardTitle:
+          type: string
+          description: Title of the board containing this card
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
   responses:
     Error400:
       description: Bad request
