@@ -20,8 +20,17 @@ class _BoardChatDrawerState extends State<BoardChatDrawer> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final isVerticalScreen = screenHeight > screenWidth;
+
+    // Use more space on vertical screens (up to 90%) and less on wide screens (40%)
+    final drawerWidth = isVerticalScreen
+        ? screenWidth * 0.8
+        : screenWidth * 0.4;
+
     return Drawer(
-      width: MediaQuery.of(context).size.width * 0.4,
+      width: drawerWidth,
       child: Column(
         children: [
           DrawerHeader(
