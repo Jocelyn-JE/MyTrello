@@ -7,6 +7,7 @@ import swaggerRouter from "./routes/swagger.router";
 import registerRouter from "./routes/register.router";
 import loginRouter from "./routes/login.router";
 import boardRouter from "./routes/board.router";
+import cardRouter from "./routes/card.router";
 import usersRouter from "./routes/users.router";
 import boardRoomSocketRouter from "./routes/board_room.socket";
 
@@ -32,6 +33,9 @@ app.useHTTP("/api/users", usersRouter);
 
 // Board routes
 app.useHTTP("/api/boards", boardRouter);
+
+// Card routes
+app.useHTTP("/api/cards", cardRouter);
 
 // Board WebSocket routes
 app.use("/ws/boards", boardRoomSocketRouter);
