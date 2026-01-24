@@ -1,10 +1,16 @@
 import { Router } from "websocket-express";
 import prisma from "../utils/prisma.client";
+import { verifyToken } from "../utils/jwt";
+import { isUserPartOfBoard } from "../utils/board_access";
 
 const router = new Router();
 
-router.get("/", async (req, res) => {
+router.get("/", verifyToken, async (req, res) => {
     console.debug("/api/users: Fetching all users");
+    if (!req.userId) {
+        console.error("User ID missing in request after token verification");
+        return res.status(500).send({ error: "Internal server error" });
+    }
     try {
         const users = await prisma.user.findMany({
             where: { username: { contains: "", mode: "insensitive" } },
@@ -19,12 +25,27 @@ router.get("/", async (req, res) => {
     }
 });
 
-router.get("/:boardId/members", async (req, res) => {
+router.get("/:boardId/members", verifyToken, async (req, res) => {
     const { boardId } = req.params;
     console.debug(
         `/api/users/${boardId}/members: Fetching members for board ${boardId}`
     );
+    if (!req.userId) {
+        console.error("User ID missing in request after token verification");
+        return res.status(500).send({ error: "Internal server error" });
+    }
+    const userId = req.userId;
     try {
+        // Check if user has access to this board
+        const hasAccess = await isUserPartOfBoard(userId, boardId);
+        if (!hasAccess) {
+            console.warn(
+                `User ${userId} attempted to access members of board ${boardId} without permission`
+            );
+            return res
+                .status(403)
+                .json({ error: "Access denied to this board" });
+        }
         const users = await prisma.user.findMany({
             where: {
                 member_boards: { some: { id: boardId } }
@@ -39,12 +60,27 @@ router.get("/:boardId/members", async (req, res) => {
     }
 });
 
-router.get("/:boardId/viewers", async (req, res) => {
+router.get("/:boardId/viewers", verifyToken, async (req, res) => {
     const { boardId } = req.params;
     console.debug(
         `/api/users/${boardId}/viewers: Fetching viewers for board ${boardId}`
     );
+    if (!req.userId) {
+        console.error("User ID missing in request after token verification");
+        return res.status(500).send({ error: "Internal server error" });
+    }
+    const userId = req.userId;
     try {
+        // Check if user has access to this board
+        const hasAccess = await isUserPartOfBoard(userId, boardId);
+        if (!hasAccess) {
+            console.warn(
+                `User ${userId} attempted to access viewers of board ${boardId} without permission`
+            );
+            return res
+                .status(403)
+                .json({ error: "Access denied to this board" });
+        }
         const users = await prisma.user.findMany({
             where: {
                 viewed_boards: { some: { id: boardId } }
@@ -73,8 +109,13 @@ type QueryValues = {
     assigned?: boolean;
 };
 
-router.get("/search", async (req, res) => {
+router.get("/search", verifyToken, async (req, res) => {
     console.debug("/api/users/search: Searching users with filters");
+    if (!req.userId) {
+        console.error("User ID missing in request after token verification");
+        return res.status(500).send({ error: "Internal server error" });
+    }
+    const userId = req.userId;
     try {
         const query: any = req.query;
         const validationError = validateQueryParams(query);
@@ -93,6 +134,22 @@ router.get("/search", async (req, res) => {
         if (query.viewer) queryFilters.viewer = query.viewer === "true";
         if (query.cardId) queryFilters.cardId = query.cardId;
         if (query.assigned) queryFilters.assigned = query.assigned === "true";
+
+        // Check board access if boardId is provided
+        if (queryFilters.boardId) {
+            const hasAccess = await isUserPartOfBoard(
+                userId,
+                queryFilters.boardId
+            );
+            if (!hasAccess) {
+                console.warn(
+                    `User ${userId} attempted to search users for board ${queryFilters.boardId} without permission`
+                );
+                return res
+                    .status(403)
+                    .json({ error: "Access denied to this board" });
+            }
+        }
 
         const where: any = {};
         if (queryFilters.username)

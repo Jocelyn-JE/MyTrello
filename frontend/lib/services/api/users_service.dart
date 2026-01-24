@@ -2,6 +2,7 @@ import 'package:frontend/models/websocket/server_types.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:frontend/utils/app_config.dart';
+import 'package:frontend/services/api/auth_service.dart';
 
 class SearchParameters {
   String? username;
@@ -29,9 +30,18 @@ class SearchParameters {
 
 class UserService {
   static Future<List<TrelloUser>> getUsers() async {
-    final response = await http.get(
-      Uri.parse('${AppConfig.backendUrl}/api/users'),
-    );
+    final token = AuthService.token;
+    if (token == null) throw Exception('No authentication token found');
+
+    final response = await http
+        .get(
+          Uri.parse('${AppConfig.backendUrl}/api/users'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        )
+        .timeout(Duration(milliseconds: AppConfig.apiTimeout));
     final jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
       return (jsonData as List)
@@ -45,9 +55,18 @@ class UserService {
   }
 
   static Future<List<TrelloUser>> getBoardMembers(String boardId) async {
-    final response = await http.get(
-      Uri.parse('${AppConfig.backendUrl}/api/users/$boardId/members'),
-    );
+    final token = AuthService.token;
+    if (token == null) throw Exception('No authentication token found');
+
+    final response = await http
+        .get(
+          Uri.parse('${AppConfig.backendUrl}/api/users/$boardId/members'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        )
+        .timeout(Duration(milliseconds: AppConfig.apiTimeout));
     final jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
       return (jsonData as List)
@@ -61,9 +80,18 @@ class UserService {
   }
 
   static Future<List<TrelloUser>> getBoardViewers(String boardId) async {
-    final response = await http.get(
-      Uri.parse('${AppConfig.backendUrl}/api/users/$boardId/viewers'),
-    );
+    final token = AuthService.token;
+    if (token == null) throw Exception('No authentication token found');
+
+    final response = await http
+        .get(
+          Uri.parse('${AppConfig.backendUrl}/api/users/$boardId/viewers'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        )
+        .timeout(Duration(milliseconds: AppConfig.apiTimeout));
     final jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
       return (jsonData as List)
@@ -77,6 +105,9 @@ class UserService {
   }
 
   static Future<List<TrelloUser>> searchUsers(SearchParameters params) async {
+    final token = AuthService.token;
+    if (token == null) throw Exception('No authentication token found');
+
     final queryParameters = <String, String>{};
     if (params.username != null) queryParameters['username'] = params.username!;
     if (params.email != null) queryParameters['email'] = params.email!;
@@ -95,11 +126,17 @@ class UserService {
     if (params.assigned != null) {
       queryParameters['assigned'] = params.assigned!.toString();
     }
-    final response = await http.get(
-      Uri.parse(
-        '${AppConfig.backendUrl}/api/users/search?${Uri(queryParameters: queryParameters).query}',
-      ),
-    );
+    final response = await http
+        .get(
+          Uri.parse(
+            '${AppConfig.backendUrl}/api/users/search?${Uri(queryParameters: queryParameters).query}',
+          ),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        )
+        .timeout(Duration(milliseconds: AppConfig.apiTimeout));
     final jsonData = json.decode(response.body);
     if (response.statusCode == 200) {
       return (jsonData as List)
