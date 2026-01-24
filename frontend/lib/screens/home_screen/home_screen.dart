@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/screens/home_screen/widgets/board_card_widget.dart';
-import 'package:frontend/screens/home_screen/widgets/assigned_card_widget.dart';
+import 'package:frontend/screens/home_screen/widgets/home_layout_widget.dart';
 import 'package:frontend/services/api/auth_service.dart';
 import 'package:frontend/services/api/board_service.dart';
 import 'package:frontend/services/api/card_service.dart';
@@ -156,57 +155,6 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
 
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: ListView(
-        children: [
-          if (_assignedCards.isNotEmpty) ...[
-            Text(
-              'Assigned to You',
-              style: Theme.of(
-                context,
-              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: _assignedCards.length,
-              itemBuilder: (context, index) {
-                final card = _assignedCards[index];
-                return AssignedCardWidget(card: card);
-              },
-            ),
-            const SizedBox(height: 24),
-          ],
-          Text(
-            'Your Boards',
-            style: Theme.of(
-              context,
-            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 12),
-          if (_boards.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text(
-                'No boards yet. Create your first board!',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey),
-              ),
-            )
-          else
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: _boards.length,
-              itemBuilder: (context, index) {
-                final board = _boards[index];
-                return BoardCardWidget(board: board);
-              },
-            ),
-        ],
-      ),
-    );
+    return HomeLayoutWidget(boards: _boards, assignedCards: _assignedCards);
   }
 }
