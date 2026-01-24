@@ -220,7 +220,7 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
       child: ListTile(
-        title: Text('${permission.username} (${permission.email})'),
+        title: Text('${permission.username} (${permission.email ?? ''})'),
         subtitle: DropdownButton<String>(
           value: permission.role,
           isExpanded: true,
@@ -400,13 +400,13 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
 class BoardUserPermission {
   final String userId;
   final String username;
-  final String email;
+  final String? email;
   final String role;
 
   BoardUserPermission({
     required this.userId,
     required this.username,
-    required this.email,
+    this.email,
     required this.role,
   });
 }

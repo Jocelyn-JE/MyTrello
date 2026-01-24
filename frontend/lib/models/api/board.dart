@@ -61,15 +61,15 @@ class Board {
 class BoardUser {
   final String id;
   final String username;
-  final String email;
+  final String? email;
 
-  BoardUser({required this.id, required this.username, required this.email});
+  BoardUser({required this.id, required this.username, this.email});
 
   factory BoardUser.fromJson(Map<String, dynamic> json) {
     return BoardUser(
       id: json['id'] as String,
       username: json['username'] as String,
-      email: json['email'] as String,
+      email: json['email'] as String?,
     );
   }
 
