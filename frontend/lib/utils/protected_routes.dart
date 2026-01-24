@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/services/auth_service.dart';
+import 'package:frontend/services/api/auth_service.dart';
 
 class ProtectedRoute extends StatelessWidget {
   final Widget child;

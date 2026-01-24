@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/models/websocket/server_types.dart';
 import 'package:frontend/screens/board_detail/widgets/board_chat_drawer.dart';
 import 'package:frontend/screens/board_detail/widgets/board_column_list.dart';
-import 'package:frontend/services/auth_service.dart';
+import 'package:frontend/services/api/auth_service.dart';
 import 'package:frontend/services/board_permissions_service.dart';
 import 'package:frontend/services/api/board_service.dart';
 import 'package:frontend/screens/board_settings_screen.dart';

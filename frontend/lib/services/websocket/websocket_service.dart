@@ -7,7 +7,7 @@ import 'package:frontend/services/websocket/commands/chat_commands.dart';
 import 'package:frontend/services/websocket/commands/column_commands.dart';
 import 'package:frontend/services/websocket/commands/websocket_command.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:frontend/services/auth_service.dart';
+import 'package:frontend/services/api/auth_service.dart';
 
 class WebsocketService {
   static WebSocketChannel? _channel;

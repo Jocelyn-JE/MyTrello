@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/utils/snackbar.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:frontend/utils/app_config.dart';
 import 'package:frontend/utils/regex.dart';
 import 'package:frontend/widgets/password_field_widget.dart';
+import 'package:frontend/services/api/auth_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -43,33 +41,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() {
       _isLoading = true;
     });
-    // Call the backend API
-    try {
-      final response = await http.post(
-        Uri.parse('${AppConfig.backendUrl}/api/register'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'email': email,
-          'username': username,
-          'password': password,
-        }),
-      );
 
-      if (response.statusCode == 201) {
-        if (mounted) {
-          showSnackBarSuccess(context, 'Registration successful!');
-          Navigator.pop(context);
-        }
-      } else {
-        if (mounted) {
-          final errorData = json.decode(response.body);
-          final errorMessage = errorData['error'] ?? 'Unknown error';
-          showSnackBarWarning(context, 'Registration failed: $errorMessage');
-        }
+    try {
+      await AuthService.register(email, username, password);
+
+      if (mounted) {
+        showSnackBarSuccess(context, 'Registration successful!');
+        Navigator.pop(context);
       }
     } catch (e) {
-      // Handle network error
-      if (mounted) showSnackBarError(context, 'Error: $e');
+      if (mounted) {
+        final errorMessage = e.toString().replaceFirst('Exception: ', '');
+        showSnackBarWarning(context, 'Registration failed: $errorMessage');
+      }
     }
 
     if (mounted) {

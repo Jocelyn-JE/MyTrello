@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/services/auth_service.dart';
+import 'package:frontend/services/api/auth_service.dart';
 import 'package:frontend/models/api/board.dart';
 import 'package:frontend/models/websocket/server_types.dart';
 import 'package:frontend/services/api/board_service.dart';

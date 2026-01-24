@@ -1,7 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:frontend/utils/app_config.dart';
-import 'package:frontend/services/auth_service.dart';
+import 'package:frontend/services/api/auth_service.dart';
 import 'package:frontend/models/api/board.dart';
 
 class BoardService {

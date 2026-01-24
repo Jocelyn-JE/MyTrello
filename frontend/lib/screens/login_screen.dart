@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/utils/snackbar.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:frontend/utils/app_config.dart';
 import 'package:frontend/utils/regex.dart';
 import 'package:frontend/widgets/password_field_widget.dart';
-import 'package:frontend/services/auth_service.dart';
+import 'package:frontend/services/api/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -52,35 +49,23 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       _isLoading = true;
     });
-    // Call the backend API
+
     try {
-      final response = await http.post(
-        Uri.parse('${AppConfig.backendUrl}/api/login'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({'email': email, 'password': password}),
-      );
+      await AuthService.loginWithCredentials(email, password);
 
-      if (response.statusCode == 200) {
-        if (mounted) {
-          final responseData = json.decode(response.body);
-          final token = responseData['token'] ?? '';
-          final userId = responseData['user']['id'] ?? '';
-
-          showSnackBarSuccess(context, 'Login successful!');
-          // Set the authentication state
-          await AuthService.login(token, userId);
-          if (mounted) Navigator.pushReplacementNamed(context, '/home');
-        }
-      } else {
-        if (mounted) {
-          final errorData = json.decode(response.body);
-          final errorMessage = errorData['error'] ?? 'Unknown error';
-          showSnackBarWarning(context, 'Login failed: $errorMessage');
-        }
+      if (mounted) {
+        showSnackBarSuccess(context, 'Login successful!');
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/home',
+          (route) => false, // Remove all previous routes
+        );
       }
     } catch (e) {
-      // Handle network error
-      if (mounted) showSnackBarError(context, 'Error: $e');
+      if (mounted) {
+        final errorMessage = e.toString().replaceFirst('Exception: ', '');
+        showSnackBarWarning(context, 'Login failed: $errorMessage');
+      }
     }
 
     if (mounted) {
