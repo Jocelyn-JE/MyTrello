@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:frontend/websocket/models/server_types.dart';
+import 'package:frontend/models/websocket/server_types.dart';
 
 void main() {
   group('TrelloBoard Tests', () {

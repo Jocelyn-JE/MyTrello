@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/services/auth_service.dart';
-import 'package:frontend/websocket/models/server_types.dart';
-import 'package:frontend/services/board_service.dart';
+import 'package:frontend/models/websocket/server_types.dart';
+import 'package:frontend/services/api/board_service.dart';
 import 'package:frontend/widgets/user_search_dialog.dart';
 import 'package:frontend/utils/snackbar.dart';
 

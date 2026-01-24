@@ -1,4 +1,4 @@
-import 'package:frontend/websocket/models/server_types.dart';
+import 'package:frontend/models/websocket/server_types.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:frontend/utils/app_config.dart';

@@ -1,4 +1,4 @@
-import 'package:frontend/websocket/models/server_types.dart';
+import 'package:frontend/models/websocket/server_types.dart';
 
 class ConnectionAckMessage {
   final String type;

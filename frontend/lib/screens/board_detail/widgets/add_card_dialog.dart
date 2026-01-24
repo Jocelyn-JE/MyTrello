@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/websocket/websocket_service.dart';
+import 'package:frontend/services/websocket/websocket_service.dart';
 
 class AddCardDialog extends StatefulWidget {
   final String columnId;

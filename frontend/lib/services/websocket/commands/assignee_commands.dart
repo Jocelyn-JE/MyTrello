@@ -1,4 +1,4 @@
-import 'package:frontend/websocket/commands/websocket_command.dart';
+import 'package:frontend/services/websocket/commands/websocket_command.dart';
 
 /// List all assignees for a card
 class ListAssigneesCommand implements WebSocketCommand {

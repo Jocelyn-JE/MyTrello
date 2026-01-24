@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/home_screen/widgets/board_card_widget.dart';
 import 'package:frontend/services/auth_service.dart';
-import 'package:frontend/services/board_service.dart';
-import 'package:frontend/models/board.dart';
+import 'package:frontend/services/api/board_service.dart';
+import 'package:frontend/models/api/board.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

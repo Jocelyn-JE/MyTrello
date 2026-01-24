@@ -1,18 +1,19 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:frontend/models/websocket/server_types.dart';
 import 'package:frontend/screens/board_detail/widgets/board_chat_drawer.dart';
 import 'package:frontend/screens/board_detail/widgets/board_column_list.dart';
 import 'package:frontend/services/auth_service.dart';
 import 'package:frontend/services/board_permissions_service.dart';
-import 'package:frontend/services/board_service.dart';
+import 'package:frontend/services/api/board_service.dart';
 import 'package:frontend/screens/board_settings_screen.dart';
+import 'package:frontend/services/websocket/websocket_service.dart';
 import 'package:frontend/utils/app_config.dart';
-import 'package:frontend/models/board.dart';
+import 'package:frontend/models/api/board.dart';
 import 'package:frontend/utils/print_to_console.dart';
 import 'package:frontend/utils/protected_routes.dart';
 import 'package:frontend/utils/snackbar.dart';
-import 'package:frontend/websocket/websocket.dart';
 
 class BoardDetailScreen extends StatefulWidget {
   final String boardId;

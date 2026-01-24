@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/utils/user_color.dart';
-import 'package:frontend/websocket/models/server_types.dart';
-import 'package:frontend/websocket/websocket_service.dart';
+import 'package:frontend/models/websocket/server_types.dart';
+import 'package:frontend/services/websocket/websocket_service.dart';
 
 class BoardChatDrawer extends StatefulWidget {
   final List<TrelloChatMessage> _chatMessages;

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:frontend/models/board.dart';
+import 'package:frontend/models/api/board.dart';
 
 void main() {
   group('Board Model Tests', () {

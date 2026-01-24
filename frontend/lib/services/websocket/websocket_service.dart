@@ -1,7 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:frontend/models/websocket/server_types.dart';
+import 'package:frontend/services/websocket/commands/assignee_commands.dart';
+import 'package:frontend/services/websocket/commands/card_commands.dart';
+import 'package:frontend/services/websocket/commands/chat_commands.dart';
+import 'package:frontend/services/websocket/commands/column_commands.dart';
+import 'package:frontend/services/websocket/commands/websocket_command.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:frontend/websocket/websocket.dart';
 import 'package:frontend/services/auth_service.dart';
 
 class WebsocketService {

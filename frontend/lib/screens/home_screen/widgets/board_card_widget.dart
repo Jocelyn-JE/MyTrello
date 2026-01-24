@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/models/board.dart';
+import 'package:frontend/models/api/board.dart';
 
 class BoardCardWidget extends StatelessWidget {
   final Board board;

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:frontend/websocket/commands/card_commands.dart';
+import 'package:frontend/services/websocket/commands/card_commands.dart';
 
 void main() {
   group('ListCardsCommand Tests', () {
