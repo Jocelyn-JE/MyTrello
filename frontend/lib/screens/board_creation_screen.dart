@@ -65,32 +65,26 @@ class _BoardCreationScreenState extends State<BoardCreationScreen> {
   Widget _buildUserItem(int index) {
     final user = users[index];
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 4.0),
+      margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
       child: ListTile(
-        title: Text(user.username),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(user.email),
-            Text('User ID: ${user.id}'),
-            DropdownButton<String>(
-              value: usersInput[index].role,
-              items: const [
-                DropdownMenuItem(value: 'member', child: Text('Member')),
-                DropdownMenuItem(value: 'viewer', child: Text('Viewer')),
-              ],
-              onChanged: (String? newRole) {
-                if (newRole != null) {
-                  setState(() {
-                    usersInput[index] = BoardUserInput(
-                      id: usersInput[index].id,
-                      role: newRole,
-                    );
-                  });
-                }
-              },
-            ),
+        title: Text('${user.username} (${user.email})'),
+        subtitle: DropdownButton<String>(
+          value: usersInput[index].role,
+          isExpanded: true,
+          items: const [
+            DropdownMenuItem(value: 'member', child: Text('Member')),
+            DropdownMenuItem(value: 'viewer', child: Text('Viewer')),
           ],
+          onChanged: (String? newRole) {
+            if (newRole != null) {
+              setState(() {
+                usersInput[index] = BoardUserInput(
+                  id: usersInput[index].id,
+                  role: newRole,
+                );
+              });
+            }
+          },
         ),
         trailing: IconButton(
           icon: const Icon(Icons.delete),
@@ -113,67 +107,117 @@ class _BoardCreationScreenState extends State<BoardCreationScreen> {
         backgroundColor: Colors.lightGreen,
         shadowColor: Colors.grey,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TextField(
-              controller: titleController,
-              decoration: const InputDecoration(labelText: 'Board Title'),
-            ),
-            const SizedBox(height: 20),
-            Expanded(
-              child: ListView.builder(
-                itemCount: users.length + 1, // +1 for the add button
-                itemBuilder: (context, index) {
-                  if (index == users.length) {
-                    // This is the last item - show the add button
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: ElevatedButton.icon(
-                        onPressed: _isLoading
-                            ? null
-                            : () async {
-                                final newUser = await showDialog<TrelloUser>(
-                                  context: context,
-                                  builder: (context) => UserSearchDialog(
-                                    excludedUserIds: [
-                                      ...users.map((u) => u.id),
-                                      if (AuthService.userId != null)
-                                        AuthService.userId!,
-                                    ],
-                                    searchMode: UserSearchMode.allUsers,
-                                  ),
-                                );
-                                if (newUser != null) {
-                                  setState(() {
-                                    users.add(newUser);
-                                    usersInput.add(
-                                      BoardUserInput(
-                                        id: newUser.id,
-                                        role: 'member',
-                                      ),
-                                    );
-                                  });
-                                }
-                              },
-                        icon: const Icon(Icons.add),
-                        label: const Text('Add User'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue.shade100,
-                          foregroundColor: Colors.blue.shade700,
-                        ),
+            // Board Title Section
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Board Title',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
-                    );
-                  } else {
-                    // Show existing user item
-                    return _buildUserItem(index);
-                  }
-                },
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: titleController,
+                      decoration: const InputDecoration(
+                        labelText: 'Title',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
+            const SizedBox(height: 16),
+
+            // Users and Permissions Section
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Users & Permissions',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.add),
+                          onPressed: _isLoading
+                              ? null
+                              : () async {
+                                  final newUser = await showDialog<TrelloUser>(
+                                    context: context,
+                                    builder: (context) => UserSearchDialog(
+                                      excludedUserIds: [
+                                        ...users.map((u) => u.id),
+                                        if (AuthService.userId != null)
+                                          AuthService.userId!,
+                                      ],
+                                      searchMode: UserSearchMode.allUsers,
+                                    ),
+                                  );
+                                  if (newUser != null) {
+                                    setState(() {
+                                      users.add(newUser);
+                                      usersInput.add(
+                                        BoardUserInput(
+                                          id: newUser.id,
+                                          role: 'member',
+                                        ),
+                                      );
+                                    });
+                                  }
+                                },
+                          tooltip: 'Add User',
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    if (users.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Center(child: Text('No users added yet')),
+                      )
+                    else
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: users.length,
+                        itemBuilder: (context, index) {
+                          return _buildUserItem(index);
+                        },
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Create Button
             ElevatedButton(
               onPressed: _isLoading ? null : _verifyParameters,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
               child: const Text('Create Board'),
             ),
           ],
