@@ -2,6 +2,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/utils/print_to_console.dart';
 
 class AppConfig {
+  static Duration get dragDelay => Duration(milliseconds: 200);
+
   static String get backendHost {
     try {
       return dotenv.env['BACKEND_HOST'] ?? 'localhost:3000';
