@@ -133,7 +133,6 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
     List<TrelloUser> alreadyAssigned,
   ) async {
     // Implementation of user assignment dialog goes here
-    // This is a placeholder for demonstration purposes
     return await showDialog(
       context: context,
       builder: (context) => UserSearchDialog(
