@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/websocket/server_types.dart';
+import 'package:frontend/screens/board_detail/widgets/assigned_user_avatar.dart';
 import 'package:frontend/services/board_permissions_service.dart';
 import 'package:frontend/services/websocket/websocket_service.dart';
 import 'package:frontend/utils/app_config.dart';
 import 'package:frontend/widgets/user_search_dialog.dart';
-import 'package:frontend/utils/user_color.dart';
 import 'package:intl/intl.dart';
 
 class TrelloCardWidget extends StatefulWidget {
@@ -301,7 +301,7 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
                   spacing: 6,
                   runSpacing: 6,
                   children: widget.card.assignedUsers.map((user) {
-                    return _AssignedUserAvatar(
+                    return AssignedUserAvatar(
                       user: user,
                       cardId: widget.card.id,
                       canEdit: canEdit,
@@ -403,111 +403,6 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
       ),
       childWhenDragging: Opacity(opacity: 0.5, child: card),
       child: card,
-    );
-  }
-}
-
-class _AssignedUserAvatar extends StatefulWidget {
-  final TrelloUser user;
-  final String cardId;
-  final bool canEdit;
-
-  const _AssignedUserAvatar({
-    required this.user,
-    required this.cardId,
-    required this.canEdit,
-  });
-
-  @override
-  State<_AssignedUserAvatar> createState() => _AssignedUserAvatarState();
-}
-
-class _AssignedUserAvatarState extends State<_AssignedUserAvatar> {
-  bool _isHovered = false;
-
-  Future<void> _confirmUnassign() async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Unassign User'),
-        content: Text('Remove ${widget.user.username} from this card?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-            ),
-            child: const Text('Unassign'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true) {
-      WebsocketService.unassignUserFromCard(widget.cardId, widget.user.id);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Tooltip(
-      message: widget.user.username,
-      child: MouseRegion(
-        onEnter: (_) {
-          if (widget.canEdit) {
-            setState(() => _isHovered = true);
-          }
-        },
-        onExit: (_) {
-          if (widget.canEdit) {
-            setState(() => _isHovered = false);
-          }
-        },
-        child: GestureDetector(
-          onTap: widget.canEdit ? _confirmUnassign : null,
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              CircleAvatar(
-                radius: 12,
-                backgroundColor: getUserColor(widget.user.id),
-                child: Text(
-                  widget.user.username.isNotEmpty
-                      ? widget.user.username[0].toUpperCase()
-                      : '?',
-                  style: const TextStyle(color: Colors.white, fontSize: 12),
-                ),
-              ),
-              if (_isHovered && widget.canEdit)
-                Positioned(
-                  top: -4,
-                  right: -4,
-                  child: GestureDetector(
-                    onTap: _confirmUnassign,
-                    child: Container(
-                      width: 16,
-                      height: 16,
-                      decoration: const BoxDecoration(
-                        color: Colors.red,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.close,
-                        size: 12,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
