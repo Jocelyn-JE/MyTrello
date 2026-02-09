@@ -176,102 +176,105 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final title = _boardTitle ?? 'Loading...';
-    return Scaffold(
-      onEndDrawerChanged: (isOpened) {
-        setState(() {
-          _isChatDrawerOpen = isOpened;
-          if (isOpened) {
-            _newMessage = false;
-          }
-        });
-      },
-      appBar: AppBar(
-        title: Text(title),
-        backgroundColor: Colors.lightGreen,
-        shadowColor: Colors.grey,
-        actions: [
-          if (BoardPermissionsService.canEdit) ...[
-            // Chat button
-            Builder(
-              builder: (BuildContext context) {
-                return IconButton(
-                  onPressed: () {
-                    Scaffold.of(context).openEndDrawer();
-                    setState(() {
-                      _newMessage = false;
-                      _isChatDrawerOpen = true;
-                    });
-                  },
-                  icon: Icon(
-                    _newMessage ? Icons.mark_unread_chat_alt : Icons.chat,
-                  ),
-                );
-              },
-            ),
-            // Settings button
-            IconButton(
-              icon: const Icon(Icons.settings),
-              onPressed: _openBoardSettings,
-              tooltip: 'Board Settings',
-            ),
-          ],
-        ],
-        automaticallyImplyLeading: false,
-        // Home button
-        leading: IconButton(
-          icon: const Icon(Icons.home),
-          onPressed: () {
-            _disconnectFromBoard();
-            _goHome();
-          },
-          tooltip: 'Home',
-        ),
-      ),
-      // Chat drawer
-      endDrawer: BoardChatDrawer(chatMessages: _chatMessages),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            // Search bar
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: 'Search cards...',
-                  prefixIcon: const Icon(Icons.search),
-                  suffixIcon: _searchQuery.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.clear),
-                          onPressed: () {
-                            setState(() {
-                              _searchQuery = '';
-                            });
-                          },
-                        )
-                      : null,
-                  border: const OutlineInputBorder(),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    _searchQuery = value.toLowerCase();
-                  });
+    return SafeArea(
+      top: false,
+      child: Scaffold(
+        onEndDrawerChanged: (isOpened) {
+          setState(() {
+            _isChatDrawerOpen = isOpened;
+            if (isOpened) {
+              _newMessage = false;
+            }
+          });
+        },
+        appBar: AppBar(
+          title: Text(title),
+          backgroundColor: Colors.lightGreen,
+          shadowColor: Colors.grey,
+          actions: [
+            if (BoardPermissionsService.canEdit) ...[
+              // Chat button
+              Builder(
+                builder: (BuildContext context) {
+                  return IconButton(
+                    onPressed: () {
+                      Scaffold.of(context).openEndDrawer();
+                      setState(() {
+                        _newMessage = false;
+                        _isChatDrawerOpen = true;
+                      });
+                    },
+                    icon: Icon(
+                      _newMessage ? Icons.mark_unread_chat_alt : Icons.chat,
+                    ),
+                  );
                 },
               ),
-            ),
-            // Column list
-            Expanded(
-              child: BoardColumnList(
-                columns: _columns,
-                searchQuery: _searchQuery,
-                boardId: _boardId,
+              // Settings button
+              IconButton(
+                icon: const Icon(Icons.settings),
+                onPressed: _openBoardSettings,
+                tooltip: 'Board Settings',
               ),
-            ),
+            ],
           ],
+          automaticallyImplyLeading: false,
+          // Home button
+          leading: IconButton(
+            icon: const Icon(Icons.home),
+            onPressed: () {
+              _disconnectFromBoard();
+              _goHome();
+            },
+            tooltip: 'Home',
+          ),
+        ),
+        // Chat drawer
+        endDrawer: BoardChatDrawer(chatMessages: _chatMessages),
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              // Search bar
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: 'Search cards...',
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: _searchQuery.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: () {
+                              setState(() {
+                                _searchQuery = '';
+                              });
+                            },
+                          )
+                        : null,
+                    border: const OutlineInputBorder(),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      _searchQuery = value.toLowerCase();
+                    });
+                  },
+                ),
+              ),
+              // Column list
+              Expanded(
+                child: BoardColumnList(
+                  columns: _columns,
+                  searchQuery: _searchQuery,
+                  boardId: _boardId,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

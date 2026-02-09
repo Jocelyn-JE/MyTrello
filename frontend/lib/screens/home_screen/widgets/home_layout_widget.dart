@@ -33,7 +33,7 @@ class HomeLayoutWidget extends StatelessWidget {
 
   Widget _buildWideLayout(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 8.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -59,17 +59,20 @@ class HomeLayoutWidget extends StatelessWidget {
 
   Widget _buildNarrowLayout(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.only(left: 16.0, right: 16.0),
       child: ListView(
         children: [
           if (assignedCards.isNotEmpty) ...[
-            Text(
-              'Assigned to You',
-              style: Theme.of(
-                context,
-              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Text(
+                'Assigned to You',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             ConstrainedBox(
               constraints: const BoxConstraints(maxHeight: 400),
               child: ListView.builder(
@@ -81,9 +84,9 @@ class HomeLayoutWidget extends StatelessWidget {
                 },
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
             Divider(height: 12, color: Colors.grey[300]),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
           ],
           Text(
             'Your Boards',
