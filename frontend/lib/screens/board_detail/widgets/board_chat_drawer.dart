@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/utils/user_color.dart';
+import 'package:frontend/utils/deterministic_color.dart';
 import 'package:frontend/models/websocket/server_types.dart';
 import 'package:frontend/services/websocket/websocket_service.dart';
 import 'package:intl/intl.dart';
@@ -67,7 +67,7 @@ class _BoardChatDrawerState extends State<BoardChatDrawer> {
                   leading: Tooltip(
                     message: '${message.user.username} (${message.user.email})',
                     child: CircleAvatar(
-                      backgroundColor: getUserColor(message.user.id),
+                      backgroundColor: getColorFromId(message.user.id),
                       child: Text(
                         message.user.username[0].toUpperCase(),
                         style: const TextStyle(color: Colors.white),

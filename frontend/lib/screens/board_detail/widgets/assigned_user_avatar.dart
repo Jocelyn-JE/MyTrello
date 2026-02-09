@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/websocket/server_types.dart';
 import 'package:frontend/services/websocket/websocket_service.dart';
-import 'package:frontend/utils/user_color.dart';
+import 'package:frontend/utils/deterministic_color.dart';
 
 class AssignedUserAvatar extends StatefulWidget {
   final TrelloUser user;
@@ -72,7 +72,7 @@ class _AssignedUserAvatarState extends State<AssignedUserAvatar> {
             children: [
               CircleAvatar(
                 radius: 12,
-                backgroundColor: getUserColor(widget.user.id),
+                backgroundColor: getColorFromId(widget.user.id),
                 child: Text(
                   widget.user.username.isNotEmpty
                       ? widget.user.username[0].toUpperCase()

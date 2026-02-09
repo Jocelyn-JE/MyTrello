@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/api/board.dart';
-import 'package:frontend/utils/board_color.dart';
+import 'package:frontend/utils/deterministic_color.dart';
 
 class BoardCardWidget extends StatelessWidget {
   final Board board;
@@ -13,7 +13,7 @@ class BoardCardWidget extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundColor: getBoardColor(board.id),
+          backgroundColor: getColorFromId(board.id),
           child: Text(
             board.title.isNotEmpty ? board.title[0].toUpperCase() : 'B',
             style: const TextStyle(
