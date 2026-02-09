@@ -6,6 +6,10 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.android
+      args:
+        - BACKEND_HOST=${BACKEND_HOST}
+        - API_TIMEOUT=${API_TIMEOUT}
+        - DEBUG_MODE=${DEBUG_MODE}
     volumes:
       - ./output:/output
 
