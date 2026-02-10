@@ -146,6 +146,7 @@ class WebsocketService {
     DateTime? startDate,
     DateTime? dueDate,
     List<String>? assignees,
+    bool updateDates = false,
   }) {
     _sendCommand(
       UpdateCardCommand(
@@ -158,6 +159,7 @@ class WebsocketService {
         startDate: startDate,
         dueDate: dueDate,
         assignees: assignees,
+        updateDates: updateDates,
       ),
     );
   }

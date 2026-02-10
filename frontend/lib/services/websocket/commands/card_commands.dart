@@ -80,6 +80,7 @@ class UpdateCardCommand implements WebSocketCommand {
   final DateTime? startDate;
   final DateTime? dueDate;
   final List<String>? assignees;
+  final bool updateDates;
 
   UpdateCardCommand({
     required this.id,
@@ -91,21 +92,28 @@ class UpdateCardCommand implements WebSocketCommand {
     this.startDate,
     this.dueDate,
     this.assignees,
+    this.updateDates = false,
   });
 
   @override
-  Map<String, dynamic> toJson() => {
-    'type': type,
-    'data': {
+  Map<String, dynamic> toJson() {
+    final data = <String, dynamic>{
       'id': id,
       if (columnId != null) 'columnId': columnId,
       if (title != null) 'title': title,
       if (content != null) 'content': content,
       if (tagId != null) 'tagId': tagId,
       if (newPos != null) 'newPos': newPos,
-      if (startDate != null) 'startDate': startDate!.toIso8601String(),
-      if (dueDate != null) 'dueDate': dueDate!.toIso8601String(),
       if (assignees != null) 'assignees': assignees,
-    },
-  };
+    };
+
+    // Include date fields explicitly (even as null) when updateDates is true
+    // This allows clearing dates by sending null
+    if (updateDates) {
+      data['startDate'] = startDate?.toIso8601String();
+      data['dueDate'] = dueDate?.toIso8601String();
+    }
+
+    return {'type': type, 'data': data};
+  }
 }
