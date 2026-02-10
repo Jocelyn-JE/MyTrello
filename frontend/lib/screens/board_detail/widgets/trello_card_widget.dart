@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/websocket/server_types.dart';
 import 'package:frontend/screens/board_detail/widgets/assigned_user_avatar.dart';
+import 'package:frontend/screens/board_detail/widgets/card_date_picker_dialog.dart';
 import 'package:frontend/services/board_permissions_service.dart';
 import 'package:frontend/services/websocket/websocket_service.dart';
 import 'package:frontend/utils/app_config.dart';
@@ -144,6 +145,25 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
     );
   }
 
+  Future<void> _showDatePickerDialog() async {
+    final result = await showDialog<Map<String, DateTime?>>(
+      context: context,
+      builder: (context) => CardDatePickerDialog(
+        initialStartDate: widget.card.startDate,
+        initialDueDate: widget.card.dueDate,
+      ),
+    );
+
+    if (result != null) {
+      WebsocketService.updateCard(
+        cardId: widget.card.id,
+        startDate: result['startDate'],
+        dueDate: result['dueDate'],
+        updateDates: true,
+      );
+    }
+  }
+
   bool _matchesSearch() {
     if (widget.searchQuery.isEmpty) return false;
     final query = widget.searchQuery.toLowerCase();
@@ -233,25 +253,55 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
                             color: Colors.grey,
                           ),
                         ),
-                      if (widget.card.dueDate != null) ...[
+                      if (widget.card.startDate != null ||
+                          widget.card.dueDate != null) ...[
                         const SizedBox(height: 4),
-                        Row(
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 4,
                           children: [
-                            const Icon(
-                              Icons.calendar_today,
-                              size: 12,
-                              color: Colors.grey,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              DateFormat(
-                                'dd/MM/yyyy',
-                              ).format(widget.card.dueDate!),
-                              style: const TextStyle(
-                                fontSize: 11,
-                                color: Colors.grey,
+                            if (widget.card.startDate != null)
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.play_arrow,
+                                    size: 12,
+                                    color: Colors.green,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    DateFormat(
+                                      'dd/MM/yyyy',
+                                    ).format(widget.card.startDate!),
+                                    style: const TextStyle(
+                                      fontSize: 11,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
+                            if (widget.card.dueDate != null)
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.calendar_today,
+                                    size: 12,
+                                    color: Colors.red,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    DateFormat(
+                                      'dd/MM/yyyy',
+                                    ).format(widget.card.dueDate!),
+                                    style: const TextStyle(
+                                      fontSize: 11,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
                           ],
                         ),
                       ],
@@ -287,6 +337,15 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
                             );
                           }
                         },
+                      ),
+                      const SizedBox(height: 4),
+                      IconButton(
+                        icon: const Icon(Icons.calendar_month, size: 18),
+                        color: Colors.green,
+                        tooltip: 'Set deadlines',
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                        onPressed: _showDatePickerDialog,
                       ),
                     ],
                   ),
