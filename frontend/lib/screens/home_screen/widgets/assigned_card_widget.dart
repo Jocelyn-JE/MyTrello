@@ -36,34 +36,61 @@ class AssignedCardWidget extends StatelessWidget {
                 context,
               ).textTheme.bodySmall?.copyWith(color: Colors.blue),
             ),
-            if (card.dueDate != null)
+            if (card.startDate != null || card.dueDate != null)
               Padding(
-                padding: const EdgeInsets.only(top: 2),
-                child: Row(
+                padding: const EdgeInsets.only(top: 4),
+                child: Wrap(
+                  spacing: 12,
+                  runSpacing: 4,
                   children: [
-                    Icon(
-                      Icons.calendar_today,
-                      size: 12,
-                      color: isOverdue
-                          ? Colors.red
-                          : isDueSoon
-                          ? Colors.orange
-                          : Colors.grey,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      DateFormat('dd/MM/yyyy').format(card.dueDate!),
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: isOverdue
-                            ? Colors.red
-                            : isDueSoon
-                            ? Colors.orange
-                            : Colors.grey,
-                        fontWeight: isOverdue || isDueSoon
-                            ? FontWeight.bold
-                            : FontWeight.normal,
+                    if (card.startDate != null)
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.play_arrow,
+                            size: 14,
+                            color: Colors.green,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            DateFormat('dd/MM/yyyy').format(card.startDate!),
+                            style: Theme.of(
+                              context,
+                            ).textTheme.bodySmall?.copyWith(color: Colors.grey),
+                          ),
+                        ],
                       ),
-                    ),
+                    if (card.dueDate != null)
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.calendar_today,
+                            size: 14,
+                            color: isOverdue
+                                ? Colors.red
+                                : isDueSoon
+                                ? Colors.orange
+                                : Colors.grey,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            DateFormat('dd/MM/yyyy').format(card.dueDate!),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: isOverdue
+                                      ? Colors.red
+                                      : isDueSoon
+                                      ? Colors.orange
+                                      : Colors.grey,
+                                  fontWeight: isOverdue || isDueSoon
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
+                          ),
+                        ],
+                      ),
                   ],
                 ),
               ),
