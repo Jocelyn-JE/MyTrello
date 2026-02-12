@@ -57,9 +57,13 @@ export const cardUpdateAction: SocketAction = {
         if (cardData.content !== undefined)
             updateData.content = cardData.content;
         if (cardData.startDate !== undefined)
-            updateData.startDate = cardData.startDate ? new Date(cardData.startDate) : null;
+            updateData.startDate = cardData.startDate
+                ? new Date(cardData.startDate)
+                : null;
         if (cardData.dueDate !== undefined)
-            updateData.dueDate = cardData.dueDate ? new Date(cardData.dueDate) : null;
+            updateData.dueDate = cardData.dueDate
+                ? new Date(cardData.dueDate)
+                : null;
         const card = await prisma.card.update({
             where: {
                 id: cardData.id
