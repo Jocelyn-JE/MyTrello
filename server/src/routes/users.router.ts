@@ -5,6 +5,7 @@ import { isUserPartOfBoard } from "../utils/board_access";
 
 const router = new Router();
 
+// GET /api/users - Get all users
 router.get("/", verifyToken, async (req, res) => {
     console.debug("/api/users: Fetching all users");
     if (!req.userId) {
@@ -25,6 +26,7 @@ router.get("/", verifyToken, async (req, res) => {
     }
 });
 
+// GET /api/users/:boardId/members - Get board members
 router.get("/:boardId/members", verifyToken, async (req, res) => {
     const { boardId } = req.params;
     console.debug(
@@ -60,6 +62,7 @@ router.get("/:boardId/members", verifyToken, async (req, res) => {
     }
 });
 
+// GET /api/users/:boardId/viewers - Get board viewers
 router.get("/:boardId/viewers", verifyToken, async (req, res) => {
     const { boardId } = req.params;
     console.debug(
@@ -109,6 +112,7 @@ type QueryValues = {
     assigned?: boolean;
 };
 
+// GET /api/users/search - Search users with filters
 router.get("/search", verifyToken, async (req, res) => {
     console.debug("/api/users/search: Searching users with filters");
     if (!req.userId) {

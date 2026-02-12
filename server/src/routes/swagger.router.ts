@@ -37,7 +37,7 @@ function middleware(req: Request, res: Response, next: NextFunction) {
     next();
 }
 
-// Endpoint to get the raw swagger JSON
+// GET /api-docs/swagger.json - Get raw swagger JSON
 router.get("/swagger.json", (req, res) => {
     console.debug("/api-docs/swagger.json: Sending swagger JSON");
     res.json(getSwaggerConfigFile());

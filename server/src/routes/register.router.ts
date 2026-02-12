@@ -11,6 +11,7 @@ import { isValidEmail } from "../utils/regex";
 const router = new Router();
 const requiredFields = ["email", "password", "username"];
 
+// POST /api/register - Register new user
 router.post("/", async (req, res) => {
     console.debug("/api/register: Received registration request");
     // Validate request

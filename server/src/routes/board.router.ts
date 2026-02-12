@@ -15,6 +15,7 @@ import { rooms } from "./board_room.socket";
 const router = new Router();
 const requiredFields = ["title", "users"];
 
+// POST /api/boards - Create a new board
 router.post("/", verifyToken, async (req, res) => {
     console.debug("/api/boards: Received create board request");
     if (
@@ -84,6 +85,7 @@ async function getNonExistentUsers(users: BoardUser[]): Promise<string[]> {
     return nonExistentUserIds;
 }
 
+// GET /api/boards - Get all boards for user
 router.get("/", verifyToken, async (req, res) => {
     console.debug("/api/boards: Received get boards request");
     if (!req.userId) {
@@ -119,6 +121,7 @@ router.get("/", verifyToken, async (req, res) => {
     }
 });
 
+// GET /api/boards/:boardId - Get board by ID
 router.get("/:boardId", verifyToken, async (req, res) => {
     console.debug("/api/boards/:boardId: Received get board request");
     if (!req.userId) {
@@ -166,6 +169,7 @@ router.get("/:boardId", verifyToken, async (req, res) => {
     }
 });
 
+// DELETE /api/boards/:boardId - Delete a board
 router.delete("/:boardId", verifyToken, async (req, res) => {
     console.debug("/api/boards/:boardId: Received delete board request");
     if (!req.userId) {
@@ -204,6 +208,7 @@ router.delete("/:boardId", verifyToken, async (req, res) => {
     }
 });
 
+// PUT /api/boards/:boardId - Update a board
 router.put("/:boardId", verifyToken, async (req, res) => {
     console.debug("/api/boards/:boardId: Received update board request");
     if (

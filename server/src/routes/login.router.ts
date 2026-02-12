@@ -12,6 +12,7 @@ import { isValidEmail } from "../utils/regex";
 const router = new Router();
 const requiredFields = ["email", "password"];
 
+// POST /api/login - Login user
 router.post("/", async (req, res) => {
     console.debug("/api/login: Received login request");
     // Validate request

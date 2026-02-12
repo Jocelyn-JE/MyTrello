@@ -4,6 +4,7 @@ import { verifyToken } from "../utils/jwt";
 
 const router = new Router();
 
+// GET /api/cards/assigned - Get assigned cards for user
 router.get("/assigned", verifyToken, async (req, res) => {
     console.debug("/api/cards/assigned: Fetching assigned cards for user");
     if (!req.userId) {
