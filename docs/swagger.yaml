@@ -294,6 +294,151 @@ paths:
         "500":
           $ref: "#/components/responses/Error500"
 
+  /api/users/username:
+    patch:
+      tags:
+        - users
+      summary: Update username
+      description: Update the authenticated user's username
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: The new username
+              required:
+                - username
+      responses:
+        "200":
+          description: Username updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Username updated successfully
+                  user:
+                    $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          $ref: "#/components/responses/Error401"
+        "500":
+          $ref: "#/components/responses/Error500"
+
+  /api/users/email:
+    patch:
+      tags:
+        - users
+      summary: Update email
+      description: Update the authenticated user's email. Requires current password for verification.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: The new email address
+                currentPassword:
+                  type: string
+                  description: Current password for verification
+              required:
+                - email
+                - currentPassword
+      responses:
+        "200":
+          description: Email updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Email updated successfully
+                  user:
+                    $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          description: Unauthorized - Invalid password
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "409":
+          description: Conflict - Email already in use
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          $ref: "#/components/responses/Error500"
+
+  /api/users/password:
+    patch:
+      tags:
+        - users
+      summary: Update password
+      description: Update the authenticated user's password. Requires current password for verification.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currentPassword:
+                  type: string
+                  description: Current password for verification
+                newPassword:
+                  type: string
+                  description: New password
+              required:
+                - currentPassword
+                - newPassword
+      responses:
+        "200":
+          description: Password updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Password updated successfully
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          description: Unauthorized - Invalid password
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
+
   /api/boards:
     post:
       tags:
