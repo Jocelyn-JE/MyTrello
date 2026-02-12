@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/home_screen/widgets/home_layout_widget.dart';
+import 'package:frontend/screens/user_settings_screen/user_settings_screen.dart';
 import 'package:frontend/services/api/auth_service.dart';
 import 'package:frontend/services/api/board_service.dart';
 import 'package:frontend/services/api/card_service.dart';
 import 'package:frontend/models/api/board.dart';
 import 'package:frontend/models/api/assigned_card.dart';
+import 'package:frontend/utils/deterministic_color.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -68,25 +70,95 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final currentUser = AuthService.currentUser;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('MyTrello - Home'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              // Handle logout
-              await AuthService.logout();
-              if (context.mounted) {
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  '/login',
-                  (route) => false,
-                );
-              }
-            },
-            tooltip: 'Logout',
-          ),
+          if (currentUser != null)
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: PopupMenuButton<String>(
+                offset: const Offset(0, kToolbarHeight),
+                padding: EdgeInsets.zero,
+                onSelected: (value) async {
+                  if (value == 'settings') {
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            UserSettingsScreen(user: currentUser),
+                      ),
+                    );
+                    // Reload if user data was updated
+                    if (result == true) {
+                      await AuthService.initialize();
+                      setState(() {});
+                    }
+                  } else if (value == 'logout') {
+                    await AuthService.logout();
+                    if (context.mounted) {
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        '/login',
+                        (route) => false,
+                      );
+                    }
+                  }
+                },
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: 'settings',
+                    child: Row(
+                      children: [
+                        Icon(Icons.person),
+                        SizedBox(width: 8),
+                        Text('Account Settings'),
+                      ],
+                    ),
+                  ),
+                  const PopupMenuItem(
+                    value: 'logout',
+                    child: Row(
+                      children: [
+                        Icon(Icons.logout),
+                        SizedBox(width: 8),
+                        Text('Logout'),
+                      ],
+                    ),
+                  ),
+                ],
+                child: CircleAvatar(
+                  backgroundColor: getColorFromId(currentUser.id),
+                  child: Text(
+                    currentUser.username.isNotEmpty
+                        ? currentUser.username[0].toUpperCase()
+                        : '?',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            )
+          else
+            IconButton(
+              padding: const EdgeInsets.only(right: 8.0),
+              icon: const Icon(Icons.logout),
+              onPressed: () async {
+                await AuthService.logout();
+                if (context.mounted) {
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    '/login',
+                    (route) => false,
+                  );
+                }
+              },
+              tooltip: 'Logout',
+            ),
         ],
         backgroundColor: Colors.lightGreen,
         shadowColor: Colors.grey,
