@@ -2,6 +2,13 @@ import { Router } from "websocket-express";
 import prisma from "../utils/prisma.client";
 import { verifyToken } from "../utils/jwt";
 import { isUserPartOfBoard } from "../utils/board_access";
+import bcrypt from "bcryptjs";
+import {
+    validateJSONRequest,
+    checkExactFields,
+    isEmpty
+} from "../utils/request.validation";
+import { isValidEmail } from "../utils/regex";
 
 const router = new Router();
 
@@ -264,5 +271,184 @@ function validateQueryParams(query: any): string | null {
         return 'Order must be either "asc" or "desc"';
     return null;
 }
+
+// PATCH /api/users/username - Update username
+router.patch("/username", verifyToken, async (req, res) => {
+    console.debug("/api/users/username: Updating username");
+    if (!req.userId) {
+        console.error("User ID missing in request after token verification");
+        return res.status(500).send({ error: "Internal server error" });
+    }
+
+    // Validate request
+    if (
+        validateJSONRequest(req, res) ||
+        checkExactFields(req.body, res, ["username"])
+    )
+        return;
+
+    const { username } = req.body;
+
+    // Empty strings check
+    if (isEmpty(username)) {
+        console.warn("Empty username detected");
+        return res
+            .status(400)
+            .send({ error: "Username must contain non-empty value" });
+    }
+
+    try {
+        const updatedUser = await prisma.user.update({
+            where: { id: req.userId },
+            data: { username },
+            omit: { password_hash: true }
+        });
+
+        console.info(`Username updated for user ${req.userId}`);
+        res.status(200).json({
+            message: "Username updated successfully",
+            user: updatedUser
+        });
+    } catch (error) {
+        console.error("Error updating username:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+// PATCH /api/users/email - Update email (requires current password)
+router.patch("/email", verifyToken, async (req, res) => {
+    console.debug("/api/users/email: Updating email");
+    if (!req.userId) {
+        console.error("User ID missing in request after token verification");
+        return res.status(500).send({ error: "Internal server error" });
+    }
+
+    // Validate request
+    if (
+        validateJSONRequest(req, res) ||
+        checkExactFields(req.body, res, ["email", "currentPassword"])
+    )
+        return;
+
+    const { email, currentPassword } = req.body;
+
+    // Empty strings check
+    if (isEmpty(email, currentPassword)) {
+        console.warn("Empty field(s) detected");
+        return res
+            .status(400)
+            .send({ error: "All fields must contain non-empty values" });
+    }
+
+    // Email format validation
+    if (!isValidEmail(email)) {
+        console.warn("Invalid email format:", email);
+        return res.status(400).send({ error: "Invalid email format" });
+    }
+
+    try {
+        // Get current user with password
+        const user = await prisma.user.findUnique({
+            where: { id: req.userId }
+        });
+
+        if (!user) {
+            console.error(`User ${req.userId} not found`);
+            return res.status(404).send({ error: "User not found" });
+        }
+
+        // Verify current password
+        if (!(await bcrypt.compare(currentPassword, user.password_hash))) {
+            console.warn(`Invalid password for user ${req.userId}`);
+            return res.status(401).send({ error: "Invalid password" });
+        }
+
+        // Check if email is already in use
+        const existingUser = await prisma.user.findUnique({
+            where: { email }
+        });
+        if (existingUser && existingUser.id !== req.userId) {
+            console.warn(`Email ${email} already in use`);
+            return res.status(409).send({ error: "Email already in use" });
+        }
+
+        // Update email
+        const updatedUser = await prisma.user.update({
+            where: { id: req.userId },
+            data: { email },
+            omit: { password_hash: true }
+        });
+
+        console.info(`Email updated for user ${req.userId}`);
+        res.status(200).json({
+            message: "Email updated successfully",
+            user: updatedUser
+        });
+    } catch (error) {
+        console.error("Error updating email:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+// PATCH /api/users/password - Update password (requires current password)
+router.patch("/password", verifyToken, async (req, res) => {
+    console.debug("/api/users/password: Updating password");
+    if (!req.userId) {
+        console.error("User ID missing in request after token verification");
+        return res.status(500).send({ error: "Internal server error" });
+    }
+
+    // Validate request
+    if (
+        validateJSONRequest(req, res) ||
+        checkExactFields(req.body, res, ["currentPassword", "newPassword"])
+    )
+        return;
+
+    const { currentPassword, newPassword } = req.body;
+
+    // Empty strings check
+    if (isEmpty(currentPassword, newPassword)) {
+        console.warn("Empty field(s) detected");
+        return res
+            .status(400)
+            .send({ error: "All fields must contain non-empty values" });
+    }
+
+    try {
+        // Get current user with password
+        const user = await prisma.user.findUnique({
+            where: { id: req.userId }
+        });
+
+        if (!user) {
+            console.error(`User ${req.userId} not found`);
+            return res.status(404).send({ error: "User not found" });
+        }
+
+        // Verify current password
+        if (!(await bcrypt.compare(currentPassword, user.password_hash))) {
+            console.warn(`Invalid password for user ${req.userId}`);
+            return res.status(401).send({ error: "Invalid password" });
+        }
+
+        // Hash new password
+        const password_hash = await bcrypt.hash(newPassword, 10);
+
+        // Update password
+        await prisma.user.update({
+            where: { id: req.userId },
+            data: { password_hash }
+        });
+
+        console.info(`Password updated for user ${req.userId}`);
+        res.status(200).json({
+            message: "Password updated successfully"
+        });
+    } catch (error) {
+        console.error("Error updating password:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
 
 export default router;
