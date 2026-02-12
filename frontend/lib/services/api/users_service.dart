@@ -148,4 +148,86 @@ class UserService {
       );
     }
   }
+
+  static Future<TrelloUser> updateUsername(String username) async {
+    final token = AuthService.token;
+    if (token == null) throw Exception('No authentication token found');
+
+    final response = await http
+        .patch(
+          Uri.parse('${AppConfig.backendUrl}/api/users/username'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+          body: json.encode({'username': username}),
+        )
+        .timeout(Duration(milliseconds: AppConfig.apiTimeout));
+    final jsonData = json.decode(response.body);
+    if (response.statusCode == 200) {
+      return TrelloUser.fromJson(jsonData['user']);
+    } else {
+      throw Exception(
+        'Failed to update username: ${jsonData['error'] ?? 'Unknown error'}',
+      );
+    }
+  }
+
+  static Future<TrelloUser> updateEmail(
+    String email,
+    String currentPassword,
+  ) async {
+    final token = AuthService.token;
+    if (token == null) throw Exception('No authentication token found');
+
+    final response = await http
+        .patch(
+          Uri.parse('${AppConfig.backendUrl}/api/users/email'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+          body: json.encode({
+            'email': email,
+            'currentPassword': currentPassword,
+          }),
+        )
+        .timeout(Duration(milliseconds: AppConfig.apiTimeout));
+    final jsonData = json.decode(response.body);
+    if (response.statusCode == 200) {
+      return TrelloUser.fromJson(jsonData['user']);
+    } else {
+      throw Exception(
+        'Failed to update email: ${jsonData['error'] ?? 'Unknown error'}',
+      );
+    }
+  }
+
+  static Future<void> updatePassword(
+    String currentPassword,
+    String newPassword,
+  ) async {
+    final token = AuthService.token;
+    if (token == null) throw Exception('No authentication token found');
+
+    final response = await http
+        .patch(
+          Uri.parse('${AppConfig.backendUrl}/api/users/password'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+          body: json.encode({
+            'currentPassword': currentPassword,
+            'newPassword': newPassword,
+          }),
+        )
+        .timeout(Duration(milliseconds: AppConfig.apiTimeout));
+    final jsonData = json.decode(response.body);
+    if (response.statusCode != 200) {
+      throw Exception(
+        'Failed to update password: ${jsonData['error'] ?? 'Unknown error'}',
+      );
+    }
+  }
 }
