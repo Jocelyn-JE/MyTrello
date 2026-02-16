@@ -9,6 +9,7 @@ import loginRouter from "./routes/login.router";
 import boardRouter from "./routes/board.router";
 import cardRouter from "./routes/card.router";
 import usersRouter from "./routes/users.router";
+import preferencesRouter from "./routes/preferences.router";
 import boardRoomSocketRouter from "./routes/board_room.socket";
 
 const app = new WebSocketExpress();
@@ -30,6 +31,7 @@ app.useHTTP("/api-docs", swaggerRouter);
 app.useHTTP("/api/register", registerRouter);
 app.useHTTP("/api/login", loginRouter);
 app.useHTTP("/api/users", usersRouter);
+app.useHTTP("/api/preferences", preferencesRouter);
 
 // Board routes
 app.useHTTP("/api/boards", boardRouter);

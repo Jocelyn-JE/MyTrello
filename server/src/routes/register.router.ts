@@ -60,7 +60,14 @@ async function createUser(email: string, password: string, username: string) {
             data: {
                 email,
                 password_hash: await bcrypt.hash(password, 10),
-                username
+                username,
+                settings: {
+                    create: {
+                        localization: "en/US",
+                        theme: "system",
+                        showAssignedCardsInHomepage: true
+                    }
+                }
             }
         });
     return safeUser;

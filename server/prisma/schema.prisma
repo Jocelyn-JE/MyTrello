@@ -25,6 +25,22 @@ model User {
   viewed_boards   Board[]   @relation("BoardViewers")
   assigned_cards  Card[]    @relation("CardAssignees")
   messages        Message[]
+  settings        UserSettings?
+}
+
+model UserSettings {
+  id              String    @id @default(uuid())
+  userId          String    @unique
+
+  localization    String    @default("en/US")
+  theme           String    @default("system") // Options: "dark", "light", "system"
+  showAssignedCardsInHomepage Boolean @default(true)
+
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([userId])
 }
 
 model Board {
