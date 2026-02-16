@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/models/websocket/server_types.dart';
 import 'package:frontend/services/api/users_service.dart';
 import 'package:frontend/services/api/board_service.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 
 enum UserSearchMode {
   /// Show all users (for board creation)
@@ -104,8 +105,9 @@ class _UserSearchDialogState extends State<UserSearchDialog> {
       });
     } catch (e) {
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       setState(() {
-        _error = 'Failed to load users: ${e.toString()}';
+        _error = l10n.failedToLoadUsers(e.toString());
       });
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -195,8 +197,9 @@ class _UserSearchDialogState extends State<UserSearchDialog> {
       });
     } catch (e) {
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       setState(() {
-        _error = 'Search failed: ${e.toString()}';
+        _error = l10n.searchFailed(e.toString());
       });
     } finally {
       if (mounted) {
@@ -219,6 +222,7 @@ class _UserSearchDialogState extends State<UserSearchDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Dialog(
       insetPadding: EdgeInsets.all(10),
       child: Container(
@@ -230,7 +234,7 @@ class _UserSearchDialogState extends State<UserSearchDialog> {
           children: [
             TextField(
               controller: _searchController,
-              decoration: const InputDecoration(labelText: 'Username'),
+              decoration: InputDecoration(labelText: l10n.username),
               onSubmitted: (_) => _doSearch(),
             ),
             const SizedBox(height: 12),
@@ -243,7 +247,7 @@ class _UserSearchDialogState extends State<UserSearchDialog> {
             if (!_loading)
               Expanded(
                 child: _searchResults.isEmpty
-                    ? const Center(child: Text('No users found.'))
+                    ? Center(child: Text(l10n.noUsersFound))
                     : ListView.builder(
                         shrinkWrap: true,
                         itemCount: _searchResults.length,
@@ -260,14 +264,14 @@ class _UserSearchDialogState extends State<UserSearchDialog> {
                 Expanded(
                   child: TextButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Cancel'),
+                    child: Text(l10n.cancel),
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: _doSearch,
-                    child: const Text('Search'),
+                    child: Text(l10n.search),
                   ),
                 ),
               ],

@@ -7,6 +7,7 @@ import 'package:frontend/services/api/card_service.dart';
 import 'package:frontend/models/api/board.dart';
 import 'package:frontend/models/api/assigned_card.dart';
 import 'package:frontend/utils/deterministic_color.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -70,11 +71,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final currentUser = AuthService.currentUser;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('MyTrello - Home'),
+        title: Text(l10n.homeTitle),
         actions: [
           if (currentUser != null)
             Padding(
@@ -108,23 +110,23 @@ class _HomeScreenState extends State<HomeScreen> {
                   }
                 },
                 itemBuilder: (context) => [
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'settings',
                     child: Row(
                       children: [
-                        Icon(Icons.person),
-                        SizedBox(width: 8),
-                        Text('Account Settings'),
+                        const Icon(Icons.person),
+                        const SizedBox(width: 8),
+                        Text(l10n.accountSettings),
                       ],
                     ),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'logout',
                     child: Row(
                       children: [
-                        Icon(Icons.logout),
-                        SizedBox(width: 8),
-                        Text('Logout'),
+                        const Icon(Icons.logout),
+                        const SizedBox(width: 8),
+                        Text(l10n.logout),
                       ],
                     ),
                   ),
@@ -157,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 }
               },
-              tooltip: 'Logout',
+              tooltip: l10n.logout,
             ),
         ],
         backgroundColor: Colors.lightGreen,
@@ -170,13 +172,14 @@ class _HomeScreenState extends State<HomeScreen> {
           final result = await Navigator.pushNamed(context, '/createBoard');
           if (result == true) _refreshData();
         },
-        tooltip: 'Create New Board',
+        tooltip: l10n.createNewBoard,
         child: const Icon(Icons.add),
       ),
     );
   }
 
   Widget _buildBody() {
+    final l10n = AppLocalizations.of(context)!;
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -193,35 +196,35 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Error loading boards',
+              l10n.errorLoadingBoards,
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 8),
             Text(
-              'The backend server may be down or unreachable.',
+              l10n.backendServerMayBeDown,
               style: Theme.of(context).textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
-            ElevatedButton(onPressed: _loadData, child: const Text('Retry')),
+            ElevatedButton(onPressed: _loadData, child: Text(l10n.retry)),
           ],
         ),
       );
     }
 
     if (_boards.isEmpty && _assignedCards.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.dashboard_outlined, size: 64, color: Colors.grey),
-            SizedBox(height: 16),
+            const Icon(Icons.dashboard_outlined, size: 64, color: Colors.grey),
+            const SizedBox(height: 16),
             Text(
-              'No boards yet',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              l10n.noBoardsYet,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 8),
-            Text('Create your first board to get started!'),
+            const SizedBox(height: 8),
+            Text(l10n.createFirstBoard),
           ],
         ),
       );

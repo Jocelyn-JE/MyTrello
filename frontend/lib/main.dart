@@ -10,6 +10,8 @@ import 'package:frontend/services/api/auth_service.dart';
 import 'package:frontend/screens/board_creation_screen.dart';
 import 'package:frontend/screens/board_detail/board_detail_screen.dart';
 import 'package:frontend/utils/regex.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 
 void main() async {
   // Ensure that widget binding is initialized
@@ -37,7 +39,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'MyTrello',
+      title: AppLocalizations.of(context)?.appTitle ?? 'MyTrello',
       theme: ThemeData.from(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightGreen),
       ),
@@ -60,6 +62,13 @@ class MyApp extends StatelessWidget {
       },
       debugShowCheckedModeBanner: false,
       debugShowMaterialGrid: false,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [Locale('en', 'US'), Locale('fr', 'FR')],
     );
   }
 

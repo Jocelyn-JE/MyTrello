@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/websocket/server_types.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 
 class UpdateEmailSection extends StatelessWidget {
   final TrelloUser currentUser;
@@ -15,6 +16,7 @@ class UpdateEmailSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final emailController = TextEditingController(text: currentUser.email);
     final passwordController = TextEditingController();
 
@@ -25,23 +27,23 @@ class UpdateEmailSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Update Email',
+              l10n.updateEmail,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 16),
             TextField(
               controller: emailController,
-              decoration: const InputDecoration(
-                labelText: 'New Email',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.newEmail,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: passwordController,
-              decoration: const InputDecoration(
-                labelText: 'Current Password',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.currentPassword,
+                border: const OutlineInputBorder(),
               ),
               obscureText: true,
             ),
@@ -61,7 +63,7 @@ class UpdateEmailSection extends StatelessWidget {
                         width: 20,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Text('Update Email'),
+                    : Text(l10n.updateEmail),
               ),
             ),
           ],

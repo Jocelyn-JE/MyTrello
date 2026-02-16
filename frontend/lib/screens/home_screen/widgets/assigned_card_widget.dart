@@ -10,6 +10,9 @@ class AssignedCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
+    final dateFormat = DateFormat.yMd(
+      Localizations.localeOf(context).toString(),
+    );
     final isOverdue = card.dueDate != null && card.dueDate!.isBefore(now);
     final isDueSoon =
         card.dueDate != null &&
@@ -54,7 +57,7 @@ class AssignedCardWidget extends StatelessWidget {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            DateFormat('dd/MM/yyyy').format(card.startDate!),
+                            dateFormat.format(card.startDate!),
                             style: Theme.of(
                               context,
                             ).textTheme.bodySmall?.copyWith(color: Colors.grey),
@@ -76,7 +79,7 @@ class AssignedCardWidget extends StatelessWidget {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            DateFormat('dd/MM/yyyy').format(card.dueDate!),
+                            dateFormat.format(card.dueDate!),
                             style: Theme.of(context).textTheme.bodySmall
                                 ?.copyWith(
                                   color: isOverdue

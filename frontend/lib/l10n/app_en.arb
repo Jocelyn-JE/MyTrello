@@ -1,0 +1,563 @@
+{
+    "@@locale": "en",
+    "appTitle": "MyTrello",
+    "@appTitle": {
+        "description": "The application title"
+    },
+    "login": "Login",
+    "@login": {
+        "description": "Label for login action"
+    },
+    "register": "Register",
+    "@register": {
+        "description": "Label for registration action"
+    },
+    "email": "Email",
+    "@email": {
+        "description": "Label for email input field"
+    },
+    "username": "Username",
+    "@username": {
+        "description": "Label for username input field"
+    },
+    "password": "Password",
+    "@password": {
+        "description": "Label for password input field"
+    },
+    "confirmPassword": "Confirm Password",
+    "@confirmPassword": {
+        "description": "Label for password confirmation input field"
+    },
+    "loginTitle": "MyTrello - Login",
+    "@loginTitle": {
+        "description": "Title for the login screen"
+    },
+    "registerTitle": "MyTrello - Register",
+    "@registerTitle": {
+        "description": "Title for the registration screen"
+    },
+    "loginButton": "Login",
+    "@loginButton": {
+        "description": "Text for login button"
+    },
+    "registerButton": "Register",
+    "@registerButton": {
+        "description": "Text for register button"
+    },
+    "pleaseEnterEmail": "Please enter your email",
+    "@pleaseEnterEmail": {
+        "description": "Validation message when email field is empty"
+    },
+    "pleaseEnterValidEmail": "Please enter a valid email address",
+    "@pleaseEnterValidEmail": {
+        "description": "Validation message when email format is invalid"
+    },
+    "pleaseEnterUsername": "Please enter your username",
+    "@pleaseEnterUsername": {
+        "description": "Validation message when username field is empty"
+    },
+    "pleaseEnterPassword": "Please enter your password",
+    "@pleaseEnterPassword": {
+        "description": "Validation message when password field is empty"
+    },
+    "passwordsDoNotMatch": "Passwords do not match",
+    "@passwordsDoNotMatch": {
+        "description": "Validation message when password and confirmation don't match"
+    },
+    "loginSuccessful": "Login successful!",
+    "@loginSuccessful": {
+        "description": "Success message after successful login"
+    },
+    "loginFailed": "Login failed: {error}",
+    "@loginFailed": {
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "registrationSuccessful": "Registration successful!",
+    "@registrationSuccessful": {
+        "description": "Success message after successful registration"
+    },
+    "registrationFailed": "Registration failed: {error}",
+    "@registrationFailed": {
+        "description": "Error message when registration fails",
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "home": "Home",
+    "@home": {
+        "description": "Label for home screen or home button"
+    },
+    "createBoard": "Create Board",
+    "@createBoard": {
+        "description": "Action to create a new board"
+    },
+    "boardTitle": "Board Title",
+    "@boardTitle": {
+        "description": "Label for board title section"
+    },
+    "title": "Title",
+    "@title": {
+        "description": "Generic title label"
+    },
+    "usersAndPermissions": "Users & Permissions",
+    "@usersAndPermissions": {
+        "description": "Section title for managing users and their permissions"
+    },
+    "addUser": "Add User",
+    "@addUser": {
+        "description": "Action to add a user to a board"
+    },
+    "noUsersAddedYet": "No users added yet",
+    "@noUsersAddedYet": {
+        "description": "Message shown when no users have been added to a board"
+    },
+    "member": "Member",
+    "@member": {
+        "description": "User role with read and write permissions"
+    },
+    "viewer": "Viewer",
+    "@viewer": {
+        "description": "User role with read-only permissions"
+    },
+    "owner": "Owner",
+    "@owner": {
+        "description": "User role with full permissions including delete"
+    },
+    "boardCreatedSuccessfully": "Board created successfully!",
+    "@boardCreatedSuccessfully": {
+        "description": "Success message after creating a board"
+    },
+    "failedToCreateBoard": "Failed to create board: {error}",
+    "@failedToCreateBoard": {
+        "description": "Error message when board creation fails",
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "pleaseEnterBoardTitle": "Please enter a board title",
+    "@pleaseEnterBoardTitle": {
+        "description": "Validation message when board title is empty"
+    },
+    "save": "Save",
+    "@save": {
+        "description": "Action to save changes"
+    },
+    "cancel": "Cancel",
+    "@cancel": {
+        "description": "Action to cancel an operation"
+    },
+    "delete": "Delete",
+    "@delete": {
+        "description": "Action to delete an item"
+    },
+    "add": "Add",
+    "@add": {
+        "description": "Action to add an item"
+    },
+    "remove": "Remove",
+    "@remove": {
+        "description": "Action to remove an item"
+    },
+    "confirm": "Confirm",
+    "@confirm": {
+        "description": "Action to confirm an operation"
+    },
+    "search": "Search",
+    "@search": {
+        "description": "Action or label for search functionality"
+    },
+    "loading": "Loading...",
+    "@loading": {
+        "description": "Message shown while content is loading"
+    },
+    "error": "Error",
+    "@error": {
+        "description": "Generic error label"
+    },
+    "logout": "Logout",
+    "@logout": {
+        "description": "Action to logout from the application"
+    },
+    "boardSettings": "Board Settings",
+    "@boardSettings": {
+        "description": "Label for board settings screen"
+    },
+    "deleteBoard": "Delete Board",
+    "@deleteBoard": {
+        "description": "Action to delete a board"
+    },
+    "areYouSureDeleteBoard": "Are you sure you want to delete this board?",
+    "@areYouSureDeleteBoard": {
+        "description": "Confirmation message before deleting a board"
+    },
+    "card": "Card",
+    "@card": {
+        "description": "Label for a card item"
+    },
+    "column": "Column",
+    "@column": {
+        "description": "Label for a column in a board"
+    },
+    "dueDate": "Due Date",
+    "@dueDate": {
+        "description": "Label for card due date"
+    },
+    "startDate": "Start Date",
+    "@startDate": {
+        "description": "Label for card start date"
+    },
+    "description": "Description",
+    "@description": {
+        "description": "Label for description field"
+    },
+    "addCard": "Add Card",
+    "@addCard": {
+        "description": "Action to add a new card"
+    },
+    "userSettings": "User Settings",
+    "@userSettings": {
+        "description": "Label for user settings screen"
+    },
+    "accountSettings": "Account Settings",
+    "@accountSettings": {
+        "description": "Label for account settings section"
+    },
+    "accountInformation": "Account Information",
+    "@accountInformation": {
+        "description": "Label for account information section in user settings"
+    },
+    "currentPassword": "Current Password",
+    "@currentPassword": {
+        "description": "Label for current password field"
+    },
+    "newPassword": "New Password",
+    "@newPassword": {
+        "description": "Label for new password field"
+    },
+    "confirmNewPassword": "Confirm New Password",
+    "@confirmNewPassword": {
+        "description": "Label for new password confirmation field"
+    },
+    "boardTitleCannotBeEmpty": "Board title cannot be empty",
+    "@boardTitleCannotBeEmpty": {
+        "description": "Validation message when board title is empty"
+    },
+    "boardUpdatedSuccessfully": "Board updated successfully!",
+    "@boardUpdatedSuccessfully": {
+        "description": "Success message after updating a board"
+    },
+    "failedToUpdateBoard": "Failed to update board: {error}",
+    "@failedToUpdateBoard": {
+        "description": "Error message when board update fails",
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "areYouSureDeleteBoardWithName": "Are you sure you want to delete \"{boardName}\"? This action cannot be undone.",
+    "@areYouSureDeleteBoardWithName": {
+        "description": "Confirmation message before deleting a specific board",
+        "placeholders": {
+            "boardName": {
+                "type": "String"
+            }
+        }
+    },
+    "boardDeletedSuccessfully": "Board deleted successfully",
+    "@boardDeletedSuccessfully": {
+        "description": "Success message after deleting a board"
+    },
+    "failedToDeleteBoard": "Failed to delete board: {error}",
+    "@failedToDeleteBoard": {
+        "description": "Error message when board deletion fails",
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "boardOwner": "Board Owner",
+    "@boardOwner": {
+        "description": "Label indicating the owner of a board"
+    },
+    "saveChanges": "Save Changes",
+    "@saveChanges": {
+        "description": "Action to save changes"
+    },
+    "usernameCannotBeEmpty": "Username cannot be empty",
+    "@usernameCannotBeEmpty": {
+        "description": "Validation message when username is empty"
+    },
+    "newUsernameMustBeDifferent": "New username must be different from current username",
+    "@newUsernameMustBeDifferent": {
+        "description": "Validation message when new username is same as current"
+    },
+    "usernameUpdatedSuccessfully": "Username updated successfully",
+    "@usernameUpdatedSuccessfully": {
+        "description": "Success message after updating username"
+    },
+    "allFieldsRequired": "All fields are required",
+    "@allFieldsRequired": {
+        "description": "Validation message when required fields are empty"
+    },
+    "newEmailMustBeDifferent": "New email must be different from current email",
+    "@newEmailMustBeDifferent": {
+        "description": "Validation message when new email is same as current"
+    },
+    "emailUpdatedSuccessfully": "Email updated successfully",
+    "@emailUpdatedSuccessfully": {
+        "description": "Success message after updating email"
+    },
+    "newPasswordsDoNotMatch": "New passwords do not match",
+    "@newPasswordsDoNotMatch": {
+        "description": "Validation message when new password and confirmation don't match"
+    },
+    "newPasswordMustBeDifferent": "New password must be different from current password",
+    "@newPasswordMustBeDifferent": {
+        "description": "Validation message when new password is same as current"
+    },
+    "passwordUpdatedSuccessfully": "Password updated successfully",
+    "@passwordUpdatedSuccessfully": {
+        "description": "Success message after updating password"
+    },
+    "homeTitle": "MyTrello - Home",
+    "@homeTitle": {
+        "description": "Title for the home screen"
+    },
+    "createNewBoard": "Create New Board",
+    "@createNewBoard": {
+        "description": "Tooltip for create board button"
+    },
+    "errorLoadingBoards": "Error loading boards",
+    "@errorLoadingBoards": {
+        "description": "Error message when boards fail to load"
+    },
+    "backendServerMayBeDown": "The backend server may be down or unreachable.",
+    "@backendServerMayBeDown": {
+        "description": "Error explanation when server is unreachable"
+    },
+    "retry": "Retry",
+    "@retry": {
+        "description": "Action to retry an operation"
+    },
+    "noBoardsYet": "No boards yet",
+    "@noBoardsYet": {
+        "description": "Message when user has no boards"
+    },
+    "createFirstBoard": "Create your first board to get started!",
+    "@createFirstBoard": {
+        "description": "Hint message to create first board"
+    },
+    "searchCards": "Search cards...",
+    "@searchCards": {
+        "description": "Placeholder for card search field"
+    },
+    "updateUsername": "Update Username",
+    "@updateUsername": {
+        "description": "Label for update username section and button"
+    },
+    "newUsername": "New Username",
+    "@newUsername": {
+        "description": "Label for new username input field"
+    },
+    "updateEmail": "Update Email",
+    "@updateEmail": {
+        "description": "Label for update email section and button"
+    },
+    "newEmail": "New Email",
+    "@newEmail": {
+        "description": "Label for new email input field"
+    },
+    "updatePassword": "Update Password",
+    "@updatePassword": {
+        "description": "Label for update password section and button"
+    },
+    "failedToLoadBoardSettings": "Failed to load board settings: {error}",
+    "@failedToLoadBoardSettings": {
+        "description": "Error message when board settings fail to load",
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "deleteCard": "Delete Card",
+    "@deleteCard": {
+        "description": "Title for delete card dialog"
+    },
+    "deleteCardConfirmation": "Are you sure you want to delete \"{cardTitle}\"?",
+    "@deleteCardConfirmation": {
+        "description": "Confirmation message for deleting a card",
+        "placeholders": {
+            "cardTitle": {
+                "type": "String"
+            }
+        }
+    },
+    "deleteCardTooltip": "Delete card",
+    "@deleteCardTooltip": {
+        "description": "Tooltip for delete card button"
+    },
+    "assignUsersTooltip": "Assign users",
+    "@assignUsersTooltip": {
+        "description": "Tooltip for assign users button"
+    },
+    "setDeadlinesTooltip": "Set deadlines",
+    "@setDeadlinesTooltip": {
+        "description": "Tooltip for set deadlines button"
+    },
+    "cardTitle": "Card title",
+    "@cardTitle": {
+        "description": "Placeholder for card title field"
+    },
+    "cardDescription": "Card description",
+    "@cardDescription": {
+        "description": "Placeholder for card description field"
+    },
+    "assignedToYou": "Assigned to You",
+    "@assignedToYou": {
+        "description": "Section title for cards assigned to the user"
+    },
+    "yourBoards": "Your Boards",
+    "@yourBoards": {
+        "description": "Section title for user's boards"
+    },
+    "membersViewersCount": "{members} members, {viewers} viewers",
+    "@membersViewersCount": {
+        "description": "Display count of members and viewers on a board",
+        "placeholders": {
+            "members": {
+                "type": "int"
+            },
+            "viewers": {
+                "type": "int"
+            }
+        }
+    },
+    "columnTitle": "Column title",
+    "@columnTitle": {
+        "description": "Placeholder for column title field"
+    },
+    "dropHere": "Drop here",
+    "@dropHere": {
+        "description": "Message shown when dragging item over drop zone"
+    },
+    "noCards": "No cards",
+    "@noCards": {
+        "description": "Message shown when column has no cards"
+    },
+    "deleteColumn": "Delete column",
+    "@deleteColumn": {
+        "description": "Tooltip for delete column button"
+    },
+    "cardsCount": "{count} cards",
+    "@cardsCount": {
+        "description": "Display count of cards",
+        "placeholders": {
+            "count": {
+                "type": "int"
+            }
+        }
+    },
+    "newColumn": "New Column",
+    "@newColumn": {
+        "description": "Default name for new column"
+    },
+    "unassignUser": "Unassign User",
+    "@unassignUser": {
+        "description": "Title for unassign user dialog"
+    },
+    "removeUserFromCard": "Remove {username} from this card?",
+    "@removeUserFromCard": {
+        "description": "Confirmation message to remove user from card",
+        "placeholders": {
+            "username": {
+                "type": "String"
+            }
+        }
+    },
+    "unassign": "Unassign",
+    "@unassign": {
+        "description": "Action to unassign user from card"
+    },
+    "addCardDialog": "Add Card",
+    "@addCardDialog": {
+        "description": "Title for add card dialog"
+    },
+    "boardChat": "Board Chat",
+    "@boardChat": {
+        "description": "Title for board chat drawer"
+    },
+    "typeMessage": "Type a message",
+    "@typeMessage": {
+        "description": "Placeholder for chat message input field"
+    },
+    "send": "Send",
+    "@send": {
+        "description": "Action to send a message"
+    },
+    "setDeadlines": "Set Deadlines",
+    "@setDeadlines": {
+        "description": "Title for set deadlines dialog"
+    },
+    "selectDate": "Select Date",
+    "@selectDate": {
+        "description": "Button text to select a date"
+    },
+    "clearStartDate": "Clear start date",
+    "@clearStartDate": {
+        "description": "Tooltip to clear start date"
+    },
+    "clearDueDate": "Clear due date",
+    "@clearDueDate": {
+        "description": "Tooltip to clear due date"
+    },
+    "durationDays": "Duration: {days} days",
+    "@durationDays": {
+        "description": "Display duration in days between dates",
+        "placeholders": {
+            "days": {
+                "type": "int"
+            }
+        }
+    },
+    "selectStartDate": "Select Start Date",
+    "@selectStartDate": {
+        "description": "Help text for start date picker"
+    },
+    "selectDueDate": "Select Due Date",
+    "@selectDueDate": {
+        "description": "Help text for due date picker"
+    },
+    "failedToLoadUsers": "Failed to load users: {error}",
+    "@failedToLoadUsers": {
+        "description": "Error message when loading users fails",
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "searchFailed": "Search failed: {error}",
+    "@searchFailed": {
+        "description": "Error message when search fails",
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "noUsersFound": "No users found.",
+    "@noUsersFound": {
+        "description": "Message when no users match search criteria"
+    }
+}

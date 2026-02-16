@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 
 class PasswordField extends StatefulWidget {
   final TextEditingController controller;
@@ -15,7 +16,7 @@ class PasswordField extends StatefulWidget {
   const PasswordField({
     super.key,
     required this.controller,
-    this.labelText = 'Password',
+    this.labelText,
     this.hintText,
     this.decoration,
     this.enabled = true,
@@ -35,6 +36,7 @@ class _PasswordFieldState extends State<PasswordField> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return TextField(
       controller: widget.controller,
       obscureText: !_isVisible,
@@ -45,7 +47,8 @@ class _PasswordFieldState extends State<PasswordField> {
       onEditingComplete: widget.onEditingComplete,
       autofillHints: widget.autofillHints ?? const [AutofillHints.password],
       decoration: (widget.decoration ?? const InputDecoration()).copyWith(
-        labelText: widget.decoration?.labelText ?? widget.labelText,
+        labelText:
+            widget.decoration?.labelText ?? widget.labelText ?? l10n.password,
         hintText: widget.decoration?.hintText ?? widget.hintText,
         suffixIcon: IconButton(
           icon: Icon(_isVisible ? Icons.visibility : Icons.visibility_off),

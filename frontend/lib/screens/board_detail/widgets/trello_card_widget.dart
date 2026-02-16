@@ -7,6 +7,7 @@ import 'package:frontend/services/websocket/websocket_service.dart';
 import 'package:frontend/utils/app_config.dart';
 import 'package:frontend/widgets/user_search_dialog.dart';
 import 'package:intl/intl.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 
 class TrelloCardWidget extends StatefulWidget {
   final TrelloCard card;
@@ -101,17 +102,16 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
   }
 
   Future<void> _confirmDelete() async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Card'),
-        content: Text(
-          'Are you sure you want to delete "${widget.card.title}"?',
-        ),
+        title: Text(l10n.deleteCard),
+        content: Text(l10n.deleteCardConfirmation(widget.card.title)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
@@ -119,7 +119,7 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Delete'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -176,6 +176,10 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final dateFormat = DateFormat.yMd(
+      Localizations.localeOf(context).toString(),
+    );
     final canEdit = BoardPermissionsService.canEdit;
     final isHighlighted = _matchesSearch();
 
@@ -204,8 +208,8 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
                       if (canEdit)
                         TextField(
                           controller: _titleController,
-                          decoration: const InputDecoration(
-                            hintText: 'Card title',
+                          decoration: InputDecoration(
+                            hintText: l10n.cardTitle,
                             border: InputBorder.none,
                             isDense: true,
                             contentPadding: EdgeInsets.zero,
@@ -231,8 +235,8 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
                         TextField(
                           controller: _contentController,
                           focusNode: _contentFocusNode,
-                          decoration: const InputDecoration(
-                            hintText: 'Card description',
+                          decoration: InputDecoration(
+                            hintText: l10n.cardDescription,
                             border: InputBorder.none,
                             isDense: true,
                             contentPadding: EdgeInsets.zero,
@@ -271,9 +275,7 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
-                                    DateFormat(
-                                      'dd/MM/yyyy',
-                                    ).format(widget.card.startDate!),
+                                    dateFormat.format(widget.card.startDate!),
                                     style: const TextStyle(
                                       fontSize: 11,
                                       color: Colors.grey,
@@ -292,9 +294,7 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
-                                    DateFormat(
-                                      'dd/MM/yyyy',
-                                    ).format(widget.card.dueDate!),
+                                    dateFormat.format(widget.card.dueDate!),
                                     style: const TextStyle(
                                       fontSize: 11,
                                       color: Colors.grey,
@@ -314,7 +314,7 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
                       IconButton(
                         icon: const Icon(Icons.delete, size: 18),
                         color: Colors.red,
-                        tooltip: 'Delete card',
+                        tooltip: l10n.deleteCardTooltip,
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
                         onPressed: _confirmDelete,
@@ -323,7 +323,7 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
                       IconButton(
                         icon: const Icon(Icons.person_add, size: 18),
                         color: Colors.blue,
-                        tooltip: 'Assign users',
+                        tooltip: l10n.assignUsersTooltip,
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
                         onPressed: () async {
@@ -342,7 +342,7 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
                       IconButton(
                         icon: const Icon(Icons.calendar_month, size: 18),
                         color: Colors.green,
-                        tooltip: 'Set deadlines',
+                        tooltip: l10n.setDeadlinesTooltip,
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
                         onPressed: _showDatePickerDialog,

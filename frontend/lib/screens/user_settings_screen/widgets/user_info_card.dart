@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/websocket/server_types.dart';
 import 'package:frontend/utils/deterministic_color.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 
 class UserInfoCard extends StatelessWidget {
   final TrelloUser user;
@@ -9,6 +10,7 @@ class UserInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -16,7 +18,7 @@ class UserInfoCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'User Information',
+              l10n.accountInformation,
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 16),

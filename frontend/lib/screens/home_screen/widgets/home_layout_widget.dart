@@ -5,6 +5,7 @@ import 'package:frontend/screens/home_screen/widgets/boards_section_widget.dart'
 import 'package:frontend/screens/home_screen/widgets/assigned_cards_section_widget.dart';
 import 'package:frontend/screens/home_screen/widgets/assigned_card_widget.dart';
 import 'package:frontend/screens/home_screen/widgets/board_card_widget.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 
 class HomeLayoutWidget extends StatelessWidget {
   final List<Board> boards;
@@ -58,6 +59,7 @@ class HomeLayoutWidget extends StatelessWidget {
   }
 
   Widget _buildNarrowLayout(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.only(left: 16.0, right: 16.0),
       child: ListView(
@@ -66,7 +68,7 @@ class HomeLayoutWidget extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: Text(
-                'Assigned to You',
+                l10n.assignedToYou,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -89,19 +91,19 @@ class HomeLayoutWidget extends StatelessWidget {
             const SizedBox(height: 8),
           ],
           Text(
-            'Your Boards',
+            l10n.yourBoards,
             style: Theme.of(
               context,
             ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
           if (boards.isEmpty)
-            const Padding(
-              padding: EdgeInsets.all(16.0),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
               child: Text(
-                'No boards yet. Create your first board!',
+                l10n.createFirstBoard,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey),
+                style: const TextStyle(color: Colors.grey),
               ),
             )
           else

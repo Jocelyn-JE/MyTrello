@@ -3,6 +3,7 @@ import 'package:frontend/utils/deterministic_color.dart';
 import 'package:frontend/models/websocket/server_types.dart';
 import 'package:frontend/services/websocket/websocket_service.dart';
 import 'package:intl/intl.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 
 class BoardChatDrawer extends StatefulWidget {
   final List<TrelloChatMessage> _chatMessages;
@@ -20,6 +21,7 @@ class _BoardChatDrawerState extends State<BoardChatDrawer> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     final isVerticalScreen = screenHeight > screenWidth;
@@ -35,10 +37,13 @@ class _BoardChatDrawerState extends State<BoardChatDrawer> {
         children: [
           DrawerHeader(
             decoration: BoxDecoration(color: Colors.lightGreen.shade200),
-            child: const Center(
+            child: Center(
               child: Text(
-                'Board Chat',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                l10n.boardChat,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
@@ -56,11 +61,12 @@ class _BoardChatDrawerState extends State<BoardChatDrawer> {
                     message.createdAt.month == now.month &&
                     message.createdAt.day == now.day;
 
-                final timeString = DateFormat(
-                  'HH:mm',
+                final locale = Localizations.localeOf(context).toString();
+                final timeString = DateFormat.jm(
+                  locale,
                 ).format(message.createdAt);
-                final dateString = DateFormat(
-                  'dd/MM/yyyy',
+                final dateString = DateFormat.yMd(
+                  locale,
                 ).format(message.createdAt);
 
                 return ListTile(
@@ -94,13 +100,13 @@ class _BoardChatDrawerState extends State<BoardChatDrawer> {
             child: TextField(
               controller: _chatController,
               decoration: InputDecoration(
-                labelText: 'Type a message',
+                labelText: l10n.typeMessage,
                 border: const OutlineInputBorder(),
                 // Send button
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.send, color: Colors.blue),
                   onPressed: _sendChatMessage,
-                  tooltip: 'Send',
+                  tooltip: l10n.send,
                 ),
               ),
               onSubmitted: (_) => _sendChatMessage(),

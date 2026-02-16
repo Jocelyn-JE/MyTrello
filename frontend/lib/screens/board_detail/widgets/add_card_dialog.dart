@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/services/websocket/websocket_service.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 
 class AddCardDialog extends StatefulWidget {
   final String columnId;
@@ -16,25 +17,26 @@ class _AddCardDialogState extends State<AddCardDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
-      title: const Text('Add Card'),
+      title: Text(l10n.addCardDialog),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(
             controller: _cardTitleController,
-            decoration: const InputDecoration(
-              labelText: 'Title',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: l10n.title,
+              border: const OutlineInputBorder(),
             ),
             autofocus: true,
           ),
           const SizedBox(height: 16),
           TextField(
             controller: _cardDescriptionController,
-            decoration: const InputDecoration(
-              labelText: 'Description',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: l10n.description,
+              border: const OutlineInputBorder(),
             ),
             maxLines: 3,
           ),
@@ -43,7 +45,7 @@ class _AddCardDialogState extends State<AddCardDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(l10n.cancel),
         ),
         ElevatedButton(
           onPressed: () {
@@ -58,7 +60,7 @@ class _AddCardDialogState extends State<AddCardDialog> {
               Navigator.pop(context);
             }
           },
-          child: const Text('Add'),
+          child: Text(l10n.add),
         ),
       ],
     );

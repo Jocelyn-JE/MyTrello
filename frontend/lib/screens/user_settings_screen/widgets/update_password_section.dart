@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 
 class UpdatePasswordSection extends StatelessWidget {
   final bool isLoading;
@@ -12,6 +13,7 @@ class UpdatePasswordSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final currentPasswordController = TextEditingController();
     final newPasswordController = TextEditingController();
     final confirmPasswordController = TextEditingController();
@@ -23,33 +25,33 @@ class UpdatePasswordSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Update Password',
+              l10n.updatePassword,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 16),
             TextField(
               controller: currentPasswordController,
-              decoration: const InputDecoration(
-                labelText: 'Current Password',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.currentPassword,
+                border: const OutlineInputBorder(),
               ),
               obscureText: true,
             ),
             const SizedBox(height: 16),
             TextField(
               controller: newPasswordController,
-              decoration: const InputDecoration(
-                labelText: 'New Password',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.newPassword,
+                border: const OutlineInputBorder(),
               ),
               obscureText: true,
             ),
             const SizedBox(height: 16),
             TextField(
               controller: confirmPasswordController,
-              decoration: const InputDecoration(
-                labelText: 'Confirm New Password',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.confirmNewPassword,
+                border: const OutlineInputBorder(),
               ),
               obscureText: true,
             ),
@@ -70,7 +72,7 @@ class UpdatePasswordSection extends StatelessWidget {
                         width: 20,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Text('Update Password'),
+                    : Text(l10n.updatePassword),
               ),
             ),
           ],

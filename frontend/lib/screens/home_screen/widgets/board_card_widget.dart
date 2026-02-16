@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/api/board.dart';
 import 'package:frontend/utils/deterministic_color.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 
 class BoardCardWidget extends StatelessWidget {
   final Board board;
@@ -9,6 +10,7 @@ class BoardCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
@@ -29,10 +31,13 @@ class BoardCardWidget extends StatelessWidget {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Owner: ${board.owner.username}'),
+            Text('${l10n.owner}: ${board.owner.username}'),
             if (board.members.isNotEmpty || board.viewers.isNotEmpty)
               Text(
-                '${board.members.length} members, ${board.viewers.length} viewers',
+                l10n.membersViewersCount(
+                  board.members.length,
+                  board.viewers.length,
+                ),
                 style: Theme.of(context).textTheme.bodySmall,
               ),
           ],

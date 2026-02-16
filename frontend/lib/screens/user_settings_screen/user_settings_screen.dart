@@ -7,6 +7,7 @@ import 'package:frontend/screens/user_settings_screen/widgets/user_info_card.dar
 import 'package:frontend/screens/user_settings_screen/widgets/update_username_section.dart';
 import 'package:frontend/screens/user_settings_screen/widgets/update_email_section.dart';
 import 'package:frontend/screens/user_settings_screen/widgets/update_password_section.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 
 class UserSettingsScreen extends StatefulWidget {
   final TrelloUser user;
@@ -29,9 +30,10 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('User Settings'),
+        title: Text(l10n.userSettings),
         backgroundColor: Colors.lightGreen,
       ),
       body: SingleChildScrollView(
@@ -64,16 +66,14 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
   }
 
   Future<void> _updateUsername(String newUsername) async {
+    final l10n = AppLocalizations.of(context)!;
     if (newUsername.isEmpty) {
-      showSnackBarWarning(context, 'Username cannot be empty');
+      showSnackBarWarning(context, l10n.usernameCannotBeEmpty);
       return;
     }
 
     if (newUsername == _currentUser.username) {
-      showSnackBarWarning(
-        context,
-        'New username must be different from current username',
-      );
+      showSnackBarWarning(context, l10n.newUsernameMustBeDifferent);
       return;
     }
 
@@ -92,7 +92,7 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
         updatedUser,
       );
       if (mounted) {
-        showSnackBarSuccess(context, 'Username updated successfully');
+        showSnackBarSuccess(context, l10n.usernameUpdatedSuccessfully);
       }
     } catch (e) {
       setState(() => _isLoading = false);
@@ -103,16 +103,14 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
   }
 
   Future<void> _updateEmail(String newEmail, String currentPassword) async {
+    final l10n = AppLocalizations.of(context)!;
     if (newEmail.isEmpty || currentPassword.isEmpty) {
-      showSnackBarWarning(context, 'All fields are required');
+      showSnackBarWarning(context, l10n.allFieldsRequired);
       return;
     }
 
     if (newEmail == _currentUser.email) {
-      showSnackBarWarning(
-        context,
-        'New email must be different from current email',
-      );
+      showSnackBarWarning(context, l10n.newEmailMustBeDifferent);
       return;
     }
 
@@ -134,7 +132,7 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
         updatedUser,
       );
       if (mounted) {
-        showSnackBarSuccess(context, 'Email updated successfully');
+        showSnackBarSuccess(context, l10n.emailUpdatedSuccessfully);
       }
     } catch (e) {
       setState(() => _isLoading = false);
@@ -149,23 +147,21 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
     String newPassword,
     String confirmPassword,
   ) async {
+    final l10n = AppLocalizations.of(context)!;
     if (currentPassword.isEmpty ||
         newPassword.isEmpty ||
         confirmPassword.isEmpty) {
-      showSnackBarWarning(context, 'All fields are required');
+      showSnackBarWarning(context, l10n.allFieldsRequired);
       return;
     }
 
     if (newPassword != confirmPassword) {
-      showSnackBarWarning(context, 'New passwords do not match');
+      showSnackBarWarning(context, l10n.newPasswordsDoNotMatch);
       return;
     }
 
     if (newPassword == currentPassword) {
-      showSnackBarWarning(
-        context,
-        'New password must be different from current password',
-      );
+      showSnackBarWarning(context, l10n.newPasswordMustBeDifferent);
       return;
     }
 
@@ -175,7 +171,7 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
       await UserService.updatePassword(currentPassword, newPassword);
       setState(() => _isLoading = false);
       if (mounted) {
-        showSnackBarSuccess(context, 'Password updated successfully');
+        showSnackBarSuccess(context, l10n.passwordUpdatedSuccessfully);
       }
     } catch (e) {
       setState(() => _isLoading = false);

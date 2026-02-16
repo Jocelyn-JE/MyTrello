@@ -14,6 +14,7 @@ import 'package:frontend/models/api/board.dart';
 import 'package:frontend/utils/print_to_console.dart';
 import 'package:frontend/utils/protected_routes.dart';
 import 'package:frontend/utils/snackbar.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 
 class BoardDetailScreen extends StatefulWidget {
   final String boardId;
@@ -143,6 +144,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
   }
 
   Future<void> _openBoardSettings() async {
+    final l10n = AppLocalizations.of(context)!;
     Board boardInfo;
     try {
       boardInfo = await BoardService.getBoard(_boardId);
@@ -150,7 +152,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
       if (mounted) {
         showSnackBarError(
           context,
-          'Failed to load board settings: ${e.toString()}',
+          l10n.failedToLoadBoardSettings(e.toString()),
         );
         _disconnectFromBoard();
         _goHome();
@@ -175,7 +177,8 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final title = _boardTitle ?? 'Loading...';
+    final l10n = AppLocalizations.of(context)!;
+    final title = _boardTitle ?? l10n.loading;
     return SafeArea(
       top: false,
       child: Scaffold(
@@ -214,7 +217,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
               IconButton(
                 icon: const Icon(Icons.settings),
                 onPressed: _openBoardSettings,
-                tooltip: 'Board Settings',
+                tooltip: l10n.boardSettings,
               ),
             ],
           ],
@@ -226,7 +229,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
               _disconnectFromBoard();
               _goHome();
             },
-            tooltip: 'Home',
+            tooltip: l10n.home,
           ),
         ),
         // Chat drawer
@@ -240,7 +243,7 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
                 padding: const EdgeInsets.only(bottom: 8.0),
                 child: TextField(
                   decoration: InputDecoration(
-                    hintText: 'Search cards...',
+                    hintText: l10n.searchCards,
                     prefixIcon: const Icon(Icons.search),
                     suffixIcon: _searchQuery.isNotEmpty
                         ? IconButton(

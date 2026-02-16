@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 
 class CardDatePickerDialog extends StatefulWidget {
   final DateTime? initialStartDate;
@@ -27,12 +28,13 @@ class _CardDatePickerDialogState extends State<CardDatePickerDialog> {
   }
 
   Future<void> _pickStartDate() async {
+    final l10n = AppLocalizations.of(context)!;
     final picked = await showDatePicker(
       context: context,
       initialDate: _startDate ?? DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
-      helpText: 'Select Start Date',
+      helpText: l10n.selectStartDate,
     );
 
     if (picked != null) {
@@ -47,12 +49,13 @@ class _CardDatePickerDialogState extends State<CardDatePickerDialog> {
   }
 
   Future<void> _pickDueDate() async {
+    final l10n = AppLocalizations.of(context)!;
     final picked = await showDatePicker(
       context: context,
       initialDate: _dueDate ?? _startDate ?? DateTime.now(),
       firstDate: _startDate ?? DateTime(2000),
       lastDate: DateTime(2100),
-      helpText: 'Select Due Date',
+      helpText: l10n.selectDueDate,
     );
 
     if (picked != null) {
@@ -76,19 +79,22 @@ class _CardDatePickerDialogState extends State<CardDatePickerDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final dateFormat = DateFormat('dd/MM/yyyy');
+    final l10n = AppLocalizations.of(context)!;
+    final dateFormat = DateFormat.yMd(
+      Localizations.localeOf(context).toString(),
+    );
 
     return AlertDialog(
-      title: const Text('Set Deadlines'),
+      title: Text(l10n.setDeadlines),
       content: SizedBox(
         width: 300,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Start Date',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            Text(
+              l10n.startDate,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
             const SizedBox(height: 8),
             Row(
@@ -100,7 +106,7 @@ class _CardDatePickerDialogState extends State<CardDatePickerDialog> {
                     label: Text(
                       _startDate != null
                           ? dateFormat.format(_startDate!)
-                          : 'Select Date',
+                          : l10n.selectDate,
                     ),
                   ),
                 ),
@@ -109,15 +115,15 @@ class _CardDatePickerDialogState extends State<CardDatePickerDialog> {
                   IconButton(
                     icon: const Icon(Icons.clear, size: 20),
                     onPressed: _clearStartDate,
-                    tooltip: 'Clear start date',
+                    tooltip: l10n.clearStartDate,
                   ),
                 ],
               ],
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Due Date',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            Text(
+              l10n.dueDate,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
             const SizedBox(height: 8),
             Row(
@@ -129,7 +135,7 @@ class _CardDatePickerDialogState extends State<CardDatePickerDialog> {
                     label: Text(
                       _dueDate != null
                           ? dateFormat.format(_dueDate!)
-                          : 'Select Date',
+                          : l10n.selectDate,
                     ),
                   ),
                 ),
@@ -138,7 +144,7 @@ class _CardDatePickerDialogState extends State<CardDatePickerDialog> {
                   IconButton(
                     icon: const Icon(Icons.clear, size: 20),
                     onPressed: _clearDueDate,
-                    tooltip: 'Clear due date',
+                    tooltip: l10n.clearDueDate,
                   ),
                 ],
               ],
@@ -161,7 +167,9 @@ class _CardDatePickerDialogState extends State<CardDatePickerDialog> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Duration: ${_dueDate!.difference(_startDate!).inDays} days',
+                        l10n.durationDays(
+                          _dueDate!.difference(_startDate!).inDays,
+                        ),
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.blue.shade700,
@@ -178,7 +186,7 @@ class _CardDatePickerDialogState extends State<CardDatePickerDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(l10n.cancel),
         ),
         ElevatedButton(
           onPressed: () {
@@ -187,7 +195,7 @@ class _CardDatePickerDialogState extends State<CardDatePickerDialog> {
               'dueDate': _dueDate,
             });
           },
-          child: const Text('Save'),
+          child: Text(l10n.save),
         ),
       ],
     );

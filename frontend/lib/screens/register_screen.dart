@@ -3,6 +3,7 @@ import 'package:frontend/utils/snackbar.dart';
 import 'package:frontend/utils/regex.dart';
 import 'package:frontend/widgets/password_field_widget.dart';
 import 'package:frontend/services/api/auth_service.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -19,6 +20,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isLoading = false;
 
   Future<void> _handleRegister() async {
+    final l10n = AppLocalizations.of(context)!;
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
     String username = _usernameController.text.trim();
@@ -26,11 +28,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     // Validation checks
     final validations = [
-      (email.isEmpty, 'Please enter your email'),
-      (!isValidEmail(email), 'Please enter a valid email address'),
-      (username.isEmpty, 'Please enter your username'),
-      (password.isEmpty, 'Please enter your password'),
-      (passwordConfirm != password, 'Passwords do not match'),
+      (email.isEmpty, l10n.pleaseEnterEmail),
+      (!isValidEmail(email), l10n.pleaseEnterValidEmail),
+      (username.isEmpty, l10n.pleaseEnterUsername),
+      (password.isEmpty, l10n.pleaseEnterPassword),
+      (passwordConfirm != password, l10n.passwordsDoNotMatch),
     ];
     for (final (condition, message) in validations) {
       if (condition) {
@@ -46,13 +48,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
       await AuthService.register(email, username, password);
 
       if (mounted) {
-        showSnackBarSuccess(context, 'Registration successful!');
+        showSnackBarSuccess(context, l10n.registrationSuccessful);
         Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
         final errorMessage = e.toString().replaceFirst('Exception: ', '');
-        showSnackBarWarning(context, 'Registration failed: $errorMessage');
+        showSnackBarWarning(context, l10n.registrationFailed(errorMessage));
       }
     }
 
@@ -65,9 +67,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('MyTrello - Register'),
+        title: Text(l10n.registerTitle),
         backgroundColor: Colors.lightGreen,
         shadowColor: Colors.grey,
       ),
@@ -84,23 +87,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   children: [
                     TextField(
                       controller: _emailController,
-                      decoration: const InputDecoration(labelText: 'Email'),
+                      decoration: InputDecoration(labelText: l10n.email),
                       keyboardType: TextInputType.emailAddress,
                       autofillHints: const [AutofillHints.email],
                     ),
                     TextField(
                       controller: _usernameController,
-                      decoration: const InputDecoration(labelText: 'Username'),
+                      decoration: InputDecoration(labelText: l10n.username),
                       autofillHints: const [AutofillHints.newUsername],
                     ),
                     PasswordField(
                       controller: _passwordController,
-                      labelText: 'Password',
+                      labelText: l10n.password,
                       autofillHints: const [AutofillHints.newPassword],
                     ),
                     PasswordField(
                       controller: _passwordConfirmController,
-                      labelText: 'Confirm Password',
+                      labelText: l10n.confirmPassword,
                       autofillHints: const [AutofillHints.newPassword],
                     ),
                     SizedBox(
@@ -115,7 +118,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   strokeWidth: 2,
                                 ),
                               )
-                            : const Text('Register'),
+                            : Text(l10n.registerButton),
                       ),
                     ),
                   ],

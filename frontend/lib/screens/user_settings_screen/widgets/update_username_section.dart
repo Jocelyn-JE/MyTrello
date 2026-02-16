@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/websocket/server_types.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 
 class UpdateUsernameSection extends StatelessWidget {
   final TrelloUser currentUser;
@@ -15,6 +16,7 @@ class UpdateUsernameSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final usernameController = TextEditingController(
       text: currentUser.username,
     );
@@ -26,15 +28,15 @@ class UpdateUsernameSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Update Username',
+              l10n.updateUsername,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 16),
             TextField(
               controller: usernameController,
-              decoration: const InputDecoration(
-                labelText: 'New Username',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.newUsername,
+                border: const OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
@@ -50,7 +52,7 @@ class UpdateUsernameSection extends StatelessWidget {
                         width: 20,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Text('Update Username'),
+                    : Text(l10n.updateUsername),
               ),
             ),
           ],

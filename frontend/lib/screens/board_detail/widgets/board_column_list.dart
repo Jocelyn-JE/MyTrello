@@ -4,6 +4,7 @@ import 'package:frontend/screens/board_detail/widgets/trello_column_widget.dart'
 import 'package:frontend/services/board_permissions_service.dart';
 import 'package:frontend/models/websocket/server_types.dart';
 import 'package:frontend/services/websocket/websocket_service.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 
 class BoardColumnList extends StatefulWidget {
   final List<TrelloColumn> _columns;
@@ -76,6 +77,7 @@ class _BoardColumnListState extends State<BoardColumnList> {
 
   /// Button to create a new column
   Widget _newColumnButton() {
+    final l10n = AppLocalizations.of(context)!;
     return DragTarget<TrelloColumn>(
       onWillAcceptWithDetails: (details) => true,
       onAcceptWithDetails: (details) {
@@ -94,7 +96,7 @@ class _BoardColumnListState extends State<BoardColumnList> {
               backgroundColor: Colors.lightGreen.shade200,
             ),
             onPressed: () {
-              WebsocketService.createColumn('New Column');
+              WebsocketService.createColumn(l10n.newColumn);
             },
             child: const Icon(Icons.add),
           ),

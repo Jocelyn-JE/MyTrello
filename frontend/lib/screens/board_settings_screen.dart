@@ -5,6 +5,7 @@ import 'package:frontend/models/websocket/server_types.dart';
 import 'package:frontend/services/api/board_service.dart';
 import 'package:frontend/widgets/user_search_dialog.dart';
 import 'package:frontend/utils/snackbar.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 
 class BoardSettingsScreen extends StatefulWidget {
   final Board board;
@@ -75,10 +76,11 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
   }
 
   Future<void> _saveChanges() async {
+    final l10n = AppLocalizations.of(context)!;
     final title = _titleController.text.trim();
 
     if (title.isEmpty) {
-      showSnackBarWarning(context, 'Board title cannot be empty');
+      showSnackBarWarning(context, l10n.boardTitleCannotBeEmpty);
       return;
     }
 
@@ -102,7 +104,7 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
           _isLoading = false;
           _hasChanges = false;
         });
-        showSnackBarSuccess(context, 'Board updated successfully!');
+        showSnackBarSuccess(context, l10n.boardUpdatedSuccessfully);
         Navigator.pop(
           context,
           true,
@@ -113,23 +115,22 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
         setState(() {
           _isLoading = false;
         });
-        showSnackBarError(context, 'Failed to update board: ${e.toString()}');
+        showSnackBarError(context, l10n.failedToUpdateBoard(e.toString()));
       }
     }
   }
 
   Future<void> _deleteBoard() async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Board'),
-        content: Text(
-          'Are you sure you want to delete "${widget.board.title}"? This action cannot be undone.',
-        ),
+        title: Text(l10n.deleteBoard),
+        content: Text(l10n.areYouSureDeleteBoardWithName(widget.board.title)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
@@ -137,7 +138,7 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Delete'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -153,7 +154,7 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
       await BoardService.deleteBoard(widget.board.id);
 
       if (mounted) {
-        showSnackBarSuccess(context, 'Board deleted successfully');
+        showSnackBarSuccess(context, l10n.boardDeletedSuccessfully);
         // Pop twice: once for this screen, once to return to home
         Navigator.pop(context);
         Navigator.pop(context, 'deleted');
@@ -163,7 +164,7 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
         setState(() {
           _isLoading = false;
         });
-        showSnackBarError(context, 'Failed to delete board: ${e.toString()}');
+        showSnackBarError(context, l10n.failedToDeleteBoard(e.toString()));
       }
     }
   }
@@ -215,6 +216,7 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
   }
 
   Widget _buildUserPermissionCard(int index) {
+    final l10n = AppLocalizations.of(context)!;
     final permission = _userPermissions[index];
 
     return Card(
@@ -224,9 +226,9 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
         subtitle: DropdownButton<String>(
           value: permission.role,
           isExpanded: true,
-          items: const [
-            DropdownMenuItem(value: 'member', child: Text('Member')),
-            DropdownMenuItem(value: 'viewer', child: Text('Viewer')),
+          items: [
+            DropdownMenuItem(value: 'member', child: Text(l10n.member)),
+            DropdownMenuItem(value: 'viewer', child: Text(l10n.viewer)),
           ],
           onChanged: _isOwner && !_isLoading
               ? (String? newRole) {
@@ -248,9 +250,10 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Board Settings'),
+        title: Text(l10n.boardSettings),
         backgroundColor: Colors.lightGreen,
         shadowColor: Colors.grey,
       ),
@@ -268,9 +271,9 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Board Title',
-                            style: TextStyle(
+                          Text(
+                            l10n.boardTitle,
+                            style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
@@ -278,9 +281,9 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
                           const SizedBox(height: 12),
                           TextField(
                             controller: _titleController,
-                            decoration: const InputDecoration(
-                              labelText: 'Title',
-                              border: OutlineInputBorder(),
+                            decoration: InputDecoration(
+                              labelText: l10n.title,
+                              border: const OutlineInputBorder(),
                             ),
                             enabled: _isOwner,
                             onChanged: (_) => _markChanged(),
@@ -298,9 +301,9 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Owner',
-                            style: TextStyle(
+                          Text(
+                            l10n.owner,
+                            style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
@@ -312,7 +315,7 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
                               color: Colors.amber,
                             ),
                             title: Text(widget.board.owner.username),
-                            subtitle: const Text('Board Owner'),
+                            subtitle: Text(l10n.boardOwner),
                           ),
                         ],
                       ),
@@ -330,9 +333,9 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text(
-                                'Users & Permissions',
-                                style: TextStyle(
+                              Text(
+                                l10n.usersAndPermissions,
+                                style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -341,15 +344,15 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
                                 IconButton(
                                   icon: const Icon(Icons.add),
                                   onPressed: _isLoading ? null : _addUser,
-                                  tooltip: 'Add User',
+                                  tooltip: l10n.addUser,
                                 ),
                             ],
                           ),
                           const SizedBox(height: 8),
                           if (_userPermissions.isEmpty)
-                            const Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: Center(child: Text('No users added yet')),
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Center(child: Text(l10n.noUsersAddedYet)),
                             )
                           else
                             ListView.builder(
@@ -377,7 +380,7 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
-                      child: const Text('Save Changes'),
+                      child: Text(l10n.saveChanges),
                     ),
                     const SizedBox(height: 16),
                     OutlinedButton(
@@ -387,7 +390,7 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
                         side: const BorderSide(color: Colors.red),
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
-                      child: const Text('Delete Board'),
+                      child: Text(l10n.deleteBoard),
                     ),
                   ],
                 ],

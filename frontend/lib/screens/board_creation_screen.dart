@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/services/api/auth_service.dart';
 import 'package:frontend/models/websocket/server_types.dart';
 import 'package:frontend/services/api/board_service.dart';
@@ -25,6 +26,7 @@ class _BoardCreationScreenState extends State<BoardCreationScreen> {
   }
 
   Future<bool> _createBoard(String title, List<BoardUserInput> users) async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       setState(() {
         _isLoading = true;
@@ -36,7 +38,7 @@ class _BoardCreationScreenState extends State<BoardCreationScreen> {
         setState(() {
           _isLoading = false;
         });
-        showSnackBarSuccess(context, 'Board created successfully!');
+        showSnackBarSuccess(context, l10n.boardCreatedSuccessfully);
       }
 
       return true;
@@ -45,16 +47,17 @@ class _BoardCreationScreenState extends State<BoardCreationScreen> {
         setState(() {
           _isLoading = false;
         });
-        showSnackBarError(context, 'Failed to create board: ${e.toString()}');
+        showSnackBarError(context, l10n.failedToCreateBoard(e.toString()));
       }
       return false;
     }
   }
 
   Future<void> _verifyParameters() async {
+    final l10n = AppLocalizations.of(context)!;
     final title = titleController.text.trim();
     if (title.isEmpty) {
-      showSnackBarWarning(context, 'Please enter a board title');
+      showSnackBarWarning(context, l10n.pleaseEnterBoardTitle);
       return;
     }
     final success = await _createBoard(title, usersInput);
@@ -63,6 +66,7 @@ class _BoardCreationScreenState extends State<BoardCreationScreen> {
   }
 
   Widget _buildUserItem(int index) {
+    final l10n = AppLocalizations.of(context)!;
     final user = users[index];
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
@@ -71,9 +75,9 @@ class _BoardCreationScreenState extends State<BoardCreationScreen> {
         subtitle: DropdownButton<String>(
           value: usersInput[index].role,
           isExpanded: true,
-          items: const [
-            DropdownMenuItem(value: 'member', child: Text('Member')),
-            DropdownMenuItem(value: 'viewer', child: Text('Viewer')),
+          items: [
+            DropdownMenuItem(value: 'member', child: Text(l10n.member)),
+            DropdownMenuItem(value: 'viewer', child: Text(l10n.viewer)),
           ],
           onChanged: (String? newRole) {
             if (newRole != null) {
@@ -101,9 +105,10 @@ class _BoardCreationScreenState extends State<BoardCreationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create Board'),
+        title: Text(l10n.createBoard),
         backgroundColor: Colors.lightGreen,
         shadowColor: Colors.grey,
       ),
@@ -119,9 +124,9 @@ class _BoardCreationScreenState extends State<BoardCreationScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Board Title',
-                      style: TextStyle(
+                    Text(
+                      l10n.boardTitle,
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -129,9 +134,9 @@ class _BoardCreationScreenState extends State<BoardCreationScreen> {
                     const SizedBox(height: 12),
                     TextField(
                       controller: titleController,
-                      decoration: const InputDecoration(
-                        labelText: 'Title',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.title,
+                        border: const OutlineInputBorder(),
                       ),
                     ),
                   ],
@@ -150,9 +155,9 @@ class _BoardCreationScreenState extends State<BoardCreationScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'Users & Permissions',
-                          style: TextStyle(
+                        Text(
+                          l10n.usersAndPermissions,
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
@@ -185,15 +190,15 @@ class _BoardCreationScreenState extends State<BoardCreationScreen> {
                                     });
                                   }
                                 },
-                          tooltip: 'Add User',
+                          tooltip: l10n.addUser,
                         ),
                       ],
                     ),
                     const SizedBox(height: 8),
                     if (users.isEmpty)
-                      const Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Center(child: Text('No users added yet')),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Center(child: Text(l10n.noUsersAddedYet)),
                       )
                     else
                       ListView.builder(
@@ -218,7 +223,7 @@ class _BoardCreationScreenState extends State<BoardCreationScreen> {
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
-              child: const Text('Create Board'),
+              child: Text(l10n.createBoard),
             ),
           ],
         ),

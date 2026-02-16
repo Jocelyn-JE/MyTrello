@@ -5,6 +5,7 @@ import 'package:frontend/services/board_permissions_service.dart';
 import 'package:frontend/screens/board_detail/widgets/trello_card_widget.dart';
 import 'package:frontend/services/websocket/websocket_service.dart';
 import 'package:frontend/utils/app_config.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 
 class TrelloColumnWidget extends StatefulWidget {
   final TrelloColumn column;
@@ -61,6 +62,7 @@ class _TrelloColumnWidgetState extends State<TrelloColumnWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final canEdit = BoardPermissionsService.canEdit;
 
     final columnWidget = SizedBox(
@@ -75,8 +77,8 @@ class _TrelloColumnWidgetState extends State<TrelloColumnWidget> {
               if (canEdit)
                 TextField(
                   controller: _titleController,
-                  decoration: const InputDecoration(
-                    hintText: 'Column title',
+                  decoration: InputDecoration(
+                    hintText: l10n.columnTitle,
                     border: InputBorder.none,
                   ),
                   style: const TextStyle(
@@ -133,7 +135,7 @@ class _TrelloColumnWidgetState extends State<TrelloColumnWidget> {
                       child: widget.column.cards.isEmpty
                           ? Center(
                               child: Text(
-                                isHovering ? 'Drop here' : 'No cards',
+                                isHovering ? l10n.dropHere : l10n.noCards,
                                 style: TextStyle(
                                   color: isHovering
                                       ? Colors.lightGreen
@@ -165,7 +167,7 @@ class _TrelloColumnWidgetState extends State<TrelloColumnWidget> {
               if (canEdit) ...[
                 ElevatedButton.icon(
                   icon: const Icon(Icons.add, size: 16),
-                  label: const Text('Add card'),
+                  label: Text(l10n.addCard),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.lightGreen.shade100,
                   ),
@@ -182,7 +184,7 @@ class _TrelloColumnWidgetState extends State<TrelloColumnWidget> {
                 IconButton(
                   color: Colors.red,
                   icon: const Icon(Icons.delete),
-                  tooltip: 'Delete column',
+                  tooltip: l10n.deleteColumn,
                   onPressed: () {
                     WebsocketService.deleteColumn(widget.column.id);
                   },
@@ -247,6 +249,7 @@ class _TrelloColumnWidgetState extends State<TrelloColumnWidget> {
   }
 
   Widget _draggableColumn(Widget column) {
+    final l10n = AppLocalizations.of(context)!;
     return LongPressDraggable<TrelloColumn>(
       data: widget.column,
       delay: AppConfig.dragDelay,
@@ -273,7 +276,7 @@ class _TrelloColumnWidgetState extends State<TrelloColumnWidget> {
                   ),
                   const Divider(),
                   Text(
-                    '${widget.column.cards.length} cards',
+                    l10n.cardsCount(widget.column.cards.length),
                     textAlign: TextAlign.center,
                     style: const TextStyle(color: Colors.grey),
                   ),

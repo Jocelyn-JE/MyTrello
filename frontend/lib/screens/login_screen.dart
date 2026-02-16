@@ -3,6 +3,7 @@ import 'package:frontend/utils/snackbar.dart';
 import 'package:frontend/utils/regex.dart';
 import 'package:frontend/widgets/password_field_widget.dart';
 import 'package:frontend/services/api/auth_service.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -32,13 +33,14 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _handleLogin() async {
+    final l10n = AppLocalizations.of(context)!;
     String email = _emailController.text.trim();
     String password = _passwordController.text.trim();
     // Validation checks
     final validations = [
-      (email.isEmpty, 'Please enter your email'),
-      (!isValidEmail(email), 'Please enter a valid email address'),
-      (password.isEmpty, 'Please enter your password'),
+      (email.isEmpty, l10n.pleaseEnterEmail),
+      (!isValidEmail(email), l10n.pleaseEnterValidEmail),
+      (password.isEmpty, l10n.pleaseEnterPassword),
     ];
     for (final (condition, message) in validations) {
       if (condition) {
@@ -54,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
       await AuthService.loginWithCredentials(email, password);
 
       if (mounted) {
-        showSnackBarSuccess(context, 'Login successful!');
+        showSnackBarSuccess(context, l10n.loginSuccessful);
         Navigator.pushNamedAndRemoveUntil(
           context,
           '/home',
@@ -64,7 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       if (mounted) {
         final errorMessage = e.toString().replaceFirst('Exception: ', '');
-        showSnackBarWarning(context, 'Login failed: $errorMessage');
+        showSnackBarWarning(context, l10n.loginFailed(errorMessage));
       }
     }
 
@@ -77,9 +79,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('MyTrello - Login'),
+        title: Text(l10n.loginTitle),
         backgroundColor: Colors.lightGreen,
         shadowColor: Colors.grey,
       ),
@@ -96,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     TextField(
                       controller: _emailController,
-                      decoration: const InputDecoration(labelText: 'Email'),
+                      decoration: InputDecoration(labelText: l10n.email),
                       keyboardType: TextInputType.emailAddress,
                       autofillHints: const [
                         AutofillHints.email,
@@ -105,7 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     PasswordField(
                       controller: _passwordController,
-                      labelText: 'Password',
+                      labelText: l10n.password,
                     ),
                     Wrap(
                       spacing: 16,
@@ -124,7 +127,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       strokeWidth: 2,
                                     ),
                                   )
-                                : const Text('Login'),
+                                : Text(l10n.loginButton),
                           ),
                         ),
                         SizedBox(
@@ -134,7 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               // Navigate to the registration screen
                               Navigator.pushNamed(context, '/register');
                             },
-                            child: const Text('Register'),
+                            child: Text(l10n.registerButton),
                           ),
                         ),
                       ],
