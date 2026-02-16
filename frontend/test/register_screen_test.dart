@@ -1,8 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-
 import 'package:frontend/screens/register_screen.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:frontend/l10n/app_localizations.dart';
+
+/// Helper to wrap widgets with MaterialApp and localization support
+Widget buildTestableWidget(Widget child) {
+  return MaterialApp(
+    localizationsDelegates: const [
+      AppLocalizations.delegate,
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
+    supportedLocales: const [Locale('en', 'US'), Locale('fr', 'FR')],
+    home: child,
+  );
+}
 
 void main() {
   setUpAll(() async {
@@ -13,7 +28,7 @@ void main() {
     testWidgets('renders register screen with all expected elements', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(const MaterialApp(home: RegisterScreen()));
+      await tester.pumpWidget(buildTestableWidget(const RegisterScreen()));
 
       expect(find.byType(AppBar), findsOneWidget);
       expect(find.text('MyTrello - Register'), findsOneWidget); // AppBar title
@@ -33,7 +48,7 @@ void main() {
     });
 
     testWidgets('has AutofillGroup wrapper', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: RegisterScreen()));
+      await tester.pumpWidget(buildTestableWidget(const RegisterScreen()));
 
       expect(find.byType(AutofillGroup), findsOneWidget);
     });
@@ -41,7 +56,7 @@ void main() {
     testWidgets('email field has proper autofill hints', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(const MaterialApp(home: RegisterScreen()));
+      await tester.pumpWidget(buildTestableWidget(const RegisterScreen()));
 
       final emailField = tester.widget<TextField>(find.byType(TextField).first);
       expect(emailField.autofillHints, contains(AutofillHints.email));
@@ -51,7 +66,7 @@ void main() {
     testWidgets('username field has proper autofill hints', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(const MaterialApp(home: RegisterScreen()));
+      await tester.pumpWidget(buildTestableWidget(const RegisterScreen()));
 
       final usernameField = tester.widget<TextField>(
         find.byType(TextField).at(1),
@@ -62,7 +77,7 @@ void main() {
     testWidgets('password fields toggle visibility independently', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(const MaterialApp(home: RegisterScreen()));
+      await tester.pumpWidget(buildTestableWidget(const RegisterScreen()));
 
       // Both password fields should be obscured initially
       final passwordFields = find.byType(TextField);
@@ -94,7 +109,7 @@ void main() {
 
   group('RegisterScreen Validation Tests', () {
     testWidgets('shows error when email is empty', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: RegisterScreen()));
+      await tester.pumpWidget(buildTestableWidget(const RegisterScreen()));
 
       await tester.tap(find.widgetWithText(ElevatedButton, 'Register'));
       await tester.pump();
@@ -106,7 +121,7 @@ void main() {
     testWidgets('shows error for invalid email format', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(const MaterialApp(home: RegisterScreen()));
+      await tester.pumpWidget(buildTestableWidget(const RegisterScreen()));
 
       await tester.enterText(find.byType(TextField).at(0), 'invalid-email');
       await tester.enterText(find.byType(TextField).at(1), 'testuser');
@@ -123,7 +138,7 @@ void main() {
     testWidgets('shows error when username is empty', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(const MaterialApp(home: RegisterScreen()));
+      await tester.pumpWidget(buildTestableWidget(const RegisterScreen()));
 
       await tester.enterText(find.byType(TextField).at(0), 'test@example.com');
       await tester.tap(find.widgetWithText(ElevatedButton, 'Register'));
@@ -136,7 +151,7 @@ void main() {
     testWidgets('shows error when password is empty', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(const MaterialApp(home: RegisterScreen()));
+      await tester.pumpWidget(buildTestableWidget(const RegisterScreen()));
 
       await tester.enterText(find.byType(TextField).at(0), 'test@example.com');
       await tester.enterText(find.byType(TextField).at(1), 'testuser');
@@ -150,7 +165,7 @@ void main() {
     testWidgets('shows error when passwords do not match', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(const MaterialApp(home: RegisterScreen()));
+      await tester.pumpWidget(buildTestableWidget(const RegisterScreen()));
 
       await tester.enterText(find.byType(TextField).at(0), 'test@example.com');
       await tester.enterText(find.byType(TextField).at(1), 'testuser');
@@ -165,7 +180,7 @@ void main() {
     });
 
     testWidgets('accepts valid registration data', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: RegisterScreen()));
+      await tester.pumpWidget(buildTestableWidget(const RegisterScreen()));
 
       await tester.enterText(find.byType(TextField).at(0), 'test@example.com');
       await tester.enterText(find.byType(TextField).at(1), 'testuser');
@@ -186,7 +201,7 @@ void main() {
 
   group('RegisterScreen Input Validation Tests', () {
     testWidgets('accepts valid email formats', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: RegisterScreen()));
+      await tester.pumpWidget(buildTestableWidget(const RegisterScreen()));
 
       final validEmails = [
         'test@example.com',
@@ -214,7 +229,7 @@ void main() {
     });
 
     testWidgets('rejects invalid email formats', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: RegisterScreen()));
+      await tester.pumpWidget(buildTestableWidget(const RegisterScreen()));
 
       final invalidEmails = [
         'invalid',
@@ -246,7 +261,7 @@ void main() {
     testWidgets('trims whitespace from all inputs', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(const MaterialApp(home: RegisterScreen()));
+      await tester.pumpWidget(buildTestableWidget(const RegisterScreen()));
 
       await tester.enterText(
         find.byType(TextField).at(0),
@@ -269,7 +284,7 @@ void main() {
 
   group('RegisterScreen Layout Tests', () {
     testWidgets('centers content properly', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: RegisterScreen()));
+      await tester.pumpWidget(buildTestableWidget(const RegisterScreen()));
 
       final column = tester.widget<Column>(find.byType(Column));
       expect(column.mainAxisAlignment, MainAxisAlignment.center);
@@ -278,7 +293,7 @@ void main() {
     testWidgets('has proper spacing between elements', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(const MaterialApp(home: RegisterScreen()));
+      await tester.pumpWidget(buildTestableWidget(const RegisterScreen()));
 
       final column = tester.widget<Column>(find.byType(Column));
       expect(column.spacing, 16);
@@ -287,7 +302,7 @@ void main() {
     testWidgets('has proper constraints on form width', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(const MaterialApp(home: RegisterScreen()));
+      await tester.pumpWidget(buildTestableWidget(const RegisterScreen()));
 
       final constrainedBoxes = find.byType(ConstrainedBox);
       expect(constrainedBoxes, findsAtLeastNWidgets(1));
@@ -311,7 +326,7 @@ void main() {
     testWidgets('shows loading indicator when registering', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(const MaterialApp(home: RegisterScreen()));
+      await tester.pumpWidget(buildTestableWidget(const RegisterScreen()));
 
       // Fill form with valid data
       await tester.enterText(find.byType(TextField).at(0), 'test@example.com');
@@ -331,7 +346,7 @@ void main() {
     testWidgets('button is enabled when not loading', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(const MaterialApp(home: RegisterScreen()));
+      await tester.pumpWidget(buildTestableWidget(const RegisterScreen()));
 
       final button = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
       expect(button.onPressed, isNotNull);
@@ -343,7 +358,7 @@ void main() {
     testWidgets('controllers are properly disposed', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(const MaterialApp(home: RegisterScreen()));
+      await tester.pumpWidget(buildTestableWidget(const RegisterScreen()));
 
       await tester.enterText(find.byType(TextField).at(0), 'test@example.com');
       await tester.enterText(find.byType(TextField).at(1), 'testuser');
@@ -360,7 +375,7 @@ void main() {
     testWidgets('form state is maintained during widget rebuilds', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(const MaterialApp(home: RegisterScreen()));
+      await tester.pumpWidget(buildTestableWidget(const RegisterScreen()));
 
       await tester.enterText(find.byType(TextField).at(0), 'test@example.com');
       await tester.enterText(find.byType(TextField).at(1), 'testuser');
@@ -380,7 +395,7 @@ void main() {
 
   group('RegisterScreen Accessibility Tests', () {
     testWidgets('has proper semantic labels', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: RegisterScreen()));
+      await tester.pumpWidget(buildTestableWidget(const RegisterScreen()));
 
       expect(find.byType(TextField), findsNWidgets(4));
 
@@ -394,7 +409,7 @@ void main() {
     });
 
     testWidgets('supports keyboard navigation', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: RegisterScreen()));
+      await tester.pumpWidget(buildTestableWidget(const RegisterScreen()));
 
       final emailField = tester.widget<TextField>(find.byType(TextField).first);
       expect(emailField.keyboardType, TextInputType.emailAddress);
@@ -405,7 +420,7 @@ void main() {
     testWidgets('handles network errors gracefully', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(const MaterialApp(home: RegisterScreen()));
+      await tester.pumpWidget(buildTestableWidget(const RegisterScreen()));
 
       // Fill form with valid data
       await tester.enterText(find.byType(TextField).at(0), 'test@example.com');

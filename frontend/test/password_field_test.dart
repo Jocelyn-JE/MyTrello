@@ -1,6 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend/widgets/password_field_widget.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:frontend/l10n/app_localizations.dart';
+
+/// Helper to wrap widgets with MaterialApp and localization support
+Widget buildTestableWidget(Widget child) {
+  return MaterialApp(
+    localizationsDelegates: const [
+      AppLocalizations.delegate,
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
+    supportedLocales: const [Locale('en', 'US'), Locale('fr', 'FR')],
+    home: Scaffold(body: child),
+  );
+}
 
 void main() {
   group('PasswordField Widget Tests', () {
@@ -19,9 +35,7 @@ void main() {
         WidgetTester tester,
       ) async {
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(body: PasswordField(controller: controller)),
-          ),
+          buildTestableWidget(PasswordField(controller: controller)),
         );
 
         expect(find.byType(TextField), findsOneWidget);
@@ -35,13 +49,8 @@ void main() {
 
       testWidgets('renders with custom label', (WidgetTester tester) async {
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: PasswordField(
-                controller: controller,
-                labelText: 'Custom Password',
-              ),
-            ),
+          buildTestableWidget(
+            PasswordField(controller: controller, labelText: 'Custom Password'),
           ),
         );
 
@@ -51,12 +60,10 @@ void main() {
 
       testWidgets('renders with custom hint text', (WidgetTester tester) async {
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: PasswordField(
-                controller: controller,
-                hintText: 'Enter your password',
-              ),
+          buildTestableWidget(
+            PasswordField(
+              controller: controller,
+              hintText: 'Enter your password',
             ),
           ),
         );
@@ -69,10 +76,8 @@ void main() {
         WidgetTester tester,
       ) async {
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: PasswordField(controller: controller, enabled: false),
-            ),
+          buildTestableWidget(
+            PasswordField(controller: controller, enabled: false),
           ),
         );
 
@@ -86,9 +91,7 @@ void main() {
         WidgetTester tester,
       ) async {
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(body: PasswordField(controller: controller)),
-          ),
+          buildTestableWidget(PasswordField(controller: controller)),
         );
 
         // Initially obscured
@@ -123,6 +126,13 @@ void main() {
         Widget buildPasswordField(String key) {
           return MaterialApp(
             key: ValueKey(key),
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [Locale('en', 'US'), Locale('fr', 'FR')],
             home: Scaffold(body: PasswordField(controller: controller)),
           );
         }
@@ -148,9 +158,7 @@ void main() {
     group('Input Interaction Tests', () {
       testWidgets('accepts text input', (WidgetTester tester) async {
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(body: PasswordField(controller: controller)),
-          ),
+          buildTestableWidget(PasswordField(controller: controller)),
         );
 
         await tester.enterText(find.byType(TextField), 'test password');
@@ -161,12 +169,10 @@ void main() {
         String? changedValue;
 
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: PasswordField(
-                controller: controller,
-                onChanged: (value) => changedValue = value,
-              ),
+          buildTestableWidget(
+            PasswordField(
+              controller: controller,
+              onChanged: (value) => changedValue = value,
             ),
           ),
         );
@@ -179,12 +185,10 @@ void main() {
         bool wasTapped = false;
 
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: PasswordField(
-                controller: controller,
-                onTap: () => wasTapped = true,
-              ),
+          buildTestableWidget(
+            PasswordField(
+              controller: controller,
+              onTap: () => wasTapped = true,
             ),
           ),
         );
@@ -199,12 +203,10 @@ void main() {
         bool editingCompleted = false;
 
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: PasswordField(
-                controller: controller,
-                onEditingComplete: () => editingCompleted = true,
-              ),
+          buildTestableWidget(
+            PasswordField(
+              controller: controller,
+              onEditingComplete: () => editingCompleted = true,
             ),
           ),
         );
@@ -218,9 +220,7 @@ void main() {
     group('Autofill Tests', () {
       testWidgets('uses default autofill hints', (WidgetTester tester) async {
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(body: PasswordField(controller: controller)),
-          ),
+          buildTestableWidget(PasswordField(controller: controller)),
         );
 
         final textField = tester.widget<TextField>(find.byType(TextField));
@@ -229,12 +229,10 @@ void main() {
 
       testWidgets('uses custom autofill hints', (WidgetTester tester) async {
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: PasswordField(
-                controller: controller,
-                autofillHints: const [AutofillHints.newPassword],
-              ),
+          buildTestableWidget(
+            PasswordField(
+              controller: controller,
+              autofillHints: const [AutofillHints.newPassword],
             ),
           ),
         );
@@ -253,14 +251,12 @@ void main() {
         WidgetTester tester,
       ) async {
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: PasswordField(
-                controller: controller,
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.lock),
-                  border: OutlineInputBorder(),
-                ),
+          buildTestableWidget(
+            PasswordField(
+              controller: controller,
+              decoration: const InputDecoration(
+                prefixIcon: Icon(Icons.lock),
+                border: OutlineInputBorder(),
               ),
             ),
           ),
@@ -280,13 +276,11 @@ void main() {
         WidgetTester tester,
       ) async {
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: PasswordField(
-                controller: controller,
-                labelText: 'Default Label',
-                decoration: const InputDecoration(labelText: 'Custom Label'),
-              ),
+          buildTestableWidget(
+            PasswordField(
+              controller: controller,
+              labelText: 'Default Label',
+              decoration: const InputDecoration(labelText: 'Custom Label'),
             ),
           ),
         );
@@ -299,12 +293,10 @@ void main() {
     group('TextInputAction Tests', () {
       testWidgets('uses custom textInputAction', (WidgetTester tester) async {
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(
-              body: PasswordField(
-                controller: controller,
-                textInputAction: TextInputAction.next,
-              ),
+          buildTestableWidget(
+            PasswordField(
+              controller: controller,
+              textInputAction: TextInputAction.next,
             ),
           ),
         );
@@ -319,9 +311,7 @@ void main() {
         WidgetTester tester,
       ) async {
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(body: PasswordField(controller: controller)),
-          ),
+          buildTestableWidget(PasswordField(controller: controller)),
         );
 
         // Rapidly toggle visibility multiple times
@@ -341,9 +331,7 @@ void main() {
         WidgetTester tester,
       ) async {
         await tester.pumpWidget(
-          MaterialApp(
-            home: Scaffold(body: PasswordField(controller: controller)),
-          ),
+          buildTestableWidget(PasswordField(controller: controller)),
         );
 
         // Enter text

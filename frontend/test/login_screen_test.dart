@@ -2,6 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/screens/login_screen.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:frontend/l10n/app_localizations.dart';
+
+/// Helper to wrap widgets with MaterialApp and localization support
+Widget buildTestableWidget(Widget child) {
+  return MaterialApp(
+    localizationsDelegates: const [
+      AppLocalizations.delegate,
+      GlobalMaterialLocalizations.delegate,
+      GlobalWidgetsLocalizations.delegate,
+      GlobalCupertinoLocalizations.delegate,
+    ],
+    supportedLocales: const [Locale('en', 'US'), Locale('fr', 'FR')],
+    home: child,
+  );
+}
 
 void main() {
   setUpAll(() async {
@@ -12,7 +28,7 @@ void main() {
     testWidgets('renders login screen with all expected elements', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(const MaterialApp(home: LoginScreen()));
+      await tester.pumpWidget(buildTestableWidget(const LoginScreen()));
 
       expect(find.byType(AppBar), findsOneWidget);
       expect(find.text('MyTrello - Login'), findsOneWidget); // AppBar title
@@ -27,7 +43,7 @@ void main() {
     testWidgets('toggles password visibility when icon is tapped', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(const MaterialApp(home: LoginScreen()));
+      await tester.pumpWidget(buildTestableWidget(const LoginScreen()));
 
       final passwordField = tester.widget<TextField>(
         find.byType(TextField).last,
@@ -45,7 +61,7 @@ void main() {
     });
 
     testWidgets('shows error when email is empty', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: LoginScreen()));
+      await tester.pumpWidget(buildTestableWidget(const LoginScreen()));
 
       await tester.tap(find.widgetWithText(ElevatedButton, 'Login'));
       await tester.pump();
@@ -57,7 +73,7 @@ void main() {
     testWidgets('shows error when password is empty', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(const MaterialApp(home: LoginScreen()));
+      await tester.pumpWidget(buildTestableWidget(const LoginScreen()));
 
       await tester.enterText(find.byType(TextField).first, 'test@example.com');
       await tester.tap(find.widgetWithText(ElevatedButton, 'Login'));
@@ -70,7 +86,7 @@ void main() {
     testWidgets('shows error for invalid email format', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(const MaterialApp(home: LoginScreen()));
+      await tester.pumpWidget(buildTestableWidget(const LoginScreen()));
 
       await tester.enterText(find.byType(TextField).first, 'invalid-email');
       await tester.enterText(find.byType(TextField).last, 'password123');
@@ -86,6 +102,13 @@ void main() {
     ) async {
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('en', 'US'), Locale('fr', 'FR')],
           initialRoute: '/login',
           routes: {
             '/login': (context) => const LoginScreen(),
@@ -105,7 +128,7 @@ void main() {
 
   group('LoginScreen Input Validation Tests', () {
     testWidgets('accepts valid email formats', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: LoginScreen()));
+      await tester.pumpWidget(buildTestableWidget(const LoginScreen()));
 
       final validEmails = [
         'test@example.com',
@@ -132,7 +155,7 @@ void main() {
     });
 
     testWidgets('rejects invalid email formats', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: LoginScreen()));
+      await tester.pumpWidget(buildTestableWidget(const LoginScreen()));
 
       final invalidEmails = [
         'invalid',
@@ -162,7 +185,7 @@ void main() {
     testWidgets('trims whitespace from email and password inputs', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(const MaterialApp(home: LoginScreen()));
+      await tester.pumpWidget(buildTestableWidget(const LoginScreen()));
 
       await tester.enterText(
         find.byType(TextField).first,
@@ -180,7 +203,7 @@ void main() {
 
   group('LoginScreen Accessibility Tests', () {
     testWidgets('has proper semantic labels', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: LoginScreen()));
+      await tester.pumpWidget(buildTestableWidget(const LoginScreen()));
 
       expect(find.byType(TextField), findsNWidgets(2));
       expect(find.byType(ElevatedButton), findsNWidgets(2));
@@ -195,7 +218,7 @@ void main() {
     });
 
     testWidgets('supports keyboard navigation', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: LoginScreen()));
+      await tester.pumpWidget(buildTestableWidget(const LoginScreen()));
 
       final emailField = tester.widget<TextField>(find.byType(TextField).first);
       expect(emailField.keyboardType, TextInputType.emailAddress);
@@ -204,7 +227,7 @@ void main() {
 
   group('LoginScreen Layout Tests', () {
     testWidgets('centers content properly', (WidgetTester tester) async {
-      await tester.pumpWidget(const MaterialApp(home: LoginScreen()));
+      await tester.pumpWidget(buildTestableWidget(const LoginScreen()));
 
       final column = tester.widget<Column>(find.byType(Column));
       expect(column.mainAxisAlignment, MainAxisAlignment.center);
@@ -213,7 +236,7 @@ void main() {
     testWidgets('has proper spacing between elements', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(const MaterialApp(home: LoginScreen()));
+      await tester.pumpWidget(buildTestableWidget(const LoginScreen()));
 
       final column = tester.widget<Column>(find.byType(Column));
       expect(column.spacing, 16);
@@ -224,7 +247,7 @@ void main() {
     testWidgets('controllers are properly disposed', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(const MaterialApp(home: LoginScreen()));
+      await tester.pumpWidget(buildTestableWidget(const LoginScreen()));
 
       await tester.enterText(find.byType(TextField).first, 'test@example.com');
       await tester.enterText(find.byType(TextField).last, 'password123');
@@ -239,7 +262,7 @@ void main() {
     testWidgets('form state is maintained during widget rebuilds', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(const MaterialApp(home: LoginScreen()));
+      await tester.pumpWidget(buildTestableWidget(const LoginScreen()));
 
       await tester.enterText(find.byType(TextField).first, 'test@example.com');
       await tester.enterText(find.byType(TextField).last, 'password123');
