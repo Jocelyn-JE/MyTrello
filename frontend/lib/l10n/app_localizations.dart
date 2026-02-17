@@ -422,6 +422,90 @@ abstract class AppLocalizations {
   /// **'Account Settings'**
   String get accountSettings;
 
+  /// Label for preferences screen
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences'**
+  String get preferences;
+
+  /// Label for app preferences section
+  ///
+  /// In en, this message translates to:
+  /// **'App Preferences'**
+  String get appPreferences;
+
+  /// Label for appearance settings section
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance Settings'**
+  String get appearanceSettings;
+
+  /// Label for display settings section
+  ///
+  /// In en, this message translates to:
+  /// **'Display Settings'**
+  String get displaySettings;
+
+  /// Label for theme setting
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get theme;
+
+  /// Label for language setting
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// Label for dark theme option
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get dark;
+
+  /// Label for light theme option
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get light;
+
+  /// Label for system theme option
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get system;
+
+  /// Label for show assigned cards toggle
+  ///
+  /// In en, this message translates to:
+  /// **'Show Assigned Cards'**
+  String get showAssignedCards;
+
+  /// Description for show assigned cards toggle
+  ///
+  /// In en, this message translates to:
+  /// **'Display assigned cards on the home screen'**
+  String get showAssignedCardsInHomepageDescription;
+
+  /// Success message after updating preferences
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences updated successfully'**
+  String get preferencesUpdatedSuccessfully;
+
+  /// Error message for failed preferences update
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update preferences: {error}'**
+  String failedToUpdatePreferences(String error);
+
+  /// Error message for failed preferences load
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load preferences: {error}'**
+  String failedToLoadPreferences(String error);
+
   /// Label for account information section in user settings
   ///
   /// In en, this message translates to:

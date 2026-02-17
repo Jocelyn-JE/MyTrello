@@ -230,6 +230,72 @@
     "@accountSettings": {
         "description": "Label for account settings section"
     },
+    "preferences": "Preferences",
+    "@preferences": {
+        "description": "Label for preferences screen"
+    },
+    "appPreferences": "App Preferences",
+    "@appPreferences": {
+        "description": "Label for app preferences section"
+    },
+    "appearanceSettings": "Appearance Settings",
+    "@appearanceSettings": {
+        "description": "Label for appearance settings section"
+    },
+    "displaySettings": "Display Settings",
+    "@displaySettings": {
+        "description": "Label for display settings section"
+    },
+    "theme": "Theme",
+    "@theme": {
+        "description": "Label for theme setting"
+    },
+    "language": "Language",
+    "@language": {
+        "description": "Label for language setting"
+    },
+    "dark": "Dark",
+    "@dark": {
+        "description": "Label for dark theme option"
+    },
+    "light": "Light",
+    "@light": {
+        "description": "Label for light theme option"
+    },
+    "system": "System",
+    "@system": {
+        "description": "Label for system theme option"
+    },
+    "showAssignedCards": "Show Assigned Cards",
+    "@showAssignedCards": {
+        "description": "Label for show assigned cards toggle"
+    },
+    "showAssignedCardsInHomepageDescription": "Display assigned cards on the home screen",
+    "@showAssignedCardsInHomepageDescription": {
+        "description": "Description for show assigned cards toggle"
+    },
+    "preferencesUpdatedSuccessfully": "Preferences updated successfully",
+    "@preferencesUpdatedSuccessfully": {
+        "description": "Success message after updating preferences"
+    },
+    "failedToUpdatePreferences": "Failed to update preferences: {error}",
+    "@failedToUpdatePreferences": {
+        "description": "Error message for failed preferences update",
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "failedToLoadPreferences": "Failed to load preferences: {error}",
+    "@failedToLoadPreferences": {
+        "description": "Error message for failed preferences load",
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
     "accountInformation": "Account Information",
     "@accountInformation": {
         "description": "Label for account information section in user settings"

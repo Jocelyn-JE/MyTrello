@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/home_screen/widgets/home_layout_widget.dart';
 import 'package:frontend/screens/user_settings_screen/user_settings_screen.dart';
+import 'package:frontend/screens/preferences_screen.dart';
 import 'package:frontend/services/api/auth_service.dart';
 import 'package:frontend/services/api/board_service.dart';
 import 'package:frontend/services/api/card_service.dart';
@@ -98,6 +99,17 @@ class _HomeScreenState extends State<HomeScreen> {
                       await AuthService.initialize();
                       setState(() {});
                     }
+                  } else if (value == 'preferences') {
+                    final result = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const PreferencesScreen(),
+                      ),
+                    );
+                    // Reload if preferences were updated
+                    if (result == true) {
+                      await _refreshData();
+                    }
                   } else if (value == 'logout') {
                     await AuthService.logout();
                     if (context.mounted) {
@@ -117,6 +129,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         const Icon(Icons.person),
                         const SizedBox(width: 8),
                         Text(l10n.accountSettings),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'preferences',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.tune),
+                        const SizedBox(width: 8),
+                        Text(l10n.preferences),
                       ],
                     ),
                   ),

@@ -179,6 +179,54 @@ class AppLocalizationsFr extends AppLocalizations {
   String get accountSettings => 'Paramètres du compte';
 
   @override
+  String get preferences => 'Préférences';
+
+  @override
+  String get appPreferences => 'Préférences de l\'application';
+
+  @override
+  String get appearanceSettings => 'Paramètres d\'apparence';
+
+  @override
+  String get displaySettings => 'Paramètres d\'affichage';
+
+  @override
+  String get theme => 'Thème';
+
+  @override
+  String get language => 'Langue';
+
+  @override
+  String get dark => 'Sombre';
+
+  @override
+  String get light => 'Clair';
+
+  @override
+  String get system => 'Système';
+
+  @override
+  String get showAssignedCards => 'Afficher les cartes assignées';
+
+  @override
+  String get showAssignedCardsInHomepageDescription =>
+      'Afficher les cartes assignées sur l\'écran d\'accueil';
+
+  @override
+  String get preferencesUpdatedSuccessfully =>
+      'Préférences mises à jour avec succès';
+
+  @override
+  String failedToUpdatePreferences(String error) {
+    return 'Échec de la mise à jour des préférences : $error';
+  }
+
+  @override
+  String failedToLoadPreferences(String error) {
+    return 'Échec du chargement des préférences : $error';
+  }
+
+  @override
   String get accountInformation => 'Informations du compte';
 
   @override

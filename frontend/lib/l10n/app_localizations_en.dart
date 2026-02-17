@@ -178,6 +178,54 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accountSettings => 'Account Settings';
 
   @override
+  String get preferences => 'Preferences';
+
+  @override
+  String get appPreferences => 'App Preferences';
+
+  @override
+  String get appearanceSettings => 'Appearance Settings';
+
+  @override
+  String get displaySettings => 'Display Settings';
+
+  @override
+  String get theme => 'Theme';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get dark => 'Dark';
+
+  @override
+  String get light => 'Light';
+
+  @override
+  String get system => 'System';
+
+  @override
+  String get showAssignedCards => 'Show Assigned Cards';
+
+  @override
+  String get showAssignedCardsInHomepageDescription =>
+      'Display assigned cards on the home screen';
+
+  @override
+  String get preferencesUpdatedSuccessfully =>
+      'Preferences updated successfully';
+
+  @override
+  String failedToUpdatePreferences(String error) {
+    return 'Failed to update preferences: $error';
+  }
+
+  @override
+  String failedToLoadPreferences(String error) {
+    return 'Failed to load preferences: $error';
+  }
+
+  @override
   String get accountInformation => 'Account Information';
 
   @override
