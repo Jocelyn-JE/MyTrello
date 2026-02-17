@@ -194,6 +194,48 @@ paths:
           $ref: "#/components/responses/Error401"
         "500":
           $ref: "#/components/responses/Error500"
+    delete:
+      tags:
+        - users
+      summary: Delete own account
+      description: Delete the authenticated user's account. Requires current password for verification. This action is irreversible and will delete all user data.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currentPassword:
+                  type: string
+                  description: Current password for verification
+              required:
+                - currentPassword
+      responses:
+        "200":
+          description: Account deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Account deleted successfully
+        "400":
+          $ref: "#/components/responses/Error400"
+        "401":
+          description: Unauthorized - Invalid password
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          $ref: "#/components/responses/Error404"
+        "500":
+          $ref: "#/components/responses/Error500"
 
   /api/users/search:
     get:

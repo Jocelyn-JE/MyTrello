@@ -451,4 +451,61 @@ router.patch("/password", verifyToken, async (req, res) => {
     }
 });
 
+// DELETE /api/users - Delete user's own account (requires current password)
+router.delete("/", verifyToken, async (req, res) => {
+    console.debug("/api/users: Deleting user account");
+    if (!req.userId) {
+        console.error("User ID missing in request after token verification");
+        return res.status(500).send({ error: "Internal server error" });
+    }
+
+    // Validate request
+    if (
+        validateJSONRequest(req, res) ||
+        checkExactFields(req.body, res, ["currentPassword"])
+    )
+        return;
+
+    const { currentPassword } = req.body;
+
+    // Empty strings check
+    if (isEmpty(currentPassword)) {
+        console.warn("Empty password detected");
+        return res
+            .status(400)
+            .send({ error: "Password must contain non-empty value" });
+    }
+
+    try {
+        // Get current user with password
+        const user = await prisma.user.findUnique({
+            where: { id: req.userId }
+        });
+
+        if (!user) {
+            console.error(`User ${req.userId} not found`);
+            return res.status(404).send({ error: "User not found" });
+        }
+
+        // Verify current password
+        if (!(await bcrypt.compare(currentPassword, user.password_hash))) {
+            console.warn(`Invalid password for user ${req.userId}`);
+            return res.status(401).send({ error: "Invalid password" });
+        }
+
+        // Delete the user (cascade will handle related data)
+        await prisma.user.delete({
+            where: { id: req.userId }
+        });
+
+        console.info(`User account ${req.userId} deleted successfully`);
+        res.status(200).json({
+            message: "Account deleted successfully"
+        });
+    } catch (error) {
+        console.error("Error deleting user account:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
 export default router;
