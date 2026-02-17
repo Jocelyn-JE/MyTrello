@@ -10,11 +10,13 @@ import 'package:frontend/l10n/app_localizations.dart';
 class HomeLayoutWidget extends StatelessWidget {
   final List<Board> boards;
   final List<AssignedCard> assignedCards;
+  final bool showAssignedCards;
 
   const HomeLayoutWidget({
     super.key,
     required this.boards,
     required this.assignedCards,
+    this.showAssignedCards = true,
   });
 
   @override
@@ -41,7 +43,7 @@ class HomeLayoutWidget extends StatelessWidget {
           // Left column - Boards
           Expanded(flex: 2, child: BoardsSectionWidget(boards: boards)),
           // Vertical divider separator
-          if (assignedCards.isNotEmpty) ...[
+          if (showAssignedCards && assignedCards.isNotEmpty) ...[
             Container(
               width: 1,
               margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -64,7 +66,7 @@ class HomeLayoutWidget extends StatelessWidget {
       padding: const EdgeInsets.only(left: 16.0, right: 16.0),
       child: ListView(
         children: [
-          if (assignedCards.isNotEmpty) ...[
+          if (showAssignedCards && assignedCards.isNotEmpty) ...[
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: Text(

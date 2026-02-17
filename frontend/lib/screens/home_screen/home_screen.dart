@@ -5,6 +5,7 @@ import 'package:frontend/screens/preferences_screen.dart';
 import 'package:frontend/services/api/auth_service.dart';
 import 'package:frontend/services/api/board_service.dart';
 import 'package:frontend/services/api/card_service.dart';
+import 'package:frontend/services/preferences_manager.dart';
 import 'package:frontend/models/api/board.dart';
 import 'package:frontend/models/api/assigned_card.dart';
 import 'package:frontend/utils/deterministic_color.dart';
@@ -36,15 +37,20 @@ class _HomeScreenState extends State<HomeScreen> {
         _errorMessage = null;
       });
 
+      final showAssignedCards =
+          PreferencesManager().showAssignedCardsInHomepage;
+
       final results = await Future.wait([
         BoardService.getBoards(),
-        CardService.getAssignedCards(),
+        if (showAssignedCards) CardService.getAssignedCards(),
       ]);
 
       if (mounted) {
         setState(() {
           _boards = results[0] as List<Board>;
-          _assignedCards = results[1] as List<AssignedCard>;
+          _assignedCards = showAssignedCards
+              ? results[1] as List<AssignedCard>
+              : [];
           _isLoading = false;
         });
       }
@@ -254,6 +260,10 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
 
-    return HomeLayoutWidget(boards: _boards, assignedCards: _assignedCards);
+    return HomeLayoutWidget(
+      boards: _boards,
+      assignedCards: _assignedCards,
+      showAssignedCards: PreferencesManager().showAssignedCardsInHomepage,
+    );
   }
 }
