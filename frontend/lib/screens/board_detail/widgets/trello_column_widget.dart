@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/models/websocket/server_types.dart';
 import 'package:frontend/screens/board_detail/widgets/add_card_dialog.dart';
 import 'package:frontend/services/board_permissions_service.dart';
+import 'package:frontend/widgets/confirmation_dialog.dart';
 import 'package:frontend/screens/board_detail/widgets/trello_card_widget.dart';
 import 'package:frontend/services/websocket/websocket_service.dart';
 import 'package:frontend/utils/app_config.dart';
@@ -57,6 +58,19 @@ class _TrelloColumnWidgetState extends State<TrelloColumnWidget> {
     final newTitle = _titleController!.text;
     if (newTitle.isNotEmpty && newTitle != widget.column.title) {
       WebsocketService.renameColumn(widget.column.id, newTitle);
+    }
+  }
+
+  Future<void> _confirmDeleteColumn() async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await ConfirmationDialog.show(
+      context: context,
+      title: l10n.deleteColumn,
+      content: l10n.deleteColumnConfirmation(widget.column.title),
+    );
+
+    if (confirmed == true) {
+      WebsocketService.deleteColumn(widget.column.id);
     }
   }
 
@@ -185,9 +199,7 @@ class _TrelloColumnWidgetState extends State<TrelloColumnWidget> {
                   color: Colors.red,
                   icon: const Icon(Icons.delete),
                   tooltip: l10n.deleteColumn,
-                  onPressed: () {
-                    WebsocketService.deleteColumn(widget.column.id);
-                  },
+                  onPressed: _confirmDeleteColumn,
                 ),
               ],
             ],

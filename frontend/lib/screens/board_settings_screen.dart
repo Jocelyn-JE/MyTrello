@@ -3,6 +3,7 @@ import 'package:frontend/services/api/auth_service.dart';
 import 'package:frontend/models/api/board.dart';
 import 'package:frontend/models/websocket/server_types.dart';
 import 'package:frontend/services/api/board_service.dart';
+import 'package:frontend/widgets/confirmation_dialog.dart';
 import 'package:frontend/widgets/user_search_dialog.dart';
 import 'package:frontend/utils/snackbar.dart';
 import 'package:frontend/l10n/app_localizations.dart';
@@ -122,26 +123,10 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
 
   Future<void> _deleteBoard() async {
     final l10n = AppLocalizations.of(context)!;
-    final confirmed = await showDialog<bool>(
+    final confirmed = await ConfirmationDialog.show(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.deleteBoard),
-        content: Text(l10n.areYouSureDeleteBoardWithName(widget.board.title)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.cancel),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-            ),
-            child: Text(l10n.delete),
-          ),
-        ],
-      ),
+      title: l10n.deleteBoard,
+      content: l10n.areYouSureDeleteBoardWithName(widget.board.title),
     );
 
     if (confirmed != true) return;

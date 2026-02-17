@@ -25,26 +25,11 @@ class _AssignedUserAvatarState extends State<AssignedUserAvatar> {
 
   Future<void> _confirmUnassign() async {
     final l10n = AppLocalizations.of(context)!;
-    final confirmed = await showDialog<bool>(
+    final confirmed = await ConfirmationDialog.show(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.unassignUser),
-        content: Text(l10n.removeUserFromCard(widget.user.username)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.cancel),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-            ),
-            child: Text(l10n.unassign),
-          ),
-        ],
-      ),
+      title: l10n.unassignUser,
+      content: l10n.removeUserFromCard(widget.user.username),
+      confirmText: l10n.unassign,
     );
 
     if (confirmed == true) {

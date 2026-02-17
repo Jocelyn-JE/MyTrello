@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/models/websocket/server_types.dart';
 import 'package:frontend/screens/board_detail/widgets/assigned_user_avatar.dart';
 import 'package:frontend/screens/board_detail/widgets/card_date_picker_dialog.dart';
+import 'package:frontend/widgets/confirmation_dialog.dart';
 import 'package:frontend/services/board_permissions_service.dart';
 import 'package:frontend/services/websocket/websocket_service.dart';
 import 'package:frontend/utils/app_config.dart';
@@ -103,26 +104,10 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
 
   Future<void> _confirmDelete() async {
     final l10n = AppLocalizations.of(context)!;
-    final confirmed = await showDialog<bool>(
+    final confirmed = await ConfirmationDialog.show(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.deleteCard),
-        content: Text(l10n.deleteCardConfirmation(widget.card.title)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.cancel),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-            ),
-            child: Text(l10n.delete),
-          ),
-        ],
-      ),
+      title: l10n.deleteCard,
+      content: l10n.deleteCardConfirmation(widget.card.title),
     );
 
     if (confirmed == true) {
