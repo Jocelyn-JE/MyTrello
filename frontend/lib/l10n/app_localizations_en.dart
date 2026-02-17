@@ -9,9 +9,6 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'MyTrello';
-
-  @override
   String get login => 'Login';
 
   @override
@@ -348,6 +345,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String deleteCardConfirmation(String cardTitle) {
     return 'Are you sure you want to delete \"$cardTitle\"?';
+  }
+
+  @override
+  String deleteColumnConfirmation(String columnTitle) {
+    return 'Are you sure you want to delete the column \"$columnTitle\"? All cards in this column will be deleted.';
   }
 
   @override

@@ -98,12 +98,6 @@ abstract class AppLocalizations {
     Locale('fr'),
   ];
 
-  /// The application title
-  ///
-  /// In en, this message translates to:
-  /// **'MyTrello'**
-  String get appTitle;
-
   /// Label for login action
   ///
   /// In en, this message translates to:
@@ -727,6 +721,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Are you sure you want to delete \"{cardTitle}\"?'**
   String deleteCardConfirmation(String cardTitle);
+
+  /// Confirmation message for deleting a column
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete the column \"{columnTitle}\"? All cards in this column will be deleted.'**
+  String deleteColumnConfirmation(String columnTitle);
 
   /// Tooltip for delete card button
   ///

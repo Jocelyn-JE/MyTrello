@@ -65,7 +65,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: AppLocalizations.of(context)?.appTitle ?? 'MyTrello',
+      title: 'MyTrello',
       theme: ThemeData.from(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightGreen),
       ),

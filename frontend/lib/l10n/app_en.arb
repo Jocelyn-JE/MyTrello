@@ -1,9 +1,5 @@
 {
     "@@locale": "en",
-    "appTitle": "MyTrello",
-    "@appTitle": {
-        "description": "The application title"
-    },
     "login": "Login",
     "@login": {
         "description": "Label for login action"
@@ -465,6 +461,15 @@
         "description": "Confirmation message for deleting a card",
         "placeholders": {
             "cardTitle": {
+                "type": "String"
+            }
+        }
+    },
+    "deleteColumnConfirmation": "Are you sure you want to delete the column \"{columnTitle}\"? All cards in this column will be deleted.",
+    "@deleteColumnConfirmation": {
+        "description": "Confirmation message for deleting a column",
+        "placeholders": {
+            "columnTitle": {
                 "type": "String"
             }
         }

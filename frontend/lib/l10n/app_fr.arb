@@ -1,6 +1,5 @@
 {
     "@@locale": "fr",
-    "appTitle": "MyTrello",
     "login": "Connexion",
     "register": "S'inscrire",
     "email": "E-mail",
@@ -135,5 +134,6 @@
     "selectDueDate": "Sélectionner la date d'échéance",
     "failedToLoadUsers": "Échec du chargement des utilisateurs : {error}",
     "searchFailed": "Échec de la recherche : {error}",
-    "noUsersFound": "Aucun utilisateur trouvé."
+    "noUsersFound": "Aucun utilisateur trouvé.",
+    "deleteColumnConfirmation": "Êtes-vous sûr de vouloir supprimer la colonne \"{columnTitle}\"? Toutes les cartes de cette colonne seront supprimées."
 }
