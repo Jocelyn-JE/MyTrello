@@ -7,6 +7,7 @@ import 'package:frontend/screens/login_screen.dart';
 import 'package:frontend/screens/register_screen.dart';
 import 'package:frontend/screens/home_screen/home_screen.dart';
 import 'package:frontend/services/api/auth_service.dart';
+import 'package:frontend/services/preferences_manager.dart';
 import 'package:frontend/screens/board_creation_screen.dart';
 import 'package:frontend/screens/board_detail/board_detail_screen.dart';
 import 'package:frontend/utils/regex.dart';
@@ -19,6 +20,9 @@ void main() async {
 
   // Initialize AuthService to load saved authentication state
   await AuthService.initialize();
+
+  // Initialize PreferencesManager to load saved preferences
+  await PreferencesManager().initialize();
 
   // Load environment variables (optional)
   try {
@@ -33,8 +37,30 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    // Listen to preference changes
+    PreferencesManager().addListener(_onPreferencesChanged);
+  }
+
+  @override
+  void dispose() {
+    PreferencesManager().removeListener(_onPreferencesChanged);
+    super.dispose();
+  }
+
+  void _onPreferencesChanged() {
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +69,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData.from(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightGreen),
       ),
+      locale: PreferencesManager().locale,
       initialRoute: AuthService.isLoggedIn ? '/home' : '/login',
       routes: {
         '/login': (context) => const LoginScreen(),

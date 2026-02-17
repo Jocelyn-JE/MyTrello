@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:frontend/utils/app_config.dart';
 import 'package:frontend/models/websocket/server_types.dart';
+import 'package:frontend/services/preferences_manager.dart';
 
 class AuthService {
   static bool _isLoggedIn = false;
@@ -33,6 +34,21 @@ class AuthService {
     }
     _isLoggedIn = _token != null && _token!.isNotEmpty;
     _isInitialized = true;
+
+    // Load preferences from API if user is logged in
+    if (_isLoggedIn) {
+      await _loadUserPreferences();
+    }
+  }
+
+  // Load user preferences from API and sync with local storage
+  static Future<void> _loadUserPreferences() async {
+    try {
+      await PreferencesManager().updateFromApi();
+    } catch (e) {
+      // Silently fail - user will use local preferences if API is unavailable
+      // This prevents blocking login flow if preferences endpoint fails
+    }
   }
 
   static Future<void> login(
@@ -107,6 +123,9 @@ class AuthService {
 
         // Set the authentication state
         await login(token, userId, user);
+
+        // Load user preferences from API
+        await _loadUserPreferences();
       } else {
         final errorData = json.decode(response.body);
         final errorMessage = errorData['error'] ?? 'Unknown error';

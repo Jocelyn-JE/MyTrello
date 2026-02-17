@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/services/api/preferences_service.dart';
+import 'package:frontend/services/preferences_manager.dart';
 
 class PreferencesScreen extends StatefulWidget {
   const PreferencesScreen({super.key});
@@ -40,6 +41,13 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               preferences.showAssignedCardsInHomepage;
           _isLoading = false;
         });
+
+        // Sync API preferences with local preferences manager
+        PreferencesManager().update(
+          localization: preferences.localization,
+          theme: preferences.theme,
+          showAssignedCardsInHomepage: preferences.showAssignedCardsInHomepage,
+        );
       }
     } catch (e) {
       if (mounted) {
@@ -71,6 +79,19 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
               updatedPreferences.showAssignedCardsInHomepage;
           _preferencesUpdated = true;
         });
+
+        // Sync with local preferences manager for immediate effect
+        if (localization != null) {
+          await PreferencesManager().setLocalization(localization);
+        }
+        if (theme != null) {
+          await PreferencesManager().setTheme(theme);
+        }
+        if (showAssignedCardsInHomepage != null) {
+          await PreferencesManager().setShowAssignedCardsInHomepage(
+            showAssignedCardsInHomepage,
+          );
+        }
       }
     } catch (e) {
       if (mounted) {
