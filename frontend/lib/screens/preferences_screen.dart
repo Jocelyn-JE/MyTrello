@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/services/api/preferences_service.dart';
 import 'package:frontend/services/preferences_manager.dart';
+import 'package:frontend/utils/snackbar.dart';
 
 class PreferencesScreen extends StatefulWidget {
   const PreferencesScreen({super.key});
@@ -96,11 +97,9 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
     } catch (e) {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.failedToUpdatePreferences(e.toString())),
-            backgroundColor: Colors.red,
-          ),
+        showSnackBarError(
+          context,
+          l10n.failedToUpdatePreferences(e.toString()),
         );
       }
     }
@@ -116,22 +115,14 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
         if (!didPop) {
           // Show snackbar if preferences were updated
           if (_preferencesUpdated) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(l10n.preferencesUpdatedSuccessfully),
-                backgroundColor: Colors.green,
-              ),
-            );
+            showSnackBarSuccess(context, l10n.preferencesUpdatedSuccessfully);
           }
           // Pop with the result indicating if preferences were updated
           Navigator.of(context).pop(_preferencesUpdated);
         }
       },
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(l10n.preferences),
-          backgroundColor: Colors.lightGreen,
-        ),
+        appBar: AppBar(title: Text(l10n.preferences)),
         body: _isLoading
             ? const Center(child: CircularProgressIndicator())
             : _errorMessage != null
