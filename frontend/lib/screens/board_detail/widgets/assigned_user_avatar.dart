@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/models/websocket/server_types.dart';
 import 'package:frontend/services/websocket/websocket_service.dart';
+import 'package:frontend/widgets/confirmation_dialog.dart';
 import 'package:frontend/utils/deterministic_color.dart';
 import 'package:frontend/l10n/app_localizations.dart';
 
