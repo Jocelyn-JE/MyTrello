@@ -170,7 +170,13 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
 
     final cardWidget = Card(
       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 2),
-      color: isHighlighted ? Colors.yellow.shade100 : null,
+      color: isHighlighted
+          ? (Theme.of(context).brightness == Brightness.light
+                ? Colors.yellow.shade100
+                : const Color.fromARGB(66, 255, 225, 0))
+          : (Theme.of(context).brightness == Brightness.light
+                ? null
+                : Theme.of(context).colorScheme.surfaceContainerHigh),
       elevation: isHighlighted ? 4 : 1,
       shape: isHighlighted
           ? RoundedRectangleBorder(
@@ -226,9 +232,11 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
                             isDense: true,
                             contentPadding: EdgeInsets.zero,
                           ),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
-                            color: Colors.grey,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                           maxLines: null,
                           minLines: 1,
@@ -237,9 +245,11 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
                       else
                         Text(
                           widget.card.content,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
-                            color: Colors.grey,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       if (widget.card.startDate != null ||
@@ -253,17 +263,21 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
                               Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(
+                                  Icon(
                                     Icons.play_arrow,
                                     size: 12,
-                                    color: Colors.green,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
                                     dateFormat.format(widget.card.startDate!),
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 11,
-                                      color: Colors.grey,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
                                     ),
                                   ),
                                 ],
@@ -272,17 +286,19 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
                               Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(
+                                  Icon(
                                     Icons.calendar_today,
                                     size: 12,
-                                    color: Colors.red,
+                                    color: Theme.of(context).colorScheme.error,
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
                                     dateFormat.format(widget.card.dueDate!),
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 11,
-                                      color: Colors.grey,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
                                     ),
                                   ),
                                 ],
@@ -298,7 +314,7 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.delete, size: 18),
-                        color: Colors.red,
+                        color: Theme.of(context).colorScheme.error,
                         tooltip: l10n.deleteCardTooltip,
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
@@ -326,7 +342,7 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
                       const SizedBox(height: 4),
                       IconButton(
                         icon: const Icon(Icons.calendar_month, size: 18),
-                        color: Colors.green,
+                        color: Theme.of(context).colorScheme.primary,
                         tooltip: l10n.setDeadlinesTooltip,
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
@@ -337,7 +353,12 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
               ],
             ),
             if (widget.card.assignedUsers.isNotEmpty) ...[
-              Divider(height: 12, color: Colors.grey[300]),
+              Divider(
+                height: 12,
+                color: isHighlighted
+                    ? Colors.white
+                    : Theme.of(context).colorScheme.outlineVariant,
+              ),
               Align(
                 alignment: Alignment.centerLeft,
                 child: Wrap(
@@ -396,7 +417,7 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
                     height: 4,
                     margin: const EdgeInsets.symmetric(vertical: 2),
                     decoration: BoxDecoration(
-                      color: Colors.lightBlue,
+                      color: Theme.of(context).colorScheme.primary,
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -436,7 +457,10 @@ class _TrelloCardWidgetState extends State<TrelloCardWidget> {
                   const SizedBox(height: 4),
                   Text(
                     widget.card.content,
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),

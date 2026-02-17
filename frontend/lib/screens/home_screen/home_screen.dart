@@ -184,8 +184,6 @@ class _HomeScreenState extends State<HomeScreen> {
               tooltip: l10n.logout,
             ),
         ],
-        backgroundColor: Colors.lightGreen,
-        shadowColor: Colors.grey,
         automaticallyImplyLeading: false,
       ),
       body: RefreshIndicator(onRefresh: _refreshData, child: _buildBody()),
@@ -239,7 +237,11 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.dashboard_outlined, size: 64, color: Colors.grey),
+            Icon(
+              Icons.dashboard_outlined,
+              size: 64,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
             const SizedBox(height: 16),
             Text(
               l10n.noBoardsYet,

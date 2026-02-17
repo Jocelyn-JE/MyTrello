@@ -81,11 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.loginTitle),
-        backgroundColor: Colors.lightGreen,
-        shadowColor: Colors.grey,
-      ),
+      appBar: AppBar(title: Text(l10n.loginTitle)),
       body: SafeArea(
         child: Center(
           child: Padding(

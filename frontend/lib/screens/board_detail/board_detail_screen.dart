@@ -192,8 +192,6 @@ class _BoardDetailScreenState extends State<BoardDetailScreen> {
         },
         appBar: AppBar(
           title: Text(title),
-          backgroundColor: Colors.lightGreen,
-          shadowColor: Colors.grey,
           actions: [
             if (BoardPermissionsService.canEdit) ...[
               // Chat button

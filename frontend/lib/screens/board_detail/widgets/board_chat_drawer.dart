@@ -36,7 +36,9 @@ class _BoardChatDrawerState extends State<BoardChatDrawer> {
       child: Column(
         children: [
           DrawerHeader(
-            decoration: BoxDecoration(color: Colors.lightGreen.shade200),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.primaryContainer,
+            ),
             child: Center(
               child: Text(
                 l10n.boardChat,
@@ -104,7 +106,10 @@ class _BoardChatDrawerState extends State<BoardChatDrawer> {
                 border: const OutlineInputBorder(),
                 // Send button
                 suffixIcon: IconButton(
-                  icon: const Icon(Icons.send, color: Colors.blue),
+                  icon: Icon(
+                    Icons.send,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                   onPressed: _sendChatMessage,
                   tooltip: l10n.send,
                 ),

@@ -107,11 +107,7 @@ class _BoardCreationScreenState extends State<BoardCreationScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.createBoard),
-        backgroundColor: Colors.lightGreen,
-        shadowColor: Colors.grey,
-      ),
+      appBar: AppBar(title: Text(l10n.createBoard)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -218,11 +214,6 @@ class _BoardCreationScreenState extends State<BoardCreationScreen> {
             // Create Button
             ElevatedButton(
               onPressed: _isLoading ? null : _verifyParameters,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-              ),
               child: Text(l10n.createBoard),
             ),
           ],

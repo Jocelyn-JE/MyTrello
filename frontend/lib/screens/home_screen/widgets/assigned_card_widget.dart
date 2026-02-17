@@ -31,13 +31,18 @@ class AssignedCardWidget extends StatelessWidget {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(card.content, style: const TextStyle(color: Colors.grey)),
+            Text(
+              card.content,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
             const SizedBox(height: 2),
             Text(
               '${card.boardTitle} • ${card.columnTitle}',
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(color: Colors.blue),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.primary,
+              ),
             ),
             if (card.startDate != null || card.dueDate != null)
               Padding(
@@ -50,17 +55,20 @@ class AssignedCardWidget extends StatelessWidget {
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.play_arrow,
                             size: 14,
-                            color: Colors.green,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                           const SizedBox(width: 4),
                           Text(
                             dateFormat.format(card.startDate!),
-                            style: Theme.of(
-                              context,
-                            ).textTheme.bodySmall?.copyWith(color: Colors.grey),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
+                                ),
                           ),
                         ],
                       ),
@@ -72,10 +80,12 @@ class AssignedCardWidget extends StatelessWidget {
                             Icons.calendar_today,
                             size: 14,
                             color: isOverdue
-                                ? Colors.red
+                                ? Theme.of(context).colorScheme.error
                                 : isDueSoon
-                                ? Colors.orange
-                                : Colors.grey,
+                                ? Theme.of(context).colorScheme.tertiary
+                                : Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                           ),
                           const SizedBox(width: 4),
                           Text(
@@ -83,10 +93,12 @@ class AssignedCardWidget extends StatelessWidget {
                             style: Theme.of(context).textTheme.bodySmall
                                 ?.copyWith(
                                   color: isOverdue
-                                      ? Colors.red
+                                      ? Theme.of(context).colorScheme.error
                                       : isDueSoon
-                                      ? Colors.orange
-                                      : Colors.grey,
+                                      ? Theme.of(context).colorScheme.tertiary
+                                      : Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant,
                                   fontWeight: isOverdue || isDueSoon
                                       ? FontWeight.bold
                                       : FontWeight.normal,

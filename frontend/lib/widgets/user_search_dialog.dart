@@ -242,7 +242,10 @@ class _UserSearchDialogState extends State<UserSearchDialog> {
             if (_error.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: Text(_error, style: const TextStyle(color: Colors.red)),
+                child: Text(
+                  _error,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
               ),
             if (!_loading)
               Expanded(

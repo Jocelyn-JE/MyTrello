@@ -237,11 +237,7 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.boardSettings),
-        backgroundColor: Colors.lightGreen,
-        shadowColor: Colors.grey,
-      ),
+      appBar: AppBar(title: Text(l10n.boardSettings)),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -295,9 +291,9 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
                           ),
                           const SizedBox(height: 8),
                           ListTile(
-                            leading: const Icon(
+                            leading: Icon(
                               Icons.person,
-                              color: Colors.amber,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                             title: Text(widget.board.owner.username),
                             subtitle: Text(l10n.boardOwner),
@@ -360,20 +356,16 @@ class _BoardSettingsScreenState extends State<BoardSettingsScreen> {
                       onPressed: _hasChanges && !_isLoading
                           ? _saveChanges
                           : null,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                      ),
                       child: Text(l10n.saveChanges),
                     ),
                     const SizedBox(height: 16),
                     OutlinedButton(
                       onPressed: _isLoading ? null : _deleteBoard,
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.red,
-                        side: const BorderSide(color: Colors.red),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        foregroundColor: Theme.of(context).colorScheme.error,
+                        side: BorderSide(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
                       ),
                       child: Text(l10n.deleteBoard),
                     ),

@@ -93,7 +93,12 @@ class _BoardColumnListState extends State<BoardColumnList> {
           padding: const EdgeInsets.only(bottom: 8.0),
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.lightGreen.shade200,
+              backgroundColor: Theme.of(context).brightness == Brightness.light
+                  ? Colors.lightGreen.shade200
+                  : Colors.green.shade800,
+              foregroundColor: Theme.of(context).brightness == Brightness.light
+                  ? Colors.black
+                  : Colors.white,
             ),
             onPressed: () {
               WebsocketService.createColumn(l10n.newColumn);
@@ -110,7 +115,7 @@ class _BoardColumnListState extends State<BoardColumnList> {
                 width: 4,
                 margin: const EdgeInsets.only(right: 8, bottom: 8),
                 decoration: BoxDecoration(
-                  color: Colors.lightBlue,
+                  color: Theme.of(context).colorScheme.primary,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),

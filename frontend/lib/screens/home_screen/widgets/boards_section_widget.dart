@@ -27,7 +27,9 @@ class BoardsSectionWidget extends StatelessWidget {
             child: Text(
               l10n.createFirstBoard,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.grey),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
           )
         else

@@ -77,14 +77,14 @@ class _AssignedUserAvatarState extends State<AssignedUserAvatar> {
                     child: Container(
                       width: 16,
                       height: 16,
-                      decoration: const BoxDecoration(
-                        color: Colors.red,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.error,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.close,
                         size: 12,
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.onError,
                       ),
                     ),
                   ),

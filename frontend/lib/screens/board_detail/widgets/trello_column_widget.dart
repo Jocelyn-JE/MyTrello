@@ -138,9 +138,12 @@ class _TrelloColumnWidgetState extends State<TrelloColumnWidget> {
                     return Container(
                       decoration: isHovering
                           ? BoxDecoration(
-                              color: Colors.lightGreen.withValues(alpha: 0.1),
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primaryContainer
+                                  .withValues(alpha: 0.3),
                               border: Border.all(
-                                color: Colors.lightGreen,
+                                color: Theme.of(context).colorScheme.primary,
                                 width: 2,
                               ),
                               borderRadius: BorderRadius.circular(8),
@@ -152,8 +155,10 @@ class _TrelloColumnWidgetState extends State<TrelloColumnWidget> {
                                 isHovering ? l10n.dropHere : l10n.noCards,
                                 style: TextStyle(
                                   color: isHovering
-                                      ? Colors.lightGreen
-                                      : Colors.grey,
+                                      ? Theme.of(context).colorScheme.primary
+                                      : Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             )
@@ -183,7 +188,14 @@ class _TrelloColumnWidgetState extends State<TrelloColumnWidget> {
                   icon: const Icon(Icons.add, size: 16),
                   label: Text(l10n.addCard),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.lightGreen.shade100,
+                    backgroundColor:
+                        Theme.of(context).brightness == Brightness.light
+                        ? Colors.lightGreen.shade200
+                        : Colors.green.shade800,
+                    foregroundColor:
+                        Theme.of(context).brightness == Brightness.light
+                        ? Colors.black
+                        : Colors.white,
                   ),
                   onPressed: () {
                     showDialog(
@@ -196,7 +208,7 @@ class _TrelloColumnWidgetState extends State<TrelloColumnWidget> {
                 const SizedBox(height: 8),
                 // Delete column button
                 IconButton(
-                  color: Colors.red,
+                  color: Theme.of(context).colorScheme.error,
                   icon: const Icon(Icons.delete),
                   tooltip: l10n.deleteColumn,
                   onPressed: _confirmDeleteColumn,
@@ -246,7 +258,7 @@ class _TrelloColumnWidgetState extends State<TrelloColumnWidget> {
                   width: 4,
                   margin: const EdgeInsets.fromLTRB(0, 0, 8, 8),
                   decoration: BoxDecoration(
-                    color: Colors.lightBlue,
+                    color: Theme.of(context).colorScheme.primary,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -290,7 +302,9 @@ class _TrelloColumnWidgetState extends State<TrelloColumnWidget> {
                   Text(
                     l10n.cardsCount(widget.column.cards.length),
                     textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.grey),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),

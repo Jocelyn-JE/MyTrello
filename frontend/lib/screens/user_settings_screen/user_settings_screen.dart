@@ -32,10 +32,7 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.userSettings),
-        backgroundColor: Colors.lightGreen,
-      ),
+      appBar: AppBar(title: Text(l10n.userSettings)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(

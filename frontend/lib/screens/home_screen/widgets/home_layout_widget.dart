@@ -45,7 +45,7 @@ class HomeLayoutWidget extends StatelessWidget {
             Container(
               width: 1,
               margin: const EdgeInsets.symmetric(horizontal: 16),
-              color: Colors.grey[300],
+              color: Theme.of(context).colorScheme.outlineVariant,
             ),
             // Right column - Assigned Cards
             SizedBox(
@@ -87,7 +87,10 @@ class HomeLayoutWidget extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            Divider(height: 12, color: Colors.grey[300]),
+            Divider(
+              height: 12,
+              color: Theme.of(context).colorScheme.outlineVariant,
+            ),
             const SizedBox(height: 8),
           ],
           Text(
@@ -103,7 +106,9 @@ class HomeLayoutWidget extends StatelessWidget {
               child: Text(
                 l10n.createFirstBoard,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.grey),
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
             )
           else
