@@ -7,6 +7,7 @@ import 'package:frontend/screens/user_settings_screen/widgets/user_info_card.dar
 import 'package:frontend/screens/user_settings_screen/widgets/update_username_section.dart';
 import 'package:frontend/screens/user_settings_screen/widgets/update_email_section.dart';
 import 'package:frontend/screens/user_settings_screen/widgets/update_password_section.dart';
+import 'package:frontend/screens/user_settings_screen/widgets/delete_account_section.dart';
 import 'package:frontend/l10n/app_localizations.dart';
 
 class UserSettingsScreen extends StatefulWidget {
@@ -55,6 +56,11 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
             UpdatePasswordSection(
               isLoading: _isLoading,
               onUpdate: _updatePassword,
+            ),
+            const SizedBox(height: 24),
+            DeleteAccountSection(
+              isLoading: _isLoading,
+              onDelete: _deleteAccount,
             ),
           ],
         ),
@@ -169,6 +175,37 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
       setState(() => _isLoading = false);
       if (mounted) {
         showSnackBarSuccess(context, l10n.passwordUpdatedSuccessfully);
+      }
+    } catch (e) {
+      setState(() => _isLoading = false);
+      if (mounted) {
+        showSnackBarWarning(context, e.toString());
+      }
+    }
+  }
+
+  Future<void> _deleteAccount(String currentPassword) async {
+    final l10n = AppLocalizations.of(context)!;
+    if (currentPassword.isEmpty) {
+      showSnackBarWarning(context, l10n.pleaseEnterPassword);
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      await UserService.deleteAccount(currentPassword);
+      setState(() => _isLoading = false);
+      if (mounted) {
+        // Log out and navigate to login screen
+        await AuthService.logout();
+        if (mounted) {
+          showSnackBarSuccess(context, l10n.accountDeletedSuccessfully);
+          // Navigate to login screen, clearing the entire navigation stack
+          Navigator.of(
+            context,
+          ).pushNamedAndRemoveUntil('/login', (route) => false);
+        }
       }
     } catch (e) {
       setState(() => _isLoading = false);

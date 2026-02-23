@@ -462,4 +462,27 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get noUsersFound => 'Aucun utilisateur trouvé.';
+
+  @override
+  String get deleteAccount => 'Supprimer le compte';
+
+  @override
+  String get deleteAccountWarning =>
+      'Cette action est permanente et ne peut pas être annulée. Toutes vos données seront supprimées.';
+
+  @override
+  String get deleteAccountConfirmation =>
+      'Êtes-vous sûr de vouloir supprimer votre compte ? Cette action ne peut pas être annulée.';
+
+  @override
+  String get accountDeletedSuccessfully => 'Compte supprimé avec succès';
+
+  @override
+  String failedToDeleteAccount(String error) {
+    return 'Échec de la suppression du compte : $error';
+  }
+
+  @override
+  String get enterPasswordToConfirm =>
+      'Entrez votre mot de passe pour confirmer';
 }

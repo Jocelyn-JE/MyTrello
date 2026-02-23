@@ -630,5 +630,34 @@
     "noUsersFound": "No users found.",
     "@noUsersFound": {
         "description": "Message when no users match search criteria"
+    },
+    "deleteAccount": "Delete Account",
+    "@deleteAccount": {
+        "description": "Label for delete account section and button"
+    },
+    "deleteAccountWarning": "This action is permanent and cannot be undone. All your data will be deleted.",
+    "@deleteAccountWarning": {
+        "description": "Warning message about account deletion"
+    },
+    "deleteAccountConfirmation": "Are you sure you want to delete your account? This action cannot be undone.",
+    "@deleteAccountConfirmation": {
+        "description": "Confirmation dialog message for account deletion"
+    },
+    "accountDeletedSuccessfully": "Account deleted successfully",
+    "@accountDeletedSuccessfully": {
+        "description": "Success message after deleting account"
+    },
+    "failedToDeleteAccount": "Failed to delete account: {error}",
+    "@failedToDeleteAccount": {
+        "description": "Error message when account deletion fails",
+        "placeholders": {
+            "error": {
+                "type": "String"
+            }
+        }
+    },
+    "enterPasswordToConfirm": "Enter your password to confirm",
+    "@enterPasswordToConfirm": {
+        "description": "Instruction to enter password for confirmation"
     }
 }

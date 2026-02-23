@@ -230,4 +230,26 @@ class UserService {
       );
     }
   }
+
+  static Future<void> deleteAccount(String currentPassword) async {
+    final token = AuthService.token;
+    if (token == null) throw Exception('No authentication token found');
+
+    final response = await http
+        .delete(
+          Uri.parse('${AppConfig.backendUrl}/api/users'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+          body: json.encode({'currentPassword': currentPassword}),
+        )
+        .timeout(Duration(milliseconds: AppConfig.apiTimeout));
+    final jsonData = json.decode(response.body);
+    if (response.statusCode != 200) {
+      throw Exception(
+        'Failed to delete account: ${jsonData['error'] ?? 'Unknown error'}',
+      );
+    }
+  }
 }

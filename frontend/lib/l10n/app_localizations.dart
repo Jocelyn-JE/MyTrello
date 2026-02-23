@@ -913,6 +913,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No users found.'**
   String get noUsersFound;
+
+  /// Label for delete account section and button
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account'**
+  String get deleteAccount;
+
+  /// Warning message about account deletion
+  ///
+  /// In en, this message translates to:
+  /// **'This action is permanent and cannot be undone. All your data will be deleted.'**
+  String get deleteAccountWarning;
+
+  /// Confirmation dialog message for account deletion
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete your account? This action cannot be undone.'**
+  String get deleteAccountConfirmation;
+
+  /// Success message after deleting account
+  ///
+  /// In en, this message translates to:
+  /// **'Account deleted successfully'**
+  String get accountDeletedSuccessfully;
+
+  /// Error message when account deletion fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete account: {error}'**
+  String failedToDeleteAccount(String error);
+
+  /// Instruction to enter password for confirmation
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password to confirm'**
+  String get enterPasswordToConfirm;
 }
 
 class _AppLocalizationsDelegate

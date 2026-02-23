@@ -456,4 +456,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noUsersFound => 'No users found.';
+
+  @override
+  String get deleteAccount => 'Delete Account';
+
+  @override
+  String get deleteAccountWarning =>
+      'This action is permanent and cannot be undone. All your data will be deleted.';
+
+  @override
+  String get deleteAccountConfirmation =>
+      'Are you sure you want to delete your account? This action cannot be undone.';
+
+  @override
+  String get accountDeletedSuccessfully => 'Account deleted successfully';
+
+  @override
+  String failedToDeleteAccount(String error) {
+    return 'Failed to delete account: $error';
+  }
+
+  @override
+  String get enterPasswordToConfirm => 'Enter your password to confirm';
 }

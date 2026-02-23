@@ -135,5 +135,11 @@
     "failedToLoadUsers": "Échec du chargement des utilisateurs : {error}",
     "searchFailed": "Échec de la recherche : {error}",
     "noUsersFound": "Aucun utilisateur trouvé.",
-    "deleteColumnConfirmation": "Êtes-vous sûr de vouloir supprimer la colonne \"{columnTitle}\"? Toutes les cartes de cette colonne seront supprimées."
+    "deleteColumnConfirmation": "Êtes-vous sûr de vouloir supprimer la colonne \"{columnTitle}\"? Toutes les cartes de cette colonne seront supprimées.",
+    "deleteAccount": "Supprimer le compte",
+    "deleteAccountWarning": "Cette action est permanente et ne peut pas être annulée. Toutes vos données seront supprimées.",
+    "deleteAccountConfirmation": "Êtes-vous sûr de vouloir supprimer votre compte ? Cette action ne peut pas être annulée.",
+    "accountDeletedSuccessfully": "Compte supprimé avec succès",
+    "failedToDeleteAccount": "Échec de la suppression du compte : {error}",
+    "enterPasswordToConfirm": "Entrez votre mot de passe pour confirmer"
 }
